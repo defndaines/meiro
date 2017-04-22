@@ -9,9 +9,10 @@
 
 (defn- top-level [maze]
   (apply str
-         corner
-         (apply str (flatten (repeat (count (first maze)) (concat horizontal-wall corner))) )
-         "\n"))
+         (flatten
+           (concat corner
+                   (repeat (count (first maze)) (concat horizontal-wall corner))
+                   "\n"))))
 
 (defn- cell-level [cell]
   (concat inside-cell
