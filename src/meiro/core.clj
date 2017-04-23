@@ -3,7 +3,7 @@
 ;; Maze is vector of vectors. Access by [row column].
 ;; Data in cell is which directions are open to the next cell.
 
-(defn init-maze
+(defn init
   "Initialize a maze. A grid of cells with the given number of rows and columns,
   which can be accessed by index, with [0 0] as the upper left corner."
   [rows columns]
@@ -21,22 +21,34 @@
       [-1 0] :south
       nil)))
 
+(defn in? [maze cell]
+  (let [max-row (dec (count maze))
+        max-col (dec (count (first maze)))
+        [row col] cell]
+    (and
+      (<= 0 row max-row)
+      (<= 0 col max-col))))
+
 (defn adjacent?
   "Are two cells adjacent.
   Cells not within the bounds of a maze are considered not adjacent."
   [maze cell-1 cell-2]
-  (let [max-row (dec (count maze))
-        max-col (dec (count (first maze)))
-        [row-1 col-1] cell-1
+  (let [[row-1 col-1] cell-1
         [row-2 col-2] cell-2]
     (and
-      (<= 0 row-1 max-row)
-      (<= 0 row-2 max-row)
-      (<= 0 col-1 max-col)
-      (<= 0 col-2 max-col)
+      (in? maze cell-1)
+      (in? maze cell-2)
       (or
         (and (= row-1 row-2) (= 1 (Math/abs (- col-1 col-2))))
         (and (= col-1 col-2) (= 1 (Math/abs (- row-1 row-2))))))))
+
+(defn neighbors
+  "Get all valid neighbors of a cell in a given maze."
+  [maze cell]
+  (let [[row col] cell]
+    (filter
+      #(in? maze %)
+      #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]})))
 
 (defn link
   "Link two adjacent cells in a maze."

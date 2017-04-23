@@ -4,8 +4,8 @@
 
 (deftest init-test
   (testing "First level is row, each row contains columns."
-    (is (= 5 (count (init-maze 5 3))))
-    (is (every? #(= 4 (count %)) (init-maze 5 4)))))
+    (is (= 5 (count (init 5 3))))
+    (is (every? #(= 4 (count %)) (init 5 4)))))
 
 (deftest direction-test
   (testing "Cardinal directions."
@@ -20,28 +20,38 @@
 
 (deftest adjacent-test
   (testing "true if cells are adjacent."
-    (is (adjacent? (init-maze 5 5) [0 0] [0 1]))
-    (is (adjacent? (init-maze 5 5) [0 0] [1 0]))
-    (is (not (adjacent? (init-maze 5 5) [0 0] [0 2])))
-    (is (not (adjacent? (init-maze 5 5) [0 0] [2 0]))))
+    (is (adjacent? (init 5 5) [0 0] [0 1]))
+    (is (adjacent? (init 5 5) [0 0] [1 0]))
+    (is (not (adjacent? (init 5 5) [0 0] [0 2])))
+    (is (not (adjacent? (init 5 5) [0 0] [2 0]))))
   (testing "false if cell outside maze."
-    (is (not (adjacent? (init-maze 5 5) [0 0] [-1 0])))
-    (is (not (adjacent? (init-maze 5 5) [0 0] [0 -1])))
-    (is (not (adjacent? (init-maze 5 5) [4 0] [5 0])))
-    (is (not (adjacent? (init-maze 5 5) [0 4] [0 5])))))
+    (is (not (adjacent? (init 5 5) [0 0] [-1 0])))
+    (is (not (adjacent? (init 5 5) [0 0] [0 -1])))
+    (is (not (adjacent? (init 5 5) [4 0] [5 0])))
+    (is (not (adjacent? (init 5 5) [0 4] [0 5])))))
 
 (deftest link-test
   (testing "Adjacent cells linked by opposite directions."
     (let [above [2 2]
           below [3 2]
-          m (link (init-maze 6 4) below above)]
+          m (link (init 6 4) below above)]
       (is (some (comp = :north) (get-in m below)))
       (is (some (comp = :south) (get-in m above))))
     (let [left [1 2]
           right [1 3]
-          m (link (init-maze 6 4) left right)]
+          m (link (init 6 4) left right)]
       (is (some (comp = :east) (get-in m left)))
       (is (some (comp = :west) (get-in m right)))))
   (testing "Non-adjacent cells do not link."
-    (let [m (init-maze 5 5)]
+    (let [m (init 5 5)]
       (is (= m (link m [0 0] [1 1]))))))
+
+(deftest neighbors-test
+  (testing "Get neighbors to a cell in a maze."
+    (is (= #{[0 1] [1 0] [1 2] [2 1]} (set (neighbors (init 3 3) [1 1]))))
+    (is (= #{[1 1] [0 0] [2 0]} (set (neighbors (init 3 3) [1 0]))))
+    (is (= #{[0 0] [0 2] [1 1]} (set (neighbors (init 3 3) [0 1]))))
+    (is (= #{[0 1] [1 0]} (set (neighbors (init 3 3) [0 0]))))
+    (is (= #{[0 1] [1 2]} (set (neighbors (init 3 3) [0 2]))))
+    (is (= #{[1 0] [2 1]} (set (neighbors (init 3 3) [2 0]))))
+    (is (= #{[2 1] [1 2]} (set (neighbors (init 3 3) [2 2]))))))
