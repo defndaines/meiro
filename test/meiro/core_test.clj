@@ -55,3 +55,21 @@
     (is (= #{[0 1] [1 2]} (set (neighbors (init 3 3) [0 2]))))
     (is (= #{[1 0] [2 1]} (set (neighbors (init 3 3) [2 0]))))
     (is (= #{[2 1] [1 2]} (set (neighbors (init 3 3) [2 2]))))))
+
+(deftest cell-direction-test
+	(testing "Methods for getting the cell in a given direction"
+    (is (= [0 1] (north [1 1])))
+    (is (= [2 1] (south [1 1])))
+    (is (= [1 2] (east [1 1])))
+    (is (= [1 0] (west [1 1])))))
+
+(deftest western-cells-test
+	(let [maze [[[:south] [:south] [:east] [:west :east] [:west :south] [:south] [:east] [:west :south]]
+							[[:north :east] [:north :west :south] [:east] [:west :east] [:north :west :east] [:north :west :south] [:south] [:north :south]]
+							[[:east] [:north :west :east] [:west :east] [:west :east] [:west :east] [:north :west :east] [:north :west :east] [:north :west]]]]
+		(testing "No linked cell to the west"
+			(is (= '([0 0]) (cells-west maze [0 0]))))
+		(testing "One linked cell to the west"
+			(is (= '([0 3] [0 2]) (cells-west maze [0 3]))))
+		(testing "Multiple linked cells to the west"
+			(is (= '([1 5] [1 4] [1 3] [1 2]) (cells-west maze [1 5]))))))

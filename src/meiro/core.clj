@@ -21,6 +21,37 @@
       [-1 0] :south
       nil)))
 
+(defn north
+  "Get cell to the north of a given cell. No bounds checking, so may return an invalid cell."
+  [cell]
+  (let [[row col] cell]
+    [(dec row) col]))
+
+(defn south
+  "Get cell to the south of a given cell. No bounds checking, so may return an invalid cell."
+  [cell]
+  (let [[row col] cell]
+    [(inc row) col]))
+
+(defn east
+  "Get cell to the east of a given cell. No bounds checking, so may return an invalid cell."
+  [cell]
+  (let [[row col] cell]
+    [row (inc col)]))
+
+(defn west
+  "Get cell to the west of a given cell. No bounds checking, so may return an invalid cell."
+  [cell]
+  (let [[row col] cell]
+    [row (dec col)]))
+
+(defn cells-west
+  "Get a sequence of cells west of the cell, including the cell."
+  [maze cell]
+  (if (seq (filter #{:west} (get-in maze cell)))
+    (cons cell (cells-west maze (west cell)))
+    [cell]))
+
 (defn in? [maze cell]
   (let [max-row (dec (count maze))
         max-col (dec (count (first maze)))
@@ -43,7 +74,7 @@
         (and (= col-1 col-2) (= 1 (Math/abs (- row-1 row-2))))))))
 
 (defn neighbors
-  "Get all valid neighbors of a cell in a given maze."
+  "Get all potential neighbors of a cell in a given maze."
   [maze cell]
   (let [[row col] cell]
     (filter
