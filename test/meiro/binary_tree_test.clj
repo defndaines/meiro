@@ -1,4 +1,4 @@
-(ns meiro.core-test
+(ns meiro.binary-tree-test
 	(:require [clojure.test :refer :all]
 						[meiro.core :refer :all]
 						[meiro.binary-tree :refer :all]))

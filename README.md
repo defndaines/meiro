@@ -7,6 +7,7 @@ is a re-thinking of the approaches in a Clojure style.
 
 Each maze generation algorithm is in its own namespace.
 
+
 ## Usage
 
 Project is currently _under development_ and does not have functions exposed for
@@ -18,7 +19,7 @@ REPL and try to following:
 (require '[meiro.core :as m])
 (require '[meiro.ascii :as ascii])
 (require '[meiro.binary-tree :as bt])
-(println (ascii/render (bt/create (m/init 8 25))))
+(print (ascii/render (bt/create (m/init 8 25))))
 ```
 
 Which will produce a maze like:
@@ -41,6 +42,7 @@ Which will produce a maze like:
 |                                                                                                   |
 +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
 ```
+
 
 ## License
 
