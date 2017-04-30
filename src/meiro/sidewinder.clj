@@ -3,7 +3,9 @@
             [clojure.data.generators :as gen]))
 
 ;; Allows for different weights for going each direction.
-(def weights {:south 1 :east 1})
+;; Higher south weight has longer verticle corridors.
+;; Higher east weight has longer horizontal corridors.
+(def weights {:south 4 :east 5})
 
 (defn possible-directions
   "Determine which directions are valid from the provided cell."
