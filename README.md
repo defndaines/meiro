@@ -71,6 +71,14 @@ Which will produce a maze like:
 +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
 ```
 
+And to render a maze as a PNG:
+```clojure
+(require '[meiro.png :as png])
+(png/render (sw/create (m/init 15 20)) "sample-maze.png")
+```
+Which creates a PNG file like:
+![Sample Maze](sample-maze.png)
+
 
 ## License
 
