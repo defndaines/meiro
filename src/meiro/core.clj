@@ -45,6 +45,16 @@
   (let [[row col] cell]
     [row (dec col)]))
 
+(defn cell-to
+  "Get neighboring cell given a direction. No bounds checking, so may return invalid cell."
+  [cardinal cell]
+  (let [[row col] cell]
+    (case cardinal
+      :north [(dec row) col]
+      :south [(inc row) col]
+      :east [row (inc col)]
+      :west [row (dec col)])))
+
 (defn cells-west
   "Get a sequence of cells west of the cell, including the cell."
   [maze cell]

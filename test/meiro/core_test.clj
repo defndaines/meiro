@@ -63,6 +63,13 @@
     (is (= [1 2] (east [1 1])))
     (is (= [1 0] (west [1 1])))))
 
+(deftest cell-to-test
+	(testing "Methods for getting the cell in a given direction"
+    (is (= [0 1] (cell-to :north [1 1])))
+    (is (= [2 1] (cell-to :south [1 1])))
+    (is (= [1 2] (cell-to :east [1 1])))
+    (is (= [1 0] (cell-to :west [1 1])))))
+
 (deftest western-cells-test
 	(let [maze [[[:south] [:south] [:east] [:west :east] [:west :south] [:south] [:east] [:west :south]]
 							[[:north :east] [:north :west :south] [:east] [:west :east] [:north :west :east] [:north :west :south] [:south] [:north :south]]
