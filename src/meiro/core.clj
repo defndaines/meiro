@@ -6,9 +6,10 @@
 (defn init
   "Initialize a maze. A grid of cells with the given number of rows and columns,
   which can be accessed by index, with [0 0] as the upper left corner."
-  [rows columns]
-  (vec (repeat rows
-               (vec (repeat columns [])))))
+  ([rows columns] (init rows columns []))
+  ([rows columns v]
+   (vec (repeat rows
+                (vec (repeat columns v))))))
 
 (defn direction
   "Get the direction from cell-1 to cell-2. Assumes [0 0] is the north-west corner."
