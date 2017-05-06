@@ -22,6 +22,6 @@
                 [[:north :south] [:east] [:west :south]]
                 [[:north :east] [:west :east] [:north :west]]]]
       (is (= [[0 1 2] [1 6 5] [2 3 4]]
-             (distances maze [0 0])))
+             (distances maze)))
       (is (= [[6 7 8] [5 0 1] [4 3 2]]
              (distances maze [1 1]))))))

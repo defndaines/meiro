@@ -12,6 +12,7 @@
 (defn distances
   "Calculate distances to each cell relative from starting cell.
   Assumes a perfect maze."
+  ([maze] (distances maze [0 0]))
   ([maze cell] (distances maze cell (m/init (count maze) (count (first maze)) nil) 0))
   ([maze cell acc dist]
    (if (seq cell)
