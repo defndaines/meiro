@@ -13,7 +13,7 @@
   (testing "When cells have been populated already"
     (let [grid (assoc-in (init 3 3 nil) [2 1] 1)]
       (is (= [[1 2]]
-             (#'meiro.dijkstra/empty-neighbors grid [1 1] [:south :east])))   
+             (#'meiro.dijkstra/empty-neighbors grid [1 1] [:south :east])))
       (is (= [[1 0]]
              (#'meiro.dijkstra/empty-neighbors grid [2 0] [:north :east]))))))
 
@@ -28,5 +28,10 @@
              (distances maze [1 1]))))))
 
 (deftest solution-test
-  (testing "Uses shortest path to find solution to maze."
-    (is (not (empty? (solution (sw/create (init 15 20)) [0 0] [14 19]))))))
+  (let [sol (solution (sw/create (init 15 20)) [0 0] [14 19])]
+    (testing "Must be long enough to cross at least all columns and rows."
+      (is (< 33 (count sol))))
+    (testing "Starts with the provided 'start' cell."
+      (is (= [0 0] (first sol))))
+    (testing "Ends with the provided 'end' cell."
+      (is (= [14 19] (last sol))))))

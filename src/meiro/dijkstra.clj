@@ -27,7 +27,7 @@
   [maze start end]
   (let [dist (distances maze start)
         step (fn [cell n] (last (filter #(= (dec n) (get-in dist %)) (m/neighbors maze cell))))]
-    (loop [acc []
+    (loop [acc '()
            cell end]
       (let [n (get-in dist cell)]
         (if (zero? n)
