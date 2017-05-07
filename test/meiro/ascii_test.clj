@@ -34,4 +34,14 @@
                 [[:north :east] [:west :east] [:north :west]]]
           distances [[0 1 2] [1 6 5] [2 3 4]]]
       (is (= "+---+---+---+\n| 0   1   2 |\n+   +---+---+\n| 1 | 6   5 |\n+   +---+   +\n| 2   3   4 |\n+---+---+---+\n"
-             (render-distances maze distances))))))
+             (render maze (show-distance distances)))))))
+
+(deftest include-solution
+  (testing "When a solution is provided."
+    (let [maze [[[:east] [:west :east :south] [:west] [:south] [:south]]
+                [[:east :south] [:north :west] [:south] [:north :east] [:north :west :south]]
+                [[:north :east :south] [:west] [:north :east :south] [:west] [:north :south]]
+                [[:north :east] [:west :east] [:north :west :east] [:west :east] [:north :west]]]
+          sol '([0 0] [0 1] [1 1] [1 0] [2 0] [3 0] [3 1] [3 2] [3 3] [3 4] [2 4] [1 4] [0 4])]
+      (is (= "+---+---+---+---+---+\n| *   *     |   | * |\n+---+   +---+   +   +\n| *   * |   |     * |\n+   +---+   +---+   +\n| *     |       | * |\n+   +---+   +---+   +\n| *   *   *   *   * |\n+---+---+---+---+---+\n"
+            (render maze (show-solution sol)))))))

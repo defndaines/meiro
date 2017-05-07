@@ -34,4 +34,12 @@
     (testing "Starts with the provided 'start' cell."
       (is (= [0 0] (first sol))))
     (testing "Ends with the provided 'end' cell."
-      (is (= [14 19] (last sol))))))
+      (is (= [14 19] (last sol)))))
+  (testing "Solution does not jump walls."
+    ;; Without bounds checking, solution can pass through [2 1] instead of [3 0].
+    (let [maze [[[:east] [:west :east :south] [:west] [:south] [:south]]
+                [[:east :south] [:north :west] [:south] [:north :east] [:north :west :south]]
+                [[:north :east :south] [:west] [:north :east :south] [:west] [:north :south]]
+                [[:north :east] [:west :east] [:north :west :east] [:west :east] [:north :west]]]]
+      (is (= '([0 0] [0 1] [1 1] [1 0] [2 0] [3 0] [3 1] [3 2] [3 3] [3 4] [2 4] [1 4] [0 4])
+             (solution maze [0 0] [0 4]))))))

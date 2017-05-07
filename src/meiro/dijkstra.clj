@@ -26,7 +26,8 @@
   "Provide the path between to two cells in the maze."
   [maze start end]
   (let [dist (distances maze start)
-        step (fn [cell n] (last (filter #(= (dec n) (get-in dist %)) (m/neighbors maze cell))))]
+        step (fn [cell n] (last (filter #(= (dec n) (get-in dist %))
+                                        (map #(m/cell-to % cell) (get-in maze cell)))))]
     (loop [acc '()
            cell end]
       (let [n (get-in dist cell)]

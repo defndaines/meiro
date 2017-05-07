@@ -24,31 +24,42 @@
   (concat (if (some #{:south} cell) horizontal-link horizontal-wall) corner))
 
 (defn render
-  "Render a maze as ASCII art."
-  [maze]
-  (apply str
-         (top-level maze)
-         (mapcat
-           (fn [row]
-             (concat verticle-wall (mapcat cell-level row) "\n"
-                     corner (mapcat bottom-level row) "\n"))
-           maze)))
+  "Render a maze as ASCII art. Uses the cell-fn if provided."
+  ([maze]
+   (apply str
+          (top-level maze)
+          (mapcat
+            (fn [row]
+              (concat verticle-wall (mapcat cell-level row) "\n"
+                      corner (mapcat bottom-level row) "\n"))
+            maze)))
+  ;; Could just call (render maze (fn [_] inside-cell)), but feel like there's
+  ;; a more elegant solution hiding here which I'll eventually figure out.
+  ([maze cell-fn]
+   (apply str
+          (top-level maze)
+          (flatten
+            (for [row (range (count maze))]
+              (concat
+                verticle-wall
+                (for [col (range (count (first maze)))]
+                  (cell-level (get-in maze [row col])
+                              (cell-fn [row col])))
+                "\n"
+                corner
+                (for [col (range (count (first maze)))]
+                  (bottom-level (get-in maze [row col])))
+                "\n"))))))
 
-(defn render-distances
-  "Render a maze with the distance values in each cell.
+(defn show-distance
+  "Auxiliary function for rendering distance values inside a cell.
   Uses base-36 to avoid spacing issues in smaller mazes."
-  [maze distances]
-  (apply str
-         (top-level maze)
-         (flatten
-           (for [row (range (count maze))]
-             (concat
-               verticle-wall
-               (for [col (range (count (first maze)))]
-                 (cell-level (get-in maze [row col])
-                             (str \space (Integer/toString (get-in distances [row col]) 36) \space)))
-               "\n"
-               corner
-               (for [col (range (count (first maze)))]
-                 (bottom-level (get-in maze [row col])))
-               "\n")))))
+  [distances]
+  (fn [cell]
+    (str \space (Integer/toString (get-in distances cell) 36) \space)))
+
+(defn show-solution
+  "Auxiliary function for rendering the solution to a maze."
+  [solution]
+  (fn [cell]
+    (str \space (if (some #{cell} solution) \* \space) \space)))
