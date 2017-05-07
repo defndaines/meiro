@@ -1,7 +1,8 @@
 (ns meiro.dijkstra-test
   (:require [clojure.test :refer :all]
             [meiro.core :refer :all]
-            [meiro.dijkstra :refer :all]))
+            [meiro.dijkstra :refer :all]
+            [meiro.sidewinder :as sw]))
 
 (deftest empty-neighbor-test
   (testing "When the grid is empty."
@@ -25,3 +26,7 @@
              (distances maze)))
       (is (= [[6 7 8] [5 0 1] [4 3 2]]
              (distances maze [1 1]))))))
+
+(deftest solution-test
+  (testing "Uses shortest path to find solution to maze."
+    (is (not (empty? (solution (sw/create (init 15 20)) [0 0] [14 19]))))))

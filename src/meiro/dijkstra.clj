@@ -21,3 +21,15 @@
        (assoc-in acc cell dist)
        (empty-neighbors acc cell (get-in maze cell)))
      acc)))
+
+(defn solution
+  "Provide the path between to two cells in the maze."
+  [maze start end]
+  (let [dist (distances maze start)
+        step (fn [cell n] (last (filter #(= (dec n) (get-in dist %)) (m/neighbors maze cell))))]
+    (loop [acc []
+           cell end]
+      (let [n (get-in dist cell)]
+        (if (zero? n)
+          (conj acc cell)
+          (recur (conj acc cell) (step cell n)))))))
