@@ -34,3 +34,22 @@
         (if (zero? n)
           (conj acc cell)
           (recur (conj acc cell) (step cell n)))))))
+
+(defn farthest-cell
+  "Find the farthest cell from a given cell, using [0 0] if none is provided."
+  ([maze] (farthest-cell maze [0 0]))
+  ([maze cell]
+   (let [dist (distances maze cell)]
+     (second
+       (last
+         (sort-by first
+                  (for [[x row] (map-indexed vector dist)
+                        [y v] (map-indexed vector row)]
+                    [v [x y]])))))))
+
+(defn longest-path
+  "Provide the path between the cells farthest apart in the maze."
+  [maze]
+  (let [farthest (farthest-cell maze)
+        and-back (farthest-cell maze farthest)]
+    (solution maze and-back farthest)))

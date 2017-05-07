@@ -43,3 +43,19 @@
                 [[:north :east] [:west :east] [:north :west :east] [:west :east] [:north :west]]]]
       (is (= '([0 0] [0 1] [1 1] [1 0] [2 0] [3 0] [3 1] [3 2] [3 3] [3 4] [2 4] [1 4] [0 4])
              (solution maze [0 0] [0 4]))))))
+
+(deftest farthest-test
+  (let [maze [[[:east :south] [:west] [:south]]
+              [[:north :east] [:west :east :south] [:north :west]]
+              [[:east] [:north :west :east] [:west]]]]
+    (testing "Finding the farthest point."
+      (is (= [2 2] (farthest-cell maze)))
+      (is (= [0 1] (farthest-cell maze [0 2])))
+      (is (= [0 1] (farthest-cell maze [2 0]))))))
+
+(deftest longest-path-test
+  (let [maze [[[:east :south] [:west] [:south]]
+              [[:north :east] [:west :east :south] [:north :west]]
+              [[:east] [:north :west :east] [:west]]]]
+    (testing "Finding the longest path."
+      (is (= '([0 1] [0 0] [1 0] [1 1] [2 1] [2 2]) (longest-path maze))))))
