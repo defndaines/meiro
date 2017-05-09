@@ -13,6 +13,82 @@ Each maze generation algorithm is in its own namespace.
 Project is currently _under development_ and does not have functions exposed for
 external use.
 
+
+### Displaying Mazes
+
+There are several ways to display a maze. The data structure used to store a
+maze is a vector of vectors, where each cell indicates which directions you can
+navigate out of the cell to.
+
+Here is a 5x5 maze:
+```clojure
+[[[:east] [:south :west :east] [:west :east] [:west :south] [:south]]
+ [[:east :south] [:east :north :west] [:south :west] [:north :east] [:west :north]]
+ [[:north :east] [:west] [:south :north :east] [:west] [:south]]
+ [[:south] [:south] [:south :north :east] [:west :east] [:west :north :south]]
+ [[:east :north] [:north :west :east] [:west :north] [:east] [:north :west]]]
+```
+
+The easiest way to visualize a maze at the REPL is to generate an ASCII
+version:
+```clojure
+user=> (require '[meiro.ascii :as ascii])
+nil
+user=> (print (ascii/render maze))
++---+---+---+---+---+
+|               |   |
++---+   +---+   +   +
+|           |       |
++   +---+   +---+---+
+|       |       |   |
++---+---+   +---+   +
+|   |   |           |
++   +   +   +---+   +
+|           |       |
++---+---+---+---+---+
+nil
+```
+
+For a slightly "fancier" experience, you can render using Unicode characters:
+```clojure
+user=> (require '[meiro.unicode :as uni] :reload)
+nil
+user=> (print (uni/render maze))
+┏━━━━━━━━━━━┳━━┓
+┃           ┃  ┃
+┣━━━  ━━━┓  ┃  ┃
+┃        ┃     ┃
+┃  ━━━┓  ┗━━┳━━┫
+┃     ┃     ┃  ┃
+┣━━┳━━┫  ━━━┛  ┃
+┃  ┃  ┃        ┃
+┃  ┃  ┃  ┏━━━  ┃
+┃        ┃     ┃
+┗━━ ━━ ━━┃━━ ━━┛
+nil
+```
+
+And if you actually want to print or share a maze, it can be output as a PNG:
+```clojure
+(require '[meiro.png :as png])
+(png/render (sw/create (m/init 15 20)) "sample-maze.png")
+```
+Which creates a PNG file like:
+
+![Sample Maze](sample-maze.png)
+
+
+## Algorithms
+
+There are a number of different algorithms for generating mazes.
+
+
+### Binary Tree
+
+Binary Tree produces mazes with a bias toward paths which flow down and to the
+right. They will always have a single corridor along both the southern and
+eastern edges.
+
 If you wish to generate and print a random binary-tree maze, you can start up a
 REPL and try to following:
 ```clojure
@@ -43,8 +119,15 @@ Which will produce a maze like:
 +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
 ```
 
-Continuing from there, if you wish to generate a maze using the sidewinder
-algorithm:
+
+### Sidewinder
+
+Sidewinder is based upon Binary Tree, but when it navigates south, it chooses a
+random cell from the current horizontal corridor and generates the link from
+there. The mazes will still flow vertically, but not to the right as with Binary
+Tree. All mazes with have a single horizontal corridor along the southern edge.
+
+To generate a maze using the sidewinder algorithm:
 ```clojure
 (require '[meiro.sidewinder :as sw])
 (print (ascii/render (sw/create (m/init 8 25))))
@@ -71,13 +154,38 @@ Which will produce a maze like:
 +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
 ```
 
-And to render a maze as a PNG:
+
+### Aldous-Broder
+
+To generate a random-walk maze using Aldous-Broder:
 ```clojure
-(require '[meiro.png :as png])
-(png/render (sw/create (m/init 15 20)) "sample-maze.png")
+(require '[meiro.aldous-broder :as ab])
+(print (ascii/render (ab/create (m/init 8 25))))
 ```
-Which creates a PNG file like:
-![Sample Maze](sample-maze.png)
+
+Which will produce a maze like:
+```
++---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+|       |   |           |   |   |               |                   |                               |
++---+   +   +   +---+---+   +   +---+---+   +---+---+   +---+---+---+   +   +   +   +---+---+   +   +
+|           |       |           |       |       |               |       |   |   |   |       |   |   |
++   +---+   +   +---+   +---+   +---+   +   +---+---+   +---+   +---+   +   +   +   +---+   +---+   +
+|   |           |           |       |   |   |       |       |   |       |   |   |               |   |
++   +---+---+---+---+---+   +---+---+   +   +   +---+---+---+   +---+---+   +   +---+   +   +---+   +
+|                       |       |   |                   |   |               |       |   |   |   |   |
++---+---+---+   +   +   +   +   +   +---+   +---+   +   +   +   +---+   +---+   +   +   +---+   +---+
+|       |       |   |   |   |       |   |       |   |           |   |   |   |   |   |   |           |
++   +---+   +---+   +---+   +   +---+   +   +---+---+---+   +---+   +   +   +   +---+   +---+   +---+
+|               |   |   |   |   |   |   |   |       |           |       |       |   |       |       |
++   +---+   +---+   +   +   +   +   +   +---+---+   +   +   +---+---+   +   +---+   +---+   +   +---+
+|   |   |   |               |       |           |   |   |       |       |           |           |   |
++---+   +   +   +---+---+   +   +---+---+   +   +   +   +---+---+---+   +   +---+   +   +   +---+   +
+|           |           |   |               |               |           |       |   |   |           |
++---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+```
+
+
+## Solutions
 
 To calculate the distance from the north-east cell to each cell using Dijkstra's
 algorithm:
@@ -134,35 +242,6 @@ Which will produce a maze like:
 |           |     * |           |   |           |       |   |               |               | *   * |
 +   +---+---+---+   +   +---+---+   +   +---+---+   +---+   +   +---+---+---+   +---+---+---+---+   +
 |                 *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   * |
-+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
-```
-
-### Aldous-Broder
-
-To generate a random-walk maze using Aldous-Broder:
-```clojure
-(require '[meiro.aldous-broder :as ab])
-(print (ascii/render (ab/create (m/init 8 25))))
-```
-
-Which will produce a maze like:
-```
-+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
-|       |   |           |   |   |               |                   |                               |
-+---+   +   +   +---+---+   +   +---+---+   +---+---+   +---+---+---+   +   +   +   +---+---+   +   +
-|           |       |           |       |       |               |       |   |   |   |       |   |   |
-+   +---+   +   +---+   +---+   +---+   +   +---+---+   +---+   +---+   +   +   +   +---+   +---+   +
-|   |           |           |       |   |   |       |       |   |       |   |   |               |   |
-+   +---+---+---+---+---+   +---+---+   +   +   +---+---+---+   +---+---+   +   +---+   +   +---+   +
-|                       |       |   |                   |   |               |       |   |   |   |   |
-+---+---+---+   +   +   +   +   +   +---+   +---+   +   +   +   +---+   +---+   +   +   +---+   +---+
-|       |       |   |   |   |       |   |       |   |           |   |   |   |   |   |   |           |
-+   +---+   +---+   +---+   +   +---+   +   +---+---+---+   +---+   +   +   +   +---+   +---+   +---+
-|               |   |   |   |   |   |   |   |       |           |       |       |   |       |       |
-+   +---+   +---+   +   +   +   +   +   +---+---+   +   +   +---+---+   +   +---+   +---+   +   +---+
-|   |   |   |               |       |           |   |   |       |       |           |           |   |
-+---+   +   +   +---+---+   +   +---+---+   +   +   +   +---+---+---+   +   +---+   +   +   +---+   +
-|           |           |   |               |               |           |       |   |   |           |
 +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
 ```
 
