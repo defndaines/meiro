@@ -49,26 +49,7 @@ user=> (print (ascii/render maze))
 nil
 ```
 
-For a slightly "fancier" experience, you can render using Unicode characters:
-```clojure
-user=> (require '[meiro.unicode :as uni] :reload)
-nil
-user=> (print (uni/render maze))
-┏━━━━━━━━━━━┳━━┓
-┃           ┃  ┃
-┣━━━  ━━━┓  ┃  ┃
-┃        ┃     ┃
-┃  ━━━┓  ┗━━┳━━┫
-┃     ┃     ┃  ┃
-┣━━┳━━┫  ━━━┛  ┃
-┃  ┃  ┃        ┃
-┃  ┃  ┃  ┏━━━  ┃
-┃        ┃     ┃
-┗━━ ━━ ━━┃━━ ━━┛
-nil
-```
-
-And if you actually want to print or share a maze, it can be output as a PNG:
+And if you want to print or share a maze, it can be output as a PNG:
 ```clojure
 (require '[meiro.png :as png])
 (png/render (sw/create (m/init 15 20)) "sample-maze.png")
