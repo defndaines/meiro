@@ -1,9 +1,11 @@
-;;; Dijkstra's algorithm for measuring distances.
 (ns meiro.dijkstra
+  "Dijkstra's algorithm for measuring distances. This in turn can be used to
+  find solutions as well as shortest and longest paths."
   (:require [meiro.core :as m]))
 
 (defn- empty-neighbors
-  "Given a grid of distances, find neighbors of a cell which haven't been calculated yet."
+  "Given a grid of distances, find neighbors of a cell which haven't been
+  calculated yet."
   [grid cell neighbors]
   (filter
     #(nil? (get-in grid %))
@@ -13,7 +15,8 @@
   "Calculate distances to each cell relative from starting cell.
   Assumes a perfect maze."
   ([maze] (distances maze [0 0]))
-  ([maze cell] (distances maze cell (m/init (count maze) (count (first maze)) nil) 0))
+  ([maze cell]
+   (distances maze cell (m/init (count maze) (count (first maze)) nil) 0))
   ([maze cell acc dist]
    (if (seq cell)
      (reduce
@@ -26,8 +29,9 @@
   "Provide the path between to two cells in the maze."
   [maze start end]
   (let [dist (distances maze start)
-        step (fn [cell n] (last (filter #(= (dec n) (get-in dist %))
-                                        (map #(m/cell-to % cell) (get-in maze cell)))))]
+        step (fn [cell n]
+               (last (filter #(= (dec n) (get-in dist %))
+                             (map #(m/cell-to % cell) (get-in maze cell)))))]
     (loop [acc '()
            cell end]
       (let [n (get-in dist cell)]

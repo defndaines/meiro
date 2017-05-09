@@ -1,6 +1,8 @@
-; Unicode rendering of a maze.
-;; NOTE Not pretty. This is super clunky, since all maze edges are treated exceptionally.
 (ns meiro.unicode
+  "Unicode rendering of a maze.
+
+  NOTE: Not pretty. This is super clunky, since all maze edges are treated
+        exceptionally."
   (:require [meiro.core :as m]))
 
 (def ^:private corner "\u254b")
@@ -31,10 +33,13 @@
 (defn- top-level [maze]
   (apply str
          (flatten
-           (concat nw-corner
-                   (map #(concat horizontal-wall (if (some #{:east} %) ew-edge wse-tee)) (butlast (first maze)))
-                   horizontal-wall ne-corner
-                   "\n"))))
+           (concat
+             nw-corner
+             (map
+               #(concat horizontal-wall (if (some #{:east} %) ew-edge wse-tee))
+               (butlast (first maze)))
+             horizontal-wall ne-corner
+             "\n"))))
 
 (defn- cell-level [cell]
   (concat inside-cell

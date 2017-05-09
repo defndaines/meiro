@@ -1,7 +1,8 @@
-(ns meiro.core)
-
-;; Maze is vector of vectors. Access by [row column].
-;; Data in cell is which directions are open to the next cell.
+(ns meiro.core
+  "Core maze-generation utilities.
+  Mazes are represented as a vector of vectors, which can be accessed by
+  [row column]. In a fully generated maze, each cell will contain the directions
+  to open neighbor cells, e.g., [:east :south].")
 
 (defn init
   "Initialize a maze. A grid of cells with the given number of rows and columns,
@@ -12,7 +13,8 @@
                 (vec (repeat columns v))))))
 
 (defn direction
-  "Get the direction from cell-1 to cell-2. Assumes [0 0] is the north-west corner."
+  "Get the direction from cell-1 to cell-2.
+  Assumes [0 0] is the north-west corner."
   [cell-1 cell-2]
   (let [[row-1 col-1] cell-1 [row-2 col-2] cell-2]
     (case [(- row-1 row-2) (- col-1 col-2)]
@@ -24,31 +26,36 @@
 
 ;; TODO Unused
 (defn north
-  "Get cell to the north of a given cell. No bounds checking, so may return an invalid cell."
+  "Get cell to the north of a given cell.
+  No bounds checking, so may return an invalid cell."
   [cell]
   (let [[row col] cell]
     [(dec row) col]))
 
 (defn south
-  "Get cell to the south of a given cell. No bounds checking, so may return an invalid cell."
+  "Get cell to the south of a given cell.
+  No bounds checking, so may return an invalid cell."
   [cell]
   (let [[row col] cell]
     [(inc row) col]))
 
 (defn east
-  "Get cell to the east of a given cell. No bounds checking, so may return an invalid cell."
+  "Get cell to the east of a given cell.
+  No bounds checking, so may return an invalid cell."
   [cell]
   (let [[row col] cell]
     [row (inc col)]))
 
 (defn west
-  "Get cell to the west of a given cell. No bounds checking, so may return an invalid cell."
+  "Get cell to the west of a given cell.
+  No bounds checking, so may return an invalid cell."
   [cell]
   (let [[row col] cell]
     [row (dec col)]))
 
 (defn cell-to
-  "Get neighboring cell given a direction. No bounds checking, so may return invalid cell."
+  "Get neighboring cell given a direction.
+  No bounds checking, so may return invalid cell."
   [cardinal cell]
   (let [[row col] cell]
     (case cardinal

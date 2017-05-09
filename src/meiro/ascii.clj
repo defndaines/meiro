@@ -1,4 +1,5 @@
-(ns meiro.ascii)
+(ns meiro.ascii
+  "Generate an ASCII representation of a maze. Useful for debugging.")
 
 (def ^:private corner "+")
 (def ^:private horizontal-wall "---")

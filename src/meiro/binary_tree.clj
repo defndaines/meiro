@@ -1,4 +1,6 @@
 (ns meiro.binary-tree
+  "Binary-tree produces mazes with a bias that flows down and to the right.
+  All mazes will have a single corridor on both the southern and eastern edges."
   (:require [meiro.core :as m]))
 
 (defn- south-east [maze cell]

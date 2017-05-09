@@ -1,9 +1,13 @@
 (ns meiro.sidewinder
+  "Sidewinder algorithm is like binary-tree, but randomly chooses a cell in
+  horizontal corridor to move south from when moving south. This algorithm's
+  bias creates vertical paths and will always have a single corridor along
+  the southern edge."
   (:require [meiro.core :as m]
             [clojure.data.generators :as gen]))
 
 ;; Allows for different weights for going each direction.
-;; Higher south weight has longer verticle corridors.
+;; Higher south weight has longer vertical corridors.
 ;; Higher east weight has longer horizontal corridors.
 (def weights {:south 4 :east 5})
 
