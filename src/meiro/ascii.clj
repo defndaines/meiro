@@ -8,11 +8,12 @@
 (def ^:private horizontal-link "   ")
 
 (defn- top-level [maze]
-  (apply str
-         (flatten
-           (concat corner
-                   (repeat (count (first maze)) (concat horizontal-wall corner))
-                   "\n"))))
+  (clojure.string/join
+    (flatten
+      (concat
+        corner
+        (repeat (count (first maze)) (concat horizontal-wall corner))
+        "\n"))))
 
 (defn- cell-level
   ([cell] (cell-level cell inside-cell))
