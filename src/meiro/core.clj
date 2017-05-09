@@ -92,7 +92,6 @@
         (and (= row-1 row-2) (= 1 (Math/abs (- col-1 col-2))))
         (and (= col-1 col-2) (= 1 (Math/abs (- row-1 row-2))))))))
 
-;; TODO Unused
 (defn neighbors
   "Get all potential neighbors of a cell in a given maze."
   [maze cell]
