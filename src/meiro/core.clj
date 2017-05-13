@@ -125,6 +125,13 @@
   [grid]
   [(rand-int (count grid)) (rand-int (count (first grid)))])
 
+;; TODO This is different from the same named function defined in dijkstra.
+;;      May rethink.
+(defn empty-neighbors
+  "Get all positions neighboring `pos` which have not been visited."
+  [maze pos]
+  (filter #(empty? (get-in maze %)) (neighbors maze pos)))
+
 (defn link
   "Link two adjacent cells in a maze."
   [maze pos-1 pos-2]

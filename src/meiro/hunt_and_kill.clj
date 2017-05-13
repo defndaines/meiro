@@ -4,12 +4,6 @@
   until all cells have been visited."
   (:require [meiro.core :as m]))
 
-;; TODO This is different from the same named function elsewhere. May rethink.
-(defn- empty-neighbors
-  "Get all positions neighboring `pos` which have not been visited."
-  [maze pos]
-  (filter #(empty? (get-in maze %)) (m/neighbors maze pos)))
-
 (defn- visited-neighbors
   "Get all positions neighboring `pos` which have been visited."
   [maze pos]
@@ -31,7 +25,7 @@
          pos (m/random-pos maze)
          positions (remove #{pos} (m/all-positions maze))]
     (if (seq positions)
-      (let [unvisited (empty-neighbors maze pos)]
+      (let [unvisited (m/empty-neighbors maze pos)]
         (if (seq unvisited)
           (let [neighbor (rand-nth unvisited)]
             (recur (m/link maze pos neighbor)
