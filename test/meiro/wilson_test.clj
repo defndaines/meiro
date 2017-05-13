@@ -9,11 +9,11 @@
       (is (= [0 0]
              (last (#'meiro.wilson/walk
                      maze
-                     (remove #{[0 0]} (#'meiro.wilson/all-cells maze))))))
+                     (remove #{[0 0]} (all-cells maze))))))
       (is (= [3 4]
              (last (#'meiro.wilson/walk
                      maze
-                     (remove #{[3 4]} (#'meiro.wilson/all-cells maze)))))))))
+                     (remove #{[3 4]} (all-cells maze)))))))))
 
 (deftest create-test
   (testing "Ensure all cells are linked."

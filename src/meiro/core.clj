@@ -4,6 +4,7 @@
   [row column]. In a fully generated maze, each cell will contain the directions
   to open neighbor cells, e.g., [:east :south].")
 
+;; TODO Start distinguishing between "grid" and "maze".
 (defn init
   "Initialize a maze. A grid of cells with the given number of rows and columns,
   which can be accessed by index, with [0 0] as the upper left corner."
@@ -99,6 +100,20 @@
     (filter
       #(in? maze %)
       #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]})))
+
+(defn all-cells
+  "Get a sequence of all the cell positions in a grid."
+  [grid]
+  ;; Maybe put into set, but then have to figure out how to
+  ;; randomly select from set.
+  (for [row (range (count grid))
+        col (range (count (first grid)))]
+    [row col]))
+
+(defn random-cell
+  "Select a random cell position from the grid."
+  [grid]
+  [(rand-int (count grid)) (rand-int (count (first grid)))])
 
 (defn link
   "Link two adjacent cells in a maze."

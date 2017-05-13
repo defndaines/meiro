@@ -5,12 +5,6 @@
   generate, especially on large mazes."
   (:require [meiro.core :as m]))
 
-(defn- all-cells
-  [maze]
-  ;; Maybe put into set, but then have to figure out how to randomly select from set.
-  (for [row (range (count maze)) col (range (count (first maze)))]
-    [row col]))
-
 (defn- pop-rand
   [cells]
   (let [cell (rand-nth cells)]
@@ -40,10 +34,10 @@
   "Create a random maze using Wilson's algorithm."
   [maze]
   (loop [acc maze
-         unvisited (pop-rand (all-cells maze))]
+         unvisited (pop-rand (m/all-cells maze))]
     (if (seq unvisited)
       (let [path (walk maze unvisited)]
         (recur
           (link-path acc path)
-          (remove (into #{} path) unvisited)))  
+          (remove (into #{} path) unvisited)))
       acc)))

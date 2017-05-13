@@ -5,15 +5,11 @@
   generate, especially on large mazes."
   (:require [meiro.core :as m]))
 
-(defn- random-cell
-  [maze]
-  [(rand-int (count maze)) (rand-int (count (first maze)))])
-
 (defn create
   "Create a random maze using the Aldous-Broder algorithm."
   [maze]
   (loop [acc maze
-         cell (random-cell maze)
+         cell (m/random-cell maze)
          unvisited (dec (* (count maze) (count (first maze))))]
     (if (zero? unvisited)
       acc
