@@ -7,13 +7,13 @@
 
 (defn create
   "Create a random maze using the Aldous-Broder algorithm."
-  [maze]
-  (loop [acc maze
-         cell (m/random-pos maze)
-         unvisited (dec (* (count maze) (count (first maze))))]
+  [grid]
+  (loop [maze grid
+         cell (m/random-pos grid)
+         unvisited (dec (* (count grid) (count (first grid))))]
     (if (zero? unvisited)
-      acc
-      (let [neighbor (rand-nth (m/neighbors acc cell))]
-        (if (empty? (get-in acc neighbor))
-          (recur (m/link acc cell neighbor) neighbor (dec unvisited))
-          (recur acc neighbor unvisited))))))
+      maze
+      (let [neighbor (rand-nth (m/neighbors maze cell))]
+        (if (empty? (get-in maze neighbor))
+          (recur (m/link maze cell neighbor) neighbor (dec unvisited))
+          (recur maze neighbor unvisited))))))

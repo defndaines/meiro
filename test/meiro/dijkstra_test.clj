@@ -49,9 +49,9 @@
               [[:north :east] [:west :east :south] [:north :west]]
               [[:east] [:north :west :east] [:west]]]]
     (testing "Finding the farthest point."
-      (is (= [2 2] (farthest-cell maze)))
-      (is (= [0 1] (farthest-cell maze [0 2])))
-      (is (= [0 1] (farthest-cell maze [2 0]))))))
+      (is (= [2 2] (farthest-pos maze)))
+      (is (= [0 1] (farthest-pos maze [0 2])))
+      (is (= [0 1] (farthest-pos maze [2 0]))))))
 
 (deftest longest-path-test
   (let [maze [[[:east :south] [:west] [:south]]

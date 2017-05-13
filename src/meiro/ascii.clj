@@ -8,7 +8,9 @@
 (def ^:private verticle-link " ")
 (def ^:private horizontal-link "   ")
 
-(defn- top-level [maze]
+(defn- top-level
+  "Render the top edge of the maze."
+  [maze]
   (clojure.string/join
     (flatten
       (concat
@@ -17,12 +19,17 @@
         "\n"))))
 
 (defn- cell-level
+  "Render the cell level, i.e., where the 'inside' of the cell is displayed.
+  This may contain values, or will default to just empty space."
   ([cell] (cell-level cell inside-cell))
   ([cell inside]
    (concat inside
            (if (some #{:east} cell) verticle-link verticle-wall))))
 
-(defn- bottom-level [cell]
+(defn- bottom-level
+  "Render the bottom edge of a cell, or precisely the south and south-east
+  edge."
+  [cell]
   (concat (if (some #{:south} cell) horizontal-link horizontal-wall) corner))
 
 (defn render

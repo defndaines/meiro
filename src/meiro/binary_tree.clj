@@ -3,24 +3,24 @@
   All mazes will have a single corridor on both the southern and eastern edges."
   (:require [meiro.core :as m]))
 
-(defn- south-east [maze cell]
+(defn- south-east [maze pos]
   (filter
     #(m/in? maze %)
-    (let [[row col] cell]
+    (let [[row col] pos]
       [[(inc row) col] [row (inc col)]])))
 
 (defn- link-neighbor
-  [maze cell]
-  (let [neighbors (south-east maze cell)]
+  [maze pos]
+  (let [neighbors (south-east maze pos)]
     (if (seq neighbors)
-      (m/link maze cell (rand-nth neighbors))
+      (m/link maze pos (rand-nth neighbors))
       maze)))
 
 (defn create
-  "Create a random maze using the binary tree algorithm."
-  [maze]
+  "Create a random grid using the binary tree algorithm."
+  [grid]
   (reduce
     link-neighbor
-    maze
-    (for [row (range (count maze)) col (range (count (first maze)))]
+    grid
+    (for [row (range (count grid)) col (range (count (first grid)))]
       [row col])))

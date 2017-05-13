@@ -6,38 +6,38 @@
   (:require [meiro.core :as m]))
 
 (defn- pop-rand
-  [cells]
-  (let [cell (rand-nth cells)]
-    (remove #{cell} cells)))
+  [positions]
+  (let [pos (rand-nth positions)]
+    (remove #{pos} positions)))
 
 (defn- walk
   "Perform a loop-erasing random walk."
   [maze unvisited]
-  (loop [cell (rand-nth unvisited)
-         path [cell]]
-    (if (some #{cell} unvisited)
-      (let [pos (.indexOf path cell)]
-        (if (= -1 pos)
-          (recur (rand-nth (m/neighbors maze cell)) (conj path cell))
-          (recur (rand-nth (m/neighbors maze cell)) (subvec path 0 (inc pos)))))
-      (conj path cell))))
+  (loop [pos (rand-nth unvisited)
+         path [pos]]
+    (if (some #{pos} unvisited)
+      (let [index (.indexOf path pos)]
+        (if (= -1 index)
+          (recur (rand-nth (m/neighbors maze pos)) (conj path pos))
+          (recur (rand-nth (m/neighbors maze pos)) (subvec path 0 (inc index)))))
+      (conj path pos))))
 
 (defn- link-path
   "Create links in the maze between each step in a path."
   [maze path]
   (reduce
-    (fn [acc [c1 c2]] (m/link acc c1 c2))
+    (fn [acc [pos-1 pos-2]] (m/link acc pos-1 pos-2))
     maze
     (partition 2 1 path)))
 
 (defn create
   "Create a random maze using Wilson's algorithm."
-  [maze]
-  (loop [acc maze
-         unvisited (pop-rand (m/all-positions maze))]
+  [grid]
+  (loop [maze grid
+         unvisited (pop-rand (m/all-positions grid))]
     (if (seq unvisited)
-      (let [path (walk maze unvisited)]
+      (let [path (walk grid unvisited)]
         (recur
-          (link-path acc path)
+          (link-path maze path)
           (remove (into #{} path) unvisited)))
-      acc)))
+      maze)))
