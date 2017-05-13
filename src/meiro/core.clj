@@ -74,7 +74,8 @@
       :west [row (dec col)])))
 
 (defn path-west
-  "Get a path sequence of positions west of the provided position, including that position."
+  "Get a path sequence of positions west of the provided position,
+  including that position."
   [maze pos]
   (if (seq (filter #{:west} (get-in maze pos)))
     (cons pos (path-west maze (west pos)))

@@ -90,3 +90,20 @@
                 [[:north :east] [:north :west :south] [:east] [:west :east] [:north :west :east] [:north :west :south] [:south] [:north :south]]
                 [[:east] [:north :west :east] [:west :east] [:west :east] [:west :east] [:north :west :east] [:north :west :east] [:north :west]]]]
       (is (= 8 (count (dead-ends maze)))))))
+
+(deftest empty-neighbor-test
+  (testing "All neighbors are empty."
+    (let [maze [[[] [] []] [[] [] []] [[] [] []]]]
+      (is (= '([1 0] [2 1] [1 2] [0 1])
+             (empty-neighbors maze [1 1])))
+      (is (= '([0 0] [1 1] [2 0])
+             (empty-neighbors maze [1 0])))
+      (is (= '([2 1] [1 2])
+             (empty-neighbors maze [2 2])))))
+  (testing "No neighbors are empty."
+    (let [maze [[[:south] [:south :east] [:west :south]]
+                [[:north :south] [:south :north] [:north :south]]
+                [[:north :east] [:west :north] [:north]]]]
+      (is (empty? (empty-neighbors maze [1 1])))
+      (is (empty? (empty-neighbors maze [1 0])))
+      (is (empty? (empty-neighbors maze [0 2]))))))

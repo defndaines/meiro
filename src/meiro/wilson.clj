@@ -18,8 +18,10 @@
     (if (some #{pos} unvisited)
       (let [index (.indexOf path pos)]
         (if (= -1 index)
-          (recur (rand-nth (m/neighbors maze pos)) (conj path pos))
-          (recur (rand-nth (m/neighbors maze pos)) (subvec path 0 (inc index)))))
+          (recur (rand-nth (m/neighbors maze pos))
+                 (conj path pos))
+          (recur (rand-nth (m/neighbors maze pos))
+                 (subvec path 0 (inc index)))))
       (conj path pos))))
 
 (defn- link-path
