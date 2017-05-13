@@ -34,7 +34,7 @@
   "Create a random maze using Wilson's algorithm."
   [maze]
   (loop [acc maze
-         unvisited (pop-rand (m/all-cells maze))]
+         unvisited (pop-rand (m/all-positions maze))]
     (if (seq unvisited)
       (let [path (walk maze unvisited)]
         (recur

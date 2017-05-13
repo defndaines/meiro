@@ -9,7 +9,7 @@
   [grid cell neighbors]
   (filter
     #(nil? (get-in grid %))
-    (map #(m/cell-to % cell) neighbors)))
+    (map #(m/pos-to % cell) neighbors)))
 
 (defn distances
   "Calculate distances to each cell relative from starting cell.
@@ -31,7 +31,7 @@
   (let [dist (distances maze start)
         step (fn [cell n]
                (last (filter #(= (dec n) (get-in dist %))
-                             (map #(m/cell-to % cell) (get-in maze cell)))))]
+                             (map #(m/pos-to % cell) (get-in maze cell)))))]
     (loop [acc '()
            cell end]
       (let [n (get-in dist cell)]

@@ -9,7 +9,7 @@
   "Create a random maze using the Aldous-Broder algorithm."
   [maze]
   (loop [acc maze
-         cell (m/random-cell maze)
+         cell (m/random-pos maze)
          unvisited (dec (* (count maze) (count (first maze))))]
     (if (zero? unvisited)
       acc

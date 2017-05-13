@@ -25,7 +25,7 @@
     (if (seq directions)
       (case (gen/weighted (select-keys weights directions))
         :east (m/link maze cell (m/east cell))
-        :south (let [from (rand-nth (m/cells-west maze cell))]
+        :south (let [from (rand-nth (m/path-west maze cell))]
                  (m/link maze from (m/south from))))
       maze)))
 

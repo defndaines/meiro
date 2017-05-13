@@ -26,8 +26,8 @@
   "Create a random maze using the Hunt and Kill algorithm."
   [grid]
   (loop [maze grid
-         cell (m/random-cell maze)
-         cells (remove #{cell} (m/all-cells maze))]
+         cell (m/random-pos maze)
+         cells (remove #{cell} (m/all-positions maze))]
     (if (seq cells)
       (let [unvisited (empty-neighbors maze cell)]
         (if (seq unvisited)
