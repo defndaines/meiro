@@ -5,11 +5,13 @@
   to open neighbor cells, e.g., [:east :south].")
 
 ;; Difference between "grid" and "maze"?
-;; A grid has no links, a maze has some links between the cells.
+;; A grid has no links, a maze has links between the cells.
 
 ;; Difference between a "cell" and "pos" (or position).
 ;; A cell has links to neighbors, such as [:east :north].
 ;; A position is the [row col] index of a cell.
+
+;; TODO May want to break apart code into "grid" and "maze" namespaces.
 
 (defn init
   "Initialize a grid of cells with the given number of rows and columns,
@@ -31,7 +33,7 @@
       [-1 0] :south
       nil)))
 
-;; TODO Unused
+;; TODO Unused. Here for "completeness", but by never be used.
 (defn north
   "Get position to the north of a given position.
   No bounds checking, so may return an invalid position."
@@ -130,4 +132,12 @@
     (-> maze
         (update-in pos-1 conj (direction pos-1 pos-2))
         (update-in pos-2 conj (direction pos-2 pos-1)))
+    maze))
+
+(defn dead-ends
+  "Filter for the dead ends in a maze.
+  Fewer dead ends contribute to 'river', more flowing and meandering in a maze."
+  [maze]
+  (mapcat
+    (fn [row] (filter #(= 1 (count %)) row))
     maze))

@@ -83,3 +83,10 @@
       (is (= '([0 3] [0 2]) (path-west maze [0 3]))))
     (testing "Multiple linked cells to the west"
       (is (= '([1 5] [1 4] [1 3] [1 2]) (path-west maze [1 5]))))))
+
+(deftest dead-end-test
+  (testing "No linked cell to the west"
+    (let [maze [[[:south] [:south] [:east] [:west :east] [:west :south] [:south] [:east] [:west :south]]
+                [[:north :east] [:north :west :south] [:east] [:west :east] [:north :west :east] [:north :west :south] [:south] [:north :south]]
+                [[:east] [:north :west :east] [:west :east] [:west :east] [:west :east] [:north :west :east] [:north :west :east] [:north :west]]]]
+      (is (= 8 (count (dead-ends maze)))))))
