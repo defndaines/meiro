@@ -42,20 +42,17 @@
       (<= 0 col max-col))))
 
 (s/fdef adjacent?
-  :args (s/cat :grid ::grid :pos-1 ::pos :pos-2 ::pos)
+  :args (s/cat :pos-1 ::pos :pos-2 ::pos)
   :ret boolean?)
 (defn adjacent?
   "Are two positions adjacent.
-  Positions not within the bounds of a grid are considered not adjacent."
-  [grid pos-1 pos-2]
+  Function does not check that positions are within the bounds of a grid."
+  [pos-1 pos-2]
   (let [[row-1 col-1] pos-1
         [row-2 col-2] pos-2]
-    (and
-      (in? grid pos-1)
-      (in? grid pos-2)
-      (or
-        (and (= row-1 row-2) (= 1 (Math/abs (- col-1 col-2))))
-        (and (= col-1 col-2) (= 1 (Math/abs (- row-1 row-2))))))))
+    (or
+      (and (= row-1 row-2) (= 1 (Math/abs (- col-1 col-2))))
+      (and (= col-1 col-2) (= 1 (Math/abs (- row-1 row-2)))))))
 
 (s/fdef direction
   :args (s/cat :pos-1 ::pos :pos-2 ::pos)
@@ -113,10 +110,10 @@
   (let [[row col] pos]
     [row (dec col)]))
 
-;; TODO (adjacent? (:ret %) (-> % :args :pos)) ... but def of adj? requires grid
 (s/fdef pos-to
   :args (s/cat :cardinal ::direction :pos ::pos)
-  :ret ::pos)
+  :ret ::pos
+  :fn #(adjacent? (:ret %) (-> % :args :pos)))
 (defn pos-to
   "Get neighboring position given a direction.
   No bounds checking, so may return invalid position."
@@ -168,7 +165,7 @@
 (defn link
   "Link two adjacent cells in a maze."
   [maze pos-1 pos-2]
-  (if (adjacent? maze pos-1 pos-2)
+  (if (and (adjacent? pos-1 pos-2) (in? maze pos-1) (in? maze pos-2)) 
     (-> maze
         (update-in pos-1 conj (direction pos-1 pos-2))
         (update-in pos-2 conj (direction pos-2 pos-1)))

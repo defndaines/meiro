@@ -23,15 +23,10 @@
 
 (deftest adjacent-test
   (testing "true if cells are adjacent."
-    (is (adjacent? (init 5 5) [0 0] [0 1]))
-    (is (adjacent? (init 5 5) [0 0] [1 0]))
-    (is (not (adjacent? (init 5 5) [0 0] [0 2])))
-    (is (not (adjacent? (init 5 5) [0 0] [2 0]))))
-  (testing "false if cell outside maze."
-    (is (not (adjacent? (init 5 5) [0 0] [-1 0])))
-    (is (not (adjacent? (init 5 5) [0 0] [0 -1])))
-    (is (not (adjacent? (init 5 5) [4 0] [5 0])))
-    (is (not (adjacent? (init 5 5) [0 4] [0 5])))))
+    (is (adjacent? [0 0] [0 1]))
+    (is (adjacent? [0 0] [1 0]))
+    (is (not (adjacent? [0 0] [0 2])))
+    (is (not (adjacent? [0 0] [2 0])))))
 
 (deftest link-test
   (testing "Adjacent cells linked by opposite directions."
