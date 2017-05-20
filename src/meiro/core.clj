@@ -8,6 +8,7 @@
 ;; Difference between a "cell" and "pos" (or position).
 ;; A position is the [row col] index of a cell.
 (s/def ::pos (s/cat :row nat-int? :col nat-int?))
+(s/def ::path (s/coll-of ::pos :min-count 1))
 ;; A cell has links to neighbors, such as [:east :north].
 (s/def ::direction #{:north :south :east :west})
 (s/def ::cell (s/coll-of ::direction :kind vector? :distinct true))
@@ -69,7 +70,7 @@
       [-1 0] :south
       nil)))
 
-;; TODO Unused. Here for "completeness", but by never be used.
+;; TODO Unused. Here for "completeness", but may never be used.
 (s/fdef north
   :args (s/cat :pos ::pos)
   :ret ::pos)
@@ -125,6 +126,10 @@
       :east [row (inc col)]
       :west [row (dec col)])))
 
+(s/fdef past-west
+  :args (s/cat :maze ::maze :pos ::pos)
+  :ret ::path
+  :fn #(= 1 (count (reduce (fn [acc [col _]] (conj acc col)) #{} %))))
 (defn path-west
   "Get a path sequence of positions west of the provided position,
   including that position."
@@ -133,6 +138,10 @@
     (cons pos (path-west maze (west pos)))
     [pos]))
 
+(s/fdef neighbors
+  :args (s/cat :grid ::grid :pos ::pos)
+  :ret (s/coll-of ::pos)
+  :fn #(every? adjacent? %))
 (defn neighbors
   "Get all potential neighbors of a position in a given grid"
   [grid pos]
@@ -141,6 +150,10 @@
       #(in? grid %)
       #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]})))
 
+(s/fdef all-positions
+  :args (s/cat :grid ::grid)
+  :ret (s/coll-of ::pos :min-count 2)
+  :fn #(every? (fn [pos] (in? (-> % :args :grid) pos)) (:ret %)))
 (defn all-positions
   "Get a sequence of all the positions in a grid."
   [grid]
@@ -150,6 +163,10 @@
         col (range (count (first grid)))]
     [row col]))
 
+(s/fdef random-pos
+  :args (s/cat :grid ::grid)
+  :ret ::pos
+  :fn #(in? (-> % :args :grid) (:ret %)))
 (defn random-pos
   "Select a random position from the grid."
   [grid]
@@ -157,20 +174,34 @@
 
 ;; TODO This is different from the same named function defined in dijkstra.
 ;;      May rethink.
+(s/fdef empty-neighbors
+  :args (s/cat :maze ::maze :pos ::pos)
+  :ret (s/coll-of ::pos)
+  :fn #(every? adjacent? %))
 (defn empty-neighbors
   "Get all positions neighboring `pos` which have not been visited."
   [maze pos]
   (filter #(empty? (get-in maze %)) (neighbors maze pos)))
 
+(s/fdef link
+  :args (s/cat :maze ::maze :pos-1 ::pos :pos-2 ::pos)
+  :ret ::maze
+  :fn #(if (adjacent? (-> % :args :pos-1) (-> % :args :pos-2))
+         (and
+           (not (empty?) (get-in (:ret %) (-> % :args :pos-1)))
+           (not (empty?) (get-in (:ret %) (-> % :args :pos-2))))))
 (defn link
   "Link two adjacent cells in a maze."
   [maze pos-1 pos-2]
-  (if (and (adjacent? pos-1 pos-2) (in? maze pos-1) (in? maze pos-2)) 
+  (if (and (adjacent? pos-1 pos-2) (in? maze pos-1) (in? maze pos-2))
     (-> maze
         (update-in pos-1 conj (direction pos-1 pos-2))
         (update-in pos-2 conj (direction pos-2 pos-1)))
     maze))
 
+(s/fdef dead-ends
+  :args (s/cat :maze ::maze)
+  :ret int?)
 (defn dead-ends
   "Filter for the dead ends in a maze.
   Fewer dead ends contribute to 'river', more flowing and meandering in a maze."
