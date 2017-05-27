@@ -8,7 +8,7 @@
 ;; Difference between a "cell" and "pos" (or position).
 ;; A position is the [row col] index of a cell.
 (s/def ::pos (s/cat :row nat-int? :col nat-int?))
-(s/def ::path (s/coll-of ::pos :min-count 1))
+(s/def ::path (s/+ ::pos))
 ;; A cell has links to neighbors, such as [:east :north].
 (s/def ::direction #{:north :south :east :west})
 (s/def ::cell (s/coll-of ::direction :kind vector? :distinct true))
@@ -20,27 +20,6 @@
 (s/def ::maze (s/coll-of ::row :kind vector? :min-count 1))
 
 ;; TODO May want to break apart code into "grid" and "maze" namespaces.
-
-(defn init
-  "Initialize a grid of cells with the given number of rows and columns,
-  which can be accessed by index. Conceptually, [0 0] is the upper left corner."
-  ([rows columns] (init rows columns []))
-  ([rows columns v]
-   (vec (repeat rows
-                (vec (repeat columns v))))))
-
-(s/fdef in?
-  :args (s/cat :grid ::grid :pos ::pos)
-  :ret boolean?)
-(defn in?
-  "Is the position within the bounds of the grid."
-  [grid pos]
-  (let [max-row (dec (count grid))
-        max-col (dec (count (first grid)))
-        [row col] pos]
-    (and
-      (<= 0 row max-row)
-      (<= 0 col max-col))))
 
 (s/fdef adjacent?
   :args (s/cat :pos-1 ::pos :pos-2 ::pos)
@@ -126,17 +105,29 @@
       :east [row (inc col)]
       :west [row (dec col)])))
 
-(s/fdef past-west
-  :args (s/cat :maze ::maze :pos ::pos)
-  :ret ::path
-  :fn #(= 1 (count (reduce (fn [acc [col _]] (conj acc col)) #{} %))))
-(defn path-west
-  "Get a path sequence of positions west of the provided position,
-  including that position."
-  [maze pos]
-  (if (seq (filter #{:west} (get-in maze pos)))
-    (cons pos (path-west maze (west pos)))
-    [pos]))
+(s/fdef init
+  :args (s/cat :rows pos-int? :columns pos-int? :v (s/? any?))
+  :ret ::grid)
+(defn init
+  "Initialize a grid of cells with the given number of rows and columns,
+  which can be accessed by index. Conceptually, [0 0] is the upper left corner."
+  ([rows columns] (init rows columns []))
+  ([rows columns v]
+   (vec (repeat rows
+                (vec (repeat columns v))))))
+
+(s/fdef in?
+  :args (s/cat :grid ::grid :pos ::pos)
+  :ret boolean?)
+(defn in?
+  "Is the position within the bounds of the grid."
+  [grid pos]
+  (let [max-row (dec (count grid))
+        max-col (dec (count (first grid)))
+        [row col] pos]
+    (and
+      (<= 0 row max-row)
+      (<= 0 col max-col))))
 
 (s/fdef neighbors
   :args (s/cat :grid ::grid :pos ::pos)
@@ -171,6 +162,18 @@
   "Select a random position from the grid."
   [grid]
   [(rand-int (count grid)) (rand-int (count (first grid)))])
+
+(s/fdef past-west
+  :args (s/cat :maze ::maze :pos ::pos)
+  :ret ::path
+  :fn #(= 1 (count (reduce (fn [acc [col _]] (conj acc col)) #{} %))))
+(defn path-west
+  "Get a path sequence of positions west of the provided position,
+  including that position."
+  [maze pos]
+  (if (seq (filter #{:west} (get-in maze pos)))
+    (cons pos (path-west maze (west pos)))
+    [pos]))
 
 ;; TODO This is different from the same named function defined in dijkstra.
 ;;      May rethink.
