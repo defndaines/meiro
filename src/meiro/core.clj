@@ -3,26 +3,26 @@
   Mazes are represented as a vector of vectors, which can be accessed by
   [row column]. In a fully generated maze, each cell will contain the directions
   to open neighbor cells, e.g., [:east :south]."
-  (:require [clojure.spec.alpha :as s]))
+  (:require [clojure.spec.alpha :as spec]))
 
 ;; Difference between a "cell" and "pos" (or position).
 ;; A position is the [row col] index of a cell.
-(s/def ::pos (s/cat :row nat-int? :col nat-int?))
-(s/def ::path (s/+ ::pos))
+(spec/def ::pos (spec/cat :row nat-int? :col nat-int?))
+(spec/def ::path (spec/+ ::pos))
 ;; A cell has links to neighbors, such as [:east :north].
-(s/def ::direction #{:north :south :east :west})
-(s/def ::cell (s/coll-of ::direction :kind vector? :distinct true))
+(spec/def ::direction #{:north :south :east :west})
+(spec/def ::cell (spec/coll-of ::direction :kind vector? :distinct true))
 
 ;; Difference between "grid" and "maze"?
 ;; A grid has no links, a maze has links between the cells.
-(s/def ::grid (s/coll-of vector? :kind vector? :min-count 1))
-(s/def ::row (s/coll-of ::cell :kind vector? :min-count 1))
-(s/def ::maze (s/coll-of ::row :kind vector? :min-count 1))
+(spec/def ::grid (spec/coll-of vector? :kind vector? :min-count 1))
+(spec/def ::row (spec/coll-of ::cell :kind vector? :min-count 1))
+(spec/def ::maze (spec/coll-of ::row :kind vector? :min-count 1))
 
-;; TODO May want to break apart code into "grid" and "maze" namespaces.
+;;; Position Functions
 
-(s/fdef adjacent?
-  :args (s/cat :pos-1 ::pos :pos-2 ::pos)
+(spec/fdef adjacent?
+  :args (spec/cat :pos-1 ::pos :pos-2 ::pos)
   :ret boolean?)
 (defn adjacent?
   "Are two positions adjacent.
@@ -34,9 +34,9 @@
       (and (= row-1 row-2) (= 1 (Math/abs (- col-1 col-2))))
       (and (= col-1 col-2) (= 1 (Math/abs (- row-1 row-2)))))))
 
-(s/fdef direction
-  :args (s/cat :pos-1 ::pos :pos-2 ::pos)
-  :ret (s/nilable ::direction))
+(spec/fdef direction
+  :args (spec/cat :pos-1 ::pos :pos-2 ::pos)
+  :ret (spec/nilable ::direction))
 (defn direction
   "Get the direction from pos-1 to pos-2.
   Assumes [0 0] is the north-west corner."
@@ -49,9 +49,8 @@
       [-1 0] :south
       nil)))
 
-;; TODO Unused. Here for "completeness", but may never be used.
-(s/fdef north
-  :args (s/cat :pos ::pos)
+(spec/fdef north
+  :args (spec/cat :pos ::pos)
   :ret ::pos)
 (defn north
   "Get position to the north of a given position.
@@ -60,8 +59,8 @@
   (let [[row col] pos]
     [(dec row) col]))
 
-(s/fdef south
-  :args (s/cat :pos ::pos)
+(spec/fdef south
+  :args (spec/cat :pos ::pos)
   :ret ::pos)
 (defn south
   "Get position to the south of a given position.
@@ -70,8 +69,8 @@
   (let [[row col] pos]
     [(inc row) col]))
 
-(s/fdef east
-  :args (s/cat :pos ::pos)
+(spec/fdef east
+  :args (spec/cat :pos ::pos)
   :ret ::pos)
 (defn east
   "Get position to the east of a given position.
@@ -80,8 +79,8 @@
   (let [[row col] pos]
     [row (inc col)]))
 
-(s/fdef west
-  :args (s/cat :pos ::pos)
+(spec/fdef west
+  :args (spec/cat :pos ::pos)
   :ret ::pos)
 (defn west
   "Get position to the west of a given position.
@@ -90,8 +89,8 @@
   (let [[row col] pos]
     [row (dec col)]))
 
-(s/fdef pos-to
-  :args (s/cat :cardinal ::direction :pos ::pos)
+(spec/fdef pos-to
+  :args (spec/cat :cardinal ::direction :pos ::pos)
   :ret ::pos
   :fn #(adjacent? (:ret %) (-> % :args :pos)))
 (defn pos-to
@@ -105,8 +104,10 @@
       :east [row (inc col)]
       :west [row (dec col)])))
 
-(s/fdef init
-  :args (s/cat :rows pos-int? :columns pos-int? :v (s/? any?))
+;;; Grid Functions
+
+(spec/fdef init
+  :args (spec/cat :rows pos-int? :columns pos-int? :v (spec/? any?))
   :ret ::grid)
 (defn init
   "Initialize a grid of cells with the given number of rows and columns,
@@ -116,8 +117,8 @@
    (vec (repeat rows
                 (vec (repeat columns v))))))
 
-(s/fdef in?
-  :args (s/cat :grid ::grid :pos ::pos)
+(spec/fdef in?
+  :args (spec/cat :grid ::grid :pos ::pos)
   :ret boolean?)
 (defn in?
   "Is the position within the bounds of the grid."
@@ -129,9 +130,9 @@
       (<= 0 row max-row)
       (<= 0 col max-col))))
 
-(s/fdef neighbors
-  :args (s/cat :grid ::grid :pos ::pos)
-  :ret (s/coll-of ::pos)
+(spec/fdef neighbors
+  :args (spec/cat :grid ::grid :pos ::pos)
+  :ret (spec/coll-of ::pos)
   :fn #(every? adjacent? %))
 (defn neighbors
   "Get all potential neighbors of a position in a given grid"
@@ -141,9 +142,9 @@
       #(in? grid %)
       #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]})))
 
-(s/fdef all-positions
-  :args (s/cat :grid ::grid)
-  :ret (s/coll-of ::pos :min-count 2)
+(spec/fdef all-positions
+  :args (spec/cat :grid ::grid)
+  :ret (spec/coll-of ::pos :min-count 2)
   :fn #(every? (fn [pos] (in? (-> % :args :grid) pos)) (:ret %)))
 (defn all-positions
   "Get a sequence of all the positions in a grid."
@@ -154,8 +155,8 @@
         col (range (count (first grid)))]
     [row col]))
 
-(s/fdef random-pos
-  :args (s/cat :grid ::grid)
+(spec/fdef random-pos
+  :args (spec/cat :grid ::grid)
   :ret ::pos
   :fn #(in? (-> % :args :grid) (:ret %)))
 (defn random-pos
@@ -163,8 +164,10 @@
   [grid]
   [(rand-int (count grid)) (rand-int (count (first grid)))])
 
-(s/fdef past-west
-  :args (s/cat :maze ::maze :pos ::pos)
+;;; Maze Functions
+
+(spec/fdef path-west
+  :args (spec/cat :maze ::maze :pos ::pos)
   :ret ::path
   :fn #(= 1 (count (reduce (fn [acc [col _]] (conj acc col)) #{} %))))
 (defn path-west
@@ -177,17 +180,17 @@
 
 ;; TODO This is different from the same named function defined in dijkstra.
 ;;      May rethink.
-(s/fdef empty-neighbors
-  :args (s/cat :maze ::maze :pos ::pos)
-  :ret (s/coll-of ::pos)
+(spec/fdef empty-neighbors
+  :args (spec/cat :maze ::maze :pos ::pos)
+  :ret (spec/coll-of ::pos)
   :fn #(every? adjacent? %))
 (defn empty-neighbors
   "Get all positions neighboring `pos` which have not been visited."
   [maze pos]
   (filter #(empty? (get-in maze %)) (neighbors maze pos)))
 
-(s/fdef link
-  :args (s/cat :maze ::maze :pos-1 ::pos :pos-2 ::pos)
+(spec/fdef link
+  :args (spec/cat :maze ::maze :pos-1 ::pos :pos-2 ::pos)
   :ret ::maze
   :fn #(if (adjacent? (-> % :args :pos-1) (-> % :args :pos-2))
          (and
@@ -202,8 +205,8 @@
         (update-in pos-2 conj (direction pos-2 pos-1)))
     maze))
 
-(s/fdef dead-ends
-  :args (s/cat :maze ::maze)
+(spec/fdef dead-ends
+  :args (spec/cat :maze ::maze)
   :ret int?)
 (defn dead-ends
   "Filter for the dead ends in a maze.
