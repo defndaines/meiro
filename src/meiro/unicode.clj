@@ -2,7 +2,7 @@
   "Unicode rendering of a maze.
 
   NOTE: Not pretty. This is super clunky, since all maze edges are treated
-        exceptionally."
+        exceptionally. I don't intend to revist this code to clean it up."
   (:require [meiro.core :as m]))
 
 (def ^:private corner "\u254b")

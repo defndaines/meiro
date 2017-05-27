@@ -6,10 +6,11 @@
   (:require [meiro.core :as m]
             [clojure.data.generators :as gen]))
 
-;; Allows for different weights for going each direction.
-;; Higher south weight has longer vertical corridors.
-;; Higher east weight has longer horizontal corridors.
-(def weights {:south 4 :east 5})
+(def ^:private weights
+  "Constants allow for different weights for each direction.
+  Higher south weight has longer vertical corridors.
+  Higher east weight has longer horizontal corridors."
+  {:south 4 :east 5})
 
 (defn possible-directions
   "Determine which directions are valid from the provided pos."
@@ -20,6 +21,9 @@
       {(m/south pos) :south (m/east pos) :east})))
 
 (defn- link-neighbor
+  "Link to a random neighbor to south or east.
+  When linking to south, the link will be created from any position in the
+  current east-west corridor, not necessarily from `pos`."
   [maze pos]
   (let [directions (possible-directions maze pos)]
     (if (seq directions)

@@ -1,11 +1,13 @@
 (ns meiro.wilson
-  "Wilson's algorithm uses a loop-erased random walk to generate an unbiased
+  "Wilson's algorithm uses a loop-erasing random walk to generate an unbiased
   maze. Because it randomly navigates to the next cell without regard to
   cells it has already visited, it can take an excessively long time to
   generate, especially on large mazes."
   (:require [meiro.core :as m]))
 
 (defn- pop-rand
+  "Remove a random element from a collection of positions.
+  Used to identify the starting position of the maze."
   [positions]
   (let [pos (rand-nth positions)]
     (remove #{pos} positions)))
@@ -41,5 +43,5 @@
       (let [path (walk grid unvisited)]
         (recur
           (link-path maze path)
-          (remove (into #{} path) unvisited)))
+          (remove (set path) unvisited)))
       maze)))

@@ -5,7 +5,9 @@
            (javax.imageio ImageIO)
            (java.io File)))
 
-(def cell-size 25)
+(def ^:private cell-size
+  "Cell size constant which determines cell width and height in image."
+  25)
 
 (defn render
   "Render a maze as a PNG image."
