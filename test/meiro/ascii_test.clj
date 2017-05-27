@@ -1,7 +1,8 @@
 (ns meiro.ascii-test
 	(:require [clojure.test :refer :all]
 						[meiro.core :as m]
-						[meiro.ascii :refer :all]))
+						[meiro.ascii :refer :all]
+						[clojure.string :as string]))
 
 (deftest cell-level-test
   (testing "Default rendering."
@@ -33,7 +34,14 @@
                 [[:north :south] [:east] [:west :south]]
                 [[:north :east] [:west :east] [:north :west]]]
           distances [[0 1 2] [1 6 5] [2 3 4]]]
-      (is (= "+---+---+---+\n| 0   1   2 |\n+   +---+---+\n| 1 | 6   5 |\n+   +---+   +\n| 2   3   4 |\n+---+---+---+\n"
+      (is (= (string/join \newline
+                          ["+---+---+---+"
+                           "| 0   1   2 |"
+                           "+   +---+---+"
+                           "| 1 | 6   5 |"
+                           "+   +---+   +"
+                           "| 2   3   4 |"
+                           "+---+---+---+\n"])
              (render maze (show-distance distances)))))))
 
 (deftest include-solution
@@ -43,5 +51,36 @@
                 [[:north :east :south] [:west] [:north :east :south] [:west] [:north :south]]
                 [[:north :east] [:west :east] [:north :west :east] [:west :east] [:north :west]]]
           sol '([0 0] [0 1] [1 1] [1 0] [2 0] [3 0] [3 1] [3 2] [3 3] [3 4] [2 4] [1 4] [0 4])]
-      (is (= "+---+---+---+---+---+\n| *   *     |   | * |\n+---+   +---+   +   +\n| *   * |   |     * |\n+   +---+   +---+   +\n| *     |       | * |\n+   +---+   +---+   +\n| *   *   *   *   * |\n+---+---+---+---+---+\n"
-            (render maze (show-solution sol)))))))
+      (is (= (string/join \newline
+                          [ "+---+---+---+---+---+"
+                           "| *   *     |   | * |"
+                           "+---+   +---+   +   +"
+                           "| *   * |   |     * |"
+                           "+   +---+   +---+   +"
+                           "| *     |       | * |"
+                           "+   +---+   +---+   +"
+                           "| *   *   *   *   * |"
+                           "+---+---+---+---+---+\n"])
+             (render maze (show-solution sol)))))))
+
+(deftest masked-test
+  (let [maze
+        [[[:south :east] [:west] [:mask] [:south] [:mask]]
+         [[:south :north] [:south :east] [:west :east] [:west :south :north] [:south]]
+         [[:south :north] [:east :north] [:west] [:north :east] [:west :south :north]]
+         [[:south :north] [:east :south] [:east :west] [:south :west] [:north :south]]
+         [[:east :north] [:north :west :east] [:west] [:east :north] [:north :west]]]]
+    (testing "Masked cells have no links."
+      (is (= (string/join \newline
+                          ["+---+---+---+---+---+"
+                           "|       |   |   |   |"
+                           "+   +---+---+   +---+"
+                           "|   |           |   |"
+                           "+   +   +---+   +   +"
+                           "|   |       |       |"
+                           "+   +---+---+---+   +"
+                           "|   |           |   |"
+                           "+   +   +---+   +   +"
+                           "|           |       |"
+                           "+---+---+---+---+---+\n"])
+             (render maze))))))

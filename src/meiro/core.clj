@@ -5,19 +5,28 @@
   to open neighbor cells, e.g., [:east :south]."
   (:require [clojure.spec.alpha :as spec]))
 
+
+(def cardinals
+  "Cardinal directions."
+  #{:north :south :east :west})
+
+(spec/def ::direction cardinals)
+(spec/def ::link (conj cardinals :mask))
+
 ;; Difference between a "cell" and "pos" (or position).
 ;; A position is the [row col] index of a cell.
 (spec/def ::pos (spec/cat :row nat-int? :col nat-int?))
 (spec/def ::path (spec/+ ::pos))
+
 ;; A cell has links to neighbors, such as [:east :north].
-(spec/def ::direction #{:north :south :east :west})
-(spec/def ::cell (spec/coll-of ::direction :kind vector? :distinct true))
+(spec/def ::cell (spec/coll-of ::link :kind vector? :distinct true))
 
 ;; Difference between "grid" and "maze"?
 ;; A grid has no links, a maze has links between the cells.
 (spec/def ::grid (spec/coll-of vector? :kind vector? :min-count 1))
 (spec/def ::row (spec/coll-of ::cell :kind vector? :min-count 1))
 (spec/def ::maze (spec/coll-of ::row :kind vector? :min-count 1))
+
 
 ;;; Position Functions
 
@@ -34,6 +43,7 @@
       (and (= row-1 row-2) (= 1 (Math/abs (- col-1 col-2))))
       (and (= col-1 col-2) (= 1 (Math/abs (- row-1 row-2)))))))
 
+
 (spec/fdef direction
   :args (spec/cat :pos-1 ::pos :pos-2 ::pos)
   :ret (spec/nilable ::direction))
@@ -48,6 +58,7 @@
       [1 0] :north
       [-1 0] :south
       nil)))
+
 
 (spec/fdef north
   :args (spec/cat :pos ::pos)
@@ -89,6 +100,7 @@
   (let [[row col] pos]
     [row (dec col)]))
 
+
 (spec/fdef pos-to
   :args (spec/cat :cardinal ::direction :pos ::pos)
   :ret ::pos
@@ -104,6 +116,7 @@
       :east [row (inc col)]
       :west [row (dec col)])))
 
+
 ;;; Grid Functions
 
 (spec/fdef init
@@ -116,6 +129,7 @@
   ([rows columns v]
    (vec (repeat rows
                 (vec (repeat columns v))))))
+
 
 (spec/fdef in?
   :args (spec/cat :grid ::grid :pos ::pos)
@@ -130,6 +144,7 @@
       (<= 0 row max-row)
       (<= 0 col max-col))))
 
+
 (spec/fdef neighbors
   :args (spec/cat :grid ::grid :pos ::pos)
   :ret (spec/coll-of ::pos)
@@ -141,6 +156,7 @@
     (filter
       #(in? grid %)
       #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]})))
+
 
 (spec/fdef all-positions
   :args (spec/cat :grid ::grid)
@@ -155,6 +171,7 @@
         col (range (count (first grid)))]
     [row col]))
 
+
 (spec/fdef random-pos
   :args (spec/cat :grid ::grid)
   :ret ::pos
@@ -163,6 +180,7 @@
   "Select a random position from the grid."
   [grid]
   [(rand-int (count grid)) (rand-int (count (first grid)))])
+
 
 ;;; Maze Functions
 
@@ -178,6 +196,7 @@
     (cons pos (path-west maze (west pos)))
     [pos]))
 
+
 ;; TODO This is different from the same named function defined in dijkstra.
 ;;      May rethink.
 (spec/fdef empty-neighbors
@@ -188,6 +207,7 @@
   "Get all positions neighboring `pos` which have not been visited."
   [maze pos]
   (filter #(empty? (get-in maze %)) (neighbors maze pos)))
+
 
 (spec/fdef link
   :args (spec/cat :maze ::maze :pos-1 ::pos :pos-2 ::pos)
@@ -204,6 +224,7 @@
         (update-in pos-1 conj (direction pos-1 pos-2))
         (update-in pos-2 conj (direction pos-2 pos-1)))
     maze))
+
 
 (spec/fdef dead-ends
   :args (spec/cat :maze ::maze)
