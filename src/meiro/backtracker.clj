@@ -6,15 +6,17 @@
   (:require [meiro.core :as m]))
 
 (defn create
-  "Create a random maze using the Recursive Backtracker algorithm."
-  [grid]
-  (loop [maze grid
-         pos (m/random-pos grid)
-         stack '(pos)]
-    (if (seq stack)
-      (let [unvisited (m/empty-neighbors maze pos)]
-        (if (seq unvisited)
-          (let [neighbor (rand-nth unvisited)]
-            (recur (m/link maze pos neighbor) neighbor (conj stack neighbor)))
-          (recur maze (first stack) (rest stack))))
-      maze)))
+  "Create a random maze using the Recursive Backtracker algorithm.
+  If a `pos` is passed, then the random walk will begin at that position."
+  ([grid] (create grid (m/random-pos grid)))
+  ([grid pos]
+   (loop [maze grid
+          pos pos
+          stack '(pos)]
+     (if (seq stack)
+       (let [unvisited (m/empty-neighbors maze pos)]
+         (if (seq unvisited)
+           (let [neighbor (rand-nth unvisited)]
+             (recur (m/link maze pos neighbor) neighbor (conj stack neighbor)))
+           (recur maze (first stack) (rest stack))))
+       maze))))
