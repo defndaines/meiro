@@ -58,6 +58,14 @@ Which creates a PNG file like:
 
 ![Sample Maze](sample-maze.png)
 
+To print a maze with masked cells:
+```clojure
+(def grid (ascii/read-grid "template.txt"))
+(png/render-masked (b/create grid))
+```
+
+![Masked Maze](masked-maze.png)
+
 
 ## Algorithms
 

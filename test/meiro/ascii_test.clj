@@ -84,3 +84,14 @@
                            "|           |       |"
                            "+---+---+---+---+---+\n"])
              (render maze))))))
+
+(deftest line-to-row-test
+  (testing "No masking"
+    (is (= [[] [] [] []]
+           (line-to-row "...."))))
+  (testing "All masking"
+    (is (= [[:mask] [:mask] [:mask] [:mask]]
+           (line-to-row "xxxx"))))
+  (testing "Mixed masking"
+    (is (= [[] [:mask] [:mask] []]
+           (line-to-row ".xx.")))))

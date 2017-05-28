@@ -72,3 +72,15 @@
   [solution]
   (fn [cell]
     (str \space (if (some #{cell} solution) \* \space) \space)))
+
+(defn line-to-row
+  "Convert line of 'x' and '.' to a grid row with masked cells."
+  [line]
+  (into [] (map #(if (= \. %) [] [:mask]) line)))
+
+(defn read-grid
+  "Read in an ASCII grid using 'x' to mark masked cells and '.' for open
+  cells."
+  [file-name]
+  (with-open [reader (clojure.java.io/reader file-name)]
+    (into [] (map line-to-row (line-seq reader)))))
