@@ -40,8 +40,8 @@
   (let [[row-1 col-1] pos-1
         [row-2 col-2] pos-2]
     (or
-      (and (= row-1 row-2) (= 1 (Math/abs (- col-1 col-2))))
-      (and (= col-1 col-2) (= 1 (Math/abs (- row-1 row-2)))))))
+      (and (= row-1 row-2) (= 1 (Math/abs ^int (- col-1 col-2))))
+      (and (= col-1 col-2) (= 1 (Math/abs ^int (- row-1 row-2)))))))
 
 
 (spec/fdef direction

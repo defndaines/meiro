@@ -1,6 +1,6 @@
 (ns meiro.png
   "Generate a PNG image of a maze."
-  (:import (java.awt Color)
+  (:import (java.awt Color Graphics2D)
            (java.awt.image BufferedImage)
            (javax.imageio ImageIO)
            (java.io File)))
@@ -11,7 +11,7 @@
 
 (defn- draw
   "Draw line in graphic from coordinates."
-  [graphic x y x' y']
+  [^Graphics2D graphic x y x' y']
   (.drawLine graphic
              (* cell-size x)
              (* cell-size y)
@@ -21,7 +21,7 @@
 (defn render
   "Render a maze as a PNG image."
   ([maze] (render maze "maze.png"))
-  ([maze file-name]
+  ([maze ^String file-name]
    (let [rows (count maze)
          cols (count (first maze))
          img (BufferedImage.
@@ -43,7 +43,7 @@
 (defn render-masked
   "Render a maze as a PNG image, but not printing masked cells."
   ([maze] (render-masked maze "maze.png"))
-  ([maze file-name]
+  ([maze ^String file-name]
    (let [rows (count maze)
          cols (count (first maze))
          img (BufferedImage.
