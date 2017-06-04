@@ -9,7 +9,7 @@
 
 (def ^:private cell-size
   "Cell size constant which determines cell width and height in image."
-  10)
+  20)
 
 
 (defn- draw
@@ -96,7 +96,7 @@
                theta-cw (* theta (inc x))
                cx (+ center (* inner-radius (Math/cos theta-cw)))
                cy (+ center (* inner-radius (Math/sin theta-cw)))]
-           (when (not-any? #{:south} cell)
+           (when (not-any? #{:north} cell)
              (.draw graphic
                     (Line2D$Double.
                       (+ center (* inner-radius (Math/cos theta-ccw)))
