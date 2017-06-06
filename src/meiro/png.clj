@@ -96,31 +96,32 @@
          center (/ image-size 2)]
      (.setColor graphic Color/BLACK)
      (doseq [[y row] (map-indexed vector maze)]
-       (doseq [[x cell] (map-indexed vector row)]
-         (let [theta (/ (* 2 Math/PI) (count row))
-               inner-radius (* cell-size y)
-               arc-length (/ 360 (count row))
-               outer-radius (* cell-size (inc y))]
-           (when (not-any? #{:north} cell)
-             (let [bounds (square (- center inner-radius) (* 2 inner-radius))
-                   start (- 360 arc-length (* x arc-length))]
-               (.draw graphic
-                      (Arc2D$Double. bounds start arc-length Arc2D/OPEN))))
-           ;; Drawing both east and west should just duplicate lines.
-           ;; Leaving the code here for now in case a use-case arises.
-           ; (when (not-any? #{:west} cell)
-             ; (let [theta-ccw (* theta x)
-                   ; ax (+ center (* inner-radius (Math/cos theta-ccw)))
-                   ; ay (+ center (* inner-radius (Math/sin theta-ccw)))
-                   ; bx (+ center (* outer-radius (Math/cos theta-ccw)))
-                   ; by (+ center (* outer-radius (Math/sin theta-ccw)))]
-               ; (.draw graphic (Line2D$Double. ax ay bx by))))
-           (when (not-any? #{:east} cell)
-             (let [theta-cw (* theta (inc x))
-                   cx (+ center (* inner-radius (Math/cos theta-cw)))
-                   cy (+ center (* inner-radius (Math/sin theta-cw)))
-                   dx (+ center (* outer-radius (Math/cos theta-cw)))
-                   dy (+ center (* outer-radius (Math/sin theta-cw)))]
-               (.draw graphic (Line2D$Double. cx cy dx dy)))))))
+       (when (> y 0)  ; Never render the center cell.
+         (doseq [[x cell] (map-indexed vector row)]
+           (let [theta (/ (* 2 Math/PI) (count row))
+                 inner-radius (* cell-size y)
+                 arc-length (/ 360 (count row))
+                 outer-radius (* cell-size (inc y))]
+             (when (not-any? #{:north} cell)
+               (let [bounds (square (- center inner-radius) (* 2 inner-radius))
+                     start (- 360 arc-length (* x arc-length))]
+                 (.draw graphic
+                        (Arc2D$Double. bounds start arc-length Arc2D/OPEN))))
+             ;; Drawing both east and west should just duplicate lines.
+             ;; Leaving the code here for now in case a use-case arises.
+             ; (when (not-any? #{:west} cell)
+               ; (let [theta-ccw (* theta x)
+                     ; ax (+ center (* inner-radius (Math/cos theta-ccw)))
+                     ; ay (+ center (* inner-radius (Math/sin theta-ccw)))
+                     ; bx (+ center (* outer-radius (Math/cos theta-ccw)))
+                     ; by (+ center (* outer-radius (Math/sin theta-ccw)))]
+                 ; (.draw graphic (Line2D$Double. ax ay bx by))))
+             (when (not-any? #{:east} cell)
+               (let [theta-cw (* theta (inc x))
+                     cx (+ center (* inner-radius (Math/cos theta-cw)))
+                     cy (+ center (* inner-radius (Math/sin theta-cw)))
+                     dx (+ center (* outer-radius (Math/cos theta-cw)))
+                     dy (+ center (* outer-radius (Math/sin theta-cw)))]
+                 (.draw graphic (Line2D$Double. cx cy dx dy))))))))
      (.draw graphic (Ellipse2D$Double. 0 0 image-size image-size))
      (ImageIO/write img "png" (File. file-name)))))
