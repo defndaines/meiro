@@ -137,9 +137,9 @@
 (defn in?
   "Is the position within the bounds of the grid."
   [grid pos]
-  (let [max-row (dec (count grid))
-        max-col (dec (count (first grid)))
-        [row col] pos]
+  (let [[row col] pos 
+        max-row (dec (count grid))
+        max-col (dec (count (get grid row)))]
     (and
       (<= 0 row max-row)
       (<= 0 col max-col))))
