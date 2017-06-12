@@ -27,7 +27,45 @@
                circumference (* 2 Math/PI radius)
                prev (count (last acc))
                estimated-cell-width (/ circumference prev)
-               ratio (Math/round (/ estimated-cell-width height)) 
+               ratio (Math/round (/ estimated-cell-width height))
                cells (* prev ratio)]
            (recur (conj acc (repeat cells v)) (inc row)))
          acc)))))
+
+
+(defn neighbors
+  "Get all potential neighbors of a position in a given grid"
+  [grid pos]
+  (let [[row col] pos
+        inward (count (get grid (dec row)))
+        cells (count (get grid row))
+        outward (count (get grid (inc row)))] ; 0 when row is last.
+    (filter
+      #(m/in? grid %)
+      (concat
+        ;; Inward
+        (if (= 1 row) ; All row 1 cells have same parent.
+          [[0 0]]
+          [[(dec row) (int (Math/floor (* col (/ inward cells))))]])
+        ;; Counter/Clockwise. Last cell is neighbor to first cell in row.
+        (when (< 0 row)
+          [[row (mod (dec col) cells)] [row (mod (inc col) cells)]])
+        ;; Outward
+        (cond
+          (= 0 row) [[1 0] [1 1] [1 2] [1 3] [1 4] [1 5]]
+          (= 0 outward) []
+          (= cells outward) [[(inc row) col]]
+          :else [[(inc row) (* 2 col)] [(inc row) (inc (* 2 col))]])))))
+
+
+(defn empty-neighbors
+  "Get all positions neighboring `pos` which have not been visited."
+  [maze pos]
+  (filter #(empty? (get-in maze %)) (neighbors maze pos)))
+
+
+(defn link
+  "Link two adjacent cells in a maze."
+  [maze pos-1 pos-2]
+  ;; TODO
+  maze)
