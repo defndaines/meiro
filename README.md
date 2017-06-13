@@ -68,7 +68,8 @@ To print a maze with masked cells:
 
 To print a circular (polar) maze:
 ```clojure
-(png/render-polar (b/create (m/init 10 36)))
+(png/render-polar
+  (b/create (polar/init 10) [0 0] polar/empty-neighbors polar/link))
 ```
 
 ![Polar Maze](polar-maze.png)

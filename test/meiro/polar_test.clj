@@ -2,7 +2,8 @@
   (:require [clojure.test :refer :all]
             [clojure.test.check.clojure-test :refer :all]
             [meiro.polar :refer :all]
-            [meiro.core :as m]))
+            [meiro.core :as m]
+            [meiro.backtracker :as backtracker]))
 
 
 (deftest init-test
@@ -49,3 +50,36 @@
   (testing "Last row."
     (is (= [[8 13] [9 12] [9 14]]
            (neighbors (init 10) [9 13])))))
+
+
+(deftest direction-test
+  (testing "Cardinal directions."
+    (is (= :north (direction [2 3] [1 3])))
+    (is (= :north (direction [1 5] [0 0])))
+    (is (= :north (direction [1 0] [0 0])))
+    (is (= :east (direction [5 1] [5 2])))
+    (is (= :west (direction [4 3] [4 2]))))
+  (testing "Wrap around the grid."
+    (is (= :east (direction [1 5] [1 0])))
+    (is (= :west (direction [1 0] [1 5]))))
+  (testing "South cells just return coordinates."
+    (is (= [4 1] (direction [3 1] [4 1])))))
+
+
+(deftest link-test
+  (testing "Cells link."
+    (let [center [0 0]
+          south [1 3]
+          maze (link (init 3) center south)]
+      (is (= south (get-in maze center)))
+      (is (= :north (get-in maze south))))))
+
+
+(deftest create-test
+  (testing "Ensure all cells are linked."
+    (is (every? #(not-any? empty? %)
+                (backtracker/create
+                  (init 10 12)
+                  [0 0]
+                  empty-neighbors
+                  link)))))

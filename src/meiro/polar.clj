@@ -29,7 +29,7 @@
                estimated-cell-width (/ circumference prev)
                ratio (Math/round (/ estimated-cell-width height))
                cells (* prev ratio)]
-           (recur (conj acc (repeat cells v)) (inc row)))
+           (recur (conj acc (vec (repeat cells v))) (inc row)))
          acc)))))
 
 
@@ -48,12 +48,12 @@
           [[0 0]]
           [[(dec row) (int (Math/floor (* col (/ inward cells))))]])
         ;; Counter/Clockwise. Last cell is neighbor to first cell in row.
-        (when (< 0 row)
+        (when (pos? row)
           [[row (mod (dec col) cells)] [row (mod (inc col) cells)]])
         ;; Outward
         (cond
-          (= 0 row) [[1 0] [1 1] [1 2] [1 3] [1 4] [1 5]]
-          (= 0 outward) []
+          (zero? row) [[1 0] [1 1] [1 2] [1 3] [1 4] [1 5]]
+          (zero? outward) []
           (= cells outward) [[(inc row) col]]
           :else [[(inc row) (* 2 col)] [(inc row) (inc (* 2 col))]])))))
 
@@ -64,8 +64,23 @@
   (filter #(empty? (get-in maze %)) (neighbors maze pos)))
 
 
+(defn direction
+  "Get the direction from pos-1 to pos-2.
+  Assumes [0 0] is the center."
+  [[row-1 col-1] [row-2 col-2]]
+  (cond
+    (< row-1 row-2) [row-2 col-2]  ; inward
+    (> row-1 row-2) :north  ; outward (just link cell)
+    (= col-1 (inc col-2)) :west  ; counter-clockwise
+    (= col-2 (inc col-1)) :east  ; counter-clockwise
+    (zero? col-1) :west  ; counter-clockwise wrap around
+    (zero? col-2) :east))  ; clockwise wrap around
+
+
 (defn link
   "Link two adjacent cells in a maze."
+  ;; TODO Difference from core is no adjacent check.
   [maze pos-1 pos-2]
-  ;; TODO
-  maze)
+  (-> maze
+      (update-in pos-1 conj (direction pos-1 pos-2))
+      (update-in pos-2 conj (direction pos-2 pos-1))))

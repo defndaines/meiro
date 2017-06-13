@@ -50,14 +50,13 @@
 (defn direction
   "Get the direction from pos-1 to pos-2.
   Assumes [0 0] is the north-west corner."
-  [pos-1 pos-2]
-  (let [[row-1 col-1] pos-1 [row-2 col-2] pos-2]
-    (case [(- row-1 row-2) (- col-1 col-2)]
-      [0 1] :west
-      [0 -1] :east
-      [1 0] :north
-      [-1 0] :south
-      nil)))
+  [[row-1 col-1] [row-2 col-2]]
+  (case [(- row-1 row-2) (- col-1 col-2)]
+    [0 1] :west
+    [0 -1] :east
+    [1 0] :north
+    [-1 0] :south
+    nil))
 
 
 (spec/fdef north
@@ -137,7 +136,7 @@
 (defn in?
   "Is the position within the bounds of the grid."
   [grid pos]
-  (let [[row col] pos 
+  (let [[row col] pos
         max-row (dec (count grid))
         max-col (dec (count (get grid row)))]
     (and
