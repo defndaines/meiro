@@ -60,9 +60,15 @@
 ;;; Maze Functions
 
 (deftest western-path-test
-  (let [maze [[[:south] [:south] [:east] [:west :east] [:west :south] [:south] [:east] [:west :south]]
-              [[:north :east] [:north :west :south] [:east] [:west :east] [:north :west :east] [:north :west :south] [:south] [:north :south]]
-              [[:east] [:north :west :east] [:west :east] [:west :east] [:west :east] [:north :west :east] [:north :west :east] [:north :west]]]]
+  (let [maze [[[:south] [:south] [:east] [:west :east]
+               [:west :south] [:south] [:east]
+               [:west :south]]
+              [[:north :east] [:north :west :south] [:east] [:west :east]
+               [:north :west :east] [:north :west :south] [:south]
+               [:north :south]]
+              [[:east] [:north :west :east] [:west :east] [:west :east]
+               [:west :east] [:north :west :east] [:north :west :east]
+               [:north :west]]]]
     (testing "No linked cell to the west"
       (is (= '([0 0]) (path-west maze [0 0]))))
     (testing "One linked cell to the west"
@@ -105,7 +111,13 @@
 
 (deftest dead-end-test
   (testing "No linked cell to the west"
-    (let [maze [[[:south] [:south] [:east] [:west :east] [:west :south] [:south] [:east] [:west :south]]
-                [[:north :east] [:north :west :south] [:east] [:west :east] [:north :west :east] [:north :west :south] [:south] [:north :south]]
-                [[:east] [:north :west :east] [:west :east] [:west :east] [:west :east] [:north :west :east] [:north :west :east] [:north :west]]]]
+    (let [maze [[[:south] [:south] [:east]
+                 [:west :east] [:west :south] [:south] [:east]
+                 [:west :south]]
+                [[:north :east] [:north :west :south] [:east] [:west :east]
+                 [:north :west :east] [:north :west :south] [:south]
+                 [:north :south]]
+                [[:east] [:north :west :east] [:west :east] [:west :east]
+                 [:west :east] [:north :west :east] [:north :west :east]
+                 [:north :west]]]]
       (is (= 8 (count (dead-ends maze)))))))

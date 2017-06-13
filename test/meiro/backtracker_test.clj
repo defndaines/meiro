@@ -9,7 +9,9 @@
 
 (deftest create-with-mask-test
   (testing "Some cells can be masked and a valid maze generates."
-    (let [grid (-> (init 10 10) (update-in [0 4] conj :mask) (update-in [0 6] conj :mask))
+    (let [grid (-> (init 10 10)
+                   (update-in [0 4] conj :mask)
+                   (update-in [0 6] conj :mask))
           maze (create grid)]
       (is (= [:mask] (get-in maze [0 4])))
       ;; TODO non-deterministic ... which means there's a bug.

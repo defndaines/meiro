@@ -7,9 +7,11 @@
 (deftest empty-neighbor-test
   (testing "When the grid is empty."
     (is (= [[0 1] [2 1] [1 2] [1 0]]
-           (#'meiro.dijkstra/empty-neighbors (init 3 3 nil) [1 1] [:north :south :east :west])))
+           (#'meiro.dijkstra/empty-neighbors
+             (init 3 3 nil) [1 1] [:north :south :east :west])))
    (is (= [[2 1] [1 2]]
-           (#'meiro.dijkstra/empty-neighbors (init 3 3 nil) [1 1] [:south :east]))))
+           (#'meiro.dijkstra/empty-neighbors
+             (init 3 3 nil) [1 1] [:south :east]))))
   (testing "When cells have been populated already"
     (let [grid (assoc-in (init 3 3 nil) [2 1] 1)]
       (is (= [[1 2]]
@@ -36,12 +38,17 @@
     (testing "Ends with the provided 'end' cell."
       (is (= [14 19] (last sol)))))
   (testing "Solution does not jump walls."
-    ;; Without bounds checking, solution can pass through [2 1] instead of [3 0].
-    (let [maze [[[:east] [:west :east :south] [:west] [:south] [:south]]
-                [[:east :south] [:north :west] [:south] [:north :east] [:north :west :south]]
-                [[:north :east :south] [:west] [:north :east :south] [:west] [:north :south]]
-                [[:north :east] [:west :east] [:north :west :east] [:west :east] [:north :west]]]]
-      (is (= '([0 0] [0 1] [1 1] [1 0] [2 0] [3 0] [3 1] [3 2] [3 3] [3 4] [2 4] [1 4] [0 4])
+    ;; Without bounds checking solution can pass through [2 1] instead of [3 0].
+    (let [maze [[[:east] [:west :east :south] [:west] [:south]
+                 [:south]]
+                [[:east :south] [:north :west] [:south] [:north :east]
+                 [:north :west :south]]
+                [[:north :east :south] [:west] [:north :east :south] [:west]
+                 [:north :south]]
+                [[:north :east] [:west :east] [:north :west :east] [:west :east]
+                 [:north :west]]]]
+      (is (= '([0 0] [0 1] [1 1] [1 0] [2 0] [3 0] [3 1] [3 2] [3 3] [3 4] [2 4]
+               [1 4] [0 4])
              (solution maze [0 0] [0 4]))))))
 
 (deftest farthest-test

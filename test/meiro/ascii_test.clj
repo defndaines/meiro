@@ -18,14 +18,36 @@
 
 (deftest ascii-art
 	(testing "Ensure rows and columns match."
-		(is (= "+---+---+---+\n|   |   |   |\n+---+---+---+\n|   |   |   |\n+---+---+---+\n"
+		(is (= (string/join \newline ["+---+---+---+"
+                                  "|   |   |   |"
+                                  "+---+---+---+"
+                                  "|   |   |   |"
+                                  "+---+---+---+\n"])
 					 (render (m/init 2 3))))
-		(is (= "+---+---+\n|   |   |\n+---+---+\n|   |   |\n+---+---+\n|   |   |\n+---+---+\n|   |   |\n+---+---+\n|   |   |\n+---+---+\n"
+    (is (= (string/join \newline ["+---+---+"
+                                  "|   |   |"
+                                  "+---+---+"
+                                  "|   |   |"
+                                  "+---+---+"
+                                  "|   |   |"
+                                  "+---+---+"
+                                  "|   |   |"
+                                  "+---+---+"
+                                  "|   |   |"
+                                  "+---+---+\n"])
 					 (render (m/init 5 2)))))
 	(testing "Links are represented as gaps in the wall."
-		(is (= "+---+---+\n|   |   |\n+---+---+\n|       |\n+---+---+\n"
+    (is (= (string/join \newline ["+---+---+"
+                                  "|   |   |"
+                                  "+---+---+"
+                                  "|       |"
+                                  "+---+---+\n"])
 					 (render (m/link (m/init 2 2) [1 1] [1 0]))))
-		(is (= "+---+---+\n|   |   |\n+---+   +\n|   |   |\n+---+---+\n"
+    (is (= (string/join \newline ["+---+---+"
+                                  "|   |   |"
+                                  "+---+   +"
+                                  "|   |   |"
+                                  "+---+---+\n"])
 					 (render (m/link (m/init 2 2) [1 1] [0 1]))))))
 
 (deftest include-distances
@@ -47,10 +69,14 @@
 (deftest include-solution
   (testing "When a solution is provided."
     (let [maze [[[:east] [:west :east :south] [:west] [:south] [:south]]
-                [[:east :south] [:north :west] [:south] [:north :east] [:north :west :south]]
-                [[:north :east :south] [:west] [:north :east :south] [:west] [:north :south]]
-                [[:north :east] [:west :east] [:north :west :east] [:west :east] [:north :west]]]
-          sol '([0 0] [0 1] [1 1] [1 0] [2 0] [3 0] [3 1] [3 2] [3 3] [3 4] [2 4] [1 4] [0 4])]
+                [[:east :south] [:north :west] [:south] [:north :east]
+                 [:north :west :south]]
+                [[:north :east :south] [:west] [:north :east :south] [:west]
+                 [:north :south]]
+                [[:north :east] [:west :east] [:north :west :east] [:west :east]
+                 [:north :west]]]
+          sol '([0 0] [0 1] [1 1] [1 0] [2 0] [3 0] [3 1] [3 2] [3 3] [3 4]
+                [2 4] [1 4] [0 4])]
       (is (= (string/join \newline
                           [ "+---+---+---+---+---+"
                            "| *   *     |   | * |"
@@ -66,10 +92,14 @@
 (deftest masked-test
   (let [maze
         [[[:south :east] [:west] [:mask] [:south] [:mask]]
-         [[:south :north] [:south :east] [:west :east] [:west :south :north] [:south]]
-         [[:south :north] [:east :north] [:west] [:north :east] [:west :south :north]]
-         [[:south :north] [:east :south] [:east :west] [:south :west] [:north :south]]
-         [[:east :north] [:north :west :east] [:west] [:east :north] [:north :west]]]]
+         [[:south :north] [:south :east] [:west :east] [:west :south :north]
+          [:south]]
+         [[:south :north] [:east :north] [:west] [:north :east]
+          [:west :south :north]]
+         [[:south :north] [:east :south] [:east :west] [:south :west]
+          [:north :south]]
+         [[:east :north] [:north :west :east] [:west] [:east :north]
+          [:north :west]]]]
     (testing "Masked cells have no links."
       (is (= (string/join \newline
                           ["+---+---+---+---+---+"
