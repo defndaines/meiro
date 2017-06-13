@@ -71,15 +71,12 @@
     (let [center [0 0]
           south [1 3]
           maze (link (init 3) center south)]
-      (is (= south (get-in maze center)))
-      (is (= :north (get-in maze south))))))
+      (is (= [south] (get-in maze center)))
+      (is (= [:north] (get-in maze south))))))
 
 
 (deftest create-test
   (testing "Ensure all cells are linked."
-    (is (every? #(not-any? empty? %)
-                (backtracker/create
-                  (init 10 12)
-                  [0 0]
-                  empty-neighbors
-                  link)))))
+    (is (every?
+          #(not-any? empty? %)
+          (backtracker/create (init 10) [0 0] empty-neighbors link)))))
