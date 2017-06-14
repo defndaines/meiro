@@ -102,7 +102,7 @@
                  inner-radius (* cell-size y)
                  arc-length (/ 360 (count row))
                  outer-radius (* cell-size (inc y))]
-             (when (not-any? #{:north} cell)
+             (when (not-any? #{:inward} cell)
                (let [bounds (square (- center inner-radius) (* 2 inner-radius))
                      start (- 360 arc-length (* x arc-length))]
                  (.draw graphic
@@ -116,7 +116,7 @@
                      ; bx (+ center (* outer-radius (Math/cos theta-ccw)))
                      ; by (+ center (* outer-radius (Math/sin theta-ccw)))]
                  ; (.draw graphic (Line2D$Double. ax ay bx by))))
-             (when (not-any? #{:east} cell)
+             (when (not-any? #{:clockwise} cell)
                (let [theta-cw (* theta (inc x))
                      cx (+ center (* inner-radius (Math/cos theta-cw)))
                      cy (+ center (* inner-radius (Math/sin theta-cw)))

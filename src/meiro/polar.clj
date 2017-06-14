@@ -4,10 +4,10 @@
   mazes pinched in the center and wide at the edges. The solution presented here
   seeks to maintain roughly square cell proportions by increasing the number of
   cells per row as it gets further away from the center. Polar grids cannot
-  simply rely on simple coordinate math to determine neighbors. All polar cells,
-  except the center, will have a single 'north' (inward), 'east' (clockwise),
-  and 'west' (counter-clockwise) neighbor, but can have multiple 'south'
-  (outward) neighbors."
+  rely on simple coordinate math to determine neighbors. All polar cells,
+  except the center, will have a single 'inward', 'clockwise',
+  and 'counter-clockwise' neighbor, but can have multiple 'outward'
+  neighbors."
   (:require [meiro.core :as m])
   (:import (java.lang Math)))
 
@@ -15,7 +15,7 @@
 (defn init
   "Initialize a polar grid of cells with the given number of rows,
   which can be accessed by index. Conceptually, [0 0] is the center;
-  [1, 0] is the cell directly 'east' from the center. Rendering fuctions expect
+  [1, 0] is the cell directly 'east' from the center. Rendering functions expect
   that rows start along the positive x axis and rotate clockwise."
   ([rows] (init rows []))
   ([rows v]
@@ -34,7 +34,7 @@
 
 
 (defn neighbors
-  "Get all potential neighbors of a position in a given grid"
+  "Get all potential neighbors of a position in a given grid."
   [grid pos]
   (let [[row col] pos
         inward (count (get grid (dec row)))
@@ -69,17 +69,17 @@
   Assumes [0 0] is the center."
   [[row-1 col-1] [row-2 col-2]]
   (cond
-    (< row-1 row-2) [row-2 col-2]  ; inward
-    (> row-1 row-2) :north  ; outward (just link cell)
-    (= col-1 (inc col-2)) :west  ; counter-clockwise
-    (= col-2 (inc col-1)) :east  ; counter-clockwise
-    (zero? col-1) :west  ; counter-clockwise wrap around
-    (zero? col-2) :east))  ; clockwise wrap around
+    (< row-1 row-2) [row-2 col-2]  ; outward (just link cell)
+    (> row-1 row-2) :inward
+    (= col-1 (inc col-2)) :counter-clockwise
+    (= col-2 (inc col-1)) :clockwise
+    (zero? col-1) :counter-clockwise  ; wrap around
+    (zero? col-2) :clockwise))  ; wrap around
 
 
 (defn link
   "Link two adjacent cells in a maze."
-  ;; TODO Difference from core is no adjacent check.
+  ;; TODO Difference from core is no adjacency check.
   [maze pos-1 pos-2]
   (-> maze
       (update-in pos-1 conj (direction pos-1 pos-2))
