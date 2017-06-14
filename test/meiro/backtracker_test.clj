@@ -14,8 +14,6 @@
                    (update-in [0 6] conj :mask))
           maze (create grid)]
       (is (= [:mask] (get-in maze [0 4])))
-      ;; TODO non-deterministic ... which means there's a bug.
       (is (= [:south] (get-in maze [0 5]))) ; Cell not orphaned
       (is (= [:mask] (get-in maze [0 6])))
-      ;; TODO non-deterministic ...
       (is (every? #(not-any? empty? %) maze)))))
