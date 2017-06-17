@@ -75,6 +75,15 @@ To print a circular (polar) maze:
 ![Polar Maze](polar-maze.png)
 
 
+To print a sigma (hex) maze:
+```clojure
+(png/render-hex
+  (b/create (m/init 15 20) [7 9] hex/empty-neighbors hex/link))
+```
+
+![Sigma Maze](sigma-maze.png)
+
+
 ## Algorithms
 
 There are a number of different algorithms for generating mazes.

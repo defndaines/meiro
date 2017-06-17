@@ -12,6 +12,10 @@
   "Cell size constant which determines cell width and height in image."
   20)
 
+(def ^:private default-file
+  "Default file name to use if none is provided."
+  "maze.png")
+
 
 (defn- draw
   "Draw line in graphic from coordinates."
@@ -28,7 +32,7 @@
 
 (defn render
   "Render a maze as a PNG image."
-  ([maze] (render maze "maze.png"))
+  ([maze] (render maze default-file))
   ([maze ^String file-name]
    (let [rows (count maze)
          cols (count (first maze))
@@ -51,7 +55,7 @@
 
 (defn render-masked
   "Render a maze as a PNG image, but not printing masked cells."
-  ([maze] (render-masked maze "maze.png"))
+  ([maze] (render-masked maze default-file))
   ([maze ^String file-name]
    (let [rows (count maze)
          cols (count (first maze))
@@ -87,7 +91,7 @@
 
 (defn render-polar
   "Render a polar grid maze as a PNG image."
-  ([maze] (render-polar maze "maze.png"))
+  ([maze] (render-polar maze default-file))
   ([maze ^String file-name]
    (let [image-size (* 2 cell-size (count maze))
          img (BufferedImage. (inc image-size) (inc image-size)
@@ -96,7 +100,7 @@
          center (/ image-size 2)]
      (.setColor graphic Color/BLACK)
      (doseq [[y row] (map-indexed vector maze)]
-       (when (> y 0)  ; Never render the center cell.
+       (when (pos? y)  ; Never render the center cell.
          (doseq [[x cell] (map-indexed vector row)]
            (let [theta (/ (* 2 Math/PI) (count row))
                  inner-radius (* cell-size y)
@@ -107,15 +111,6 @@
                      start (- 360 arc-length (* x arc-length))]
                  (.draw graphic
                         (Arc2D$Double. bounds start arc-length Arc2D/OPEN))))
-             ;; Drawing both east and west should just duplicate lines.
-             ;; Leaving the code here for now in case a use-case arises.
-             ; (when (not-any? #{:west} cell)
-               ; (let [theta-ccw (* theta x)
-                     ; ax (+ center (* inner-radius (Math/cos theta-ccw)))
-                     ; ay (+ center (* inner-radius (Math/sin theta-ccw)))
-                     ; bx (+ center (* outer-radius (Math/cos theta-ccw)))
-                     ; by (+ center (* outer-radius (Math/sin theta-ccw)))]
-                 ; (.draw graphic (Line2D$Double. ax ay bx by))))
              (when (not-any? #{:clockwise} cell)
                (let [theta-cw (* theta (inc x))
                      cx (+ center (* inner-radius (Math/cos theta-cw)))
@@ -124,4 +119,48 @@
                      dy (+ center (* outer-radius (Math/sin theta-cw)))]
                  (.draw graphic (Line2D$Double. cx cy dx dy))))))))
      (.draw graphic (Ellipse2D$Double. 0 0 image-size image-size))
+     (ImageIO/write img "png" (File. file-name)))))
+
+
+(defn render-hex
+  "Render a sigma (hex) maze as a PNG image."
+  ([maze] (render-hex maze default-file))
+  ([maze ^String file-name]
+   (let [size 10
+         a-size (/ size 2.0)
+         b-size (/ (* size (Math/sqrt 3)) 2.0)
+         width (* size 2)
+         height (* b-size 2)
+         rows (count maze)
+         columns (count (first maze))
+         img-width (inc (+ (* 3 a-size columns) a-size 0.5))
+         img-height (inc (+ (* height rows) b-size 0.5))
+         img (BufferedImage. img-width img-height
+                             BufferedImage/TYPE_INT_ARGB)
+         graphic (.createGraphics img)
+         draw-line (fn [x y x' y'] (.draw graphic (Line2D$Double. x y x' y')))]
+     (.setColor graphic Color/BLACK)
+     (doseq [[y row] (map-indexed vector maze)]
+       (doseq [[x cell] (map-indexed vector row)]
+         (if (not-any? #{:mask} cell)
+           (let [cx (+ size (* 3 x a-size))
+                 cy (+ b-size (* y height) (if (odd? x) b-size 0))
+                 x-far-west (- cx size)
+                 x-near-west (- cx a-size)
+                 x-near-east (+ cx a-size)
+                 x-far-east (+ cx size)
+                 y-near (- cy b-size)
+                 y-s (+ cy b-size)]
+             (when (not-any? #{:north} cell)
+               (draw-line x-near-west y-near x-near-east y-near))
+             (when (not-any? #{:south} cell)
+               (draw-line x-near-east y-s x-near-west y-s))
+             (when (not-any? #{:northwest} cell)
+               (draw-line x-far-west cy x-near-west y-near))
+             (when (not-any? #{:southwest} cell)
+               (draw-line x-far-west cy x-near-west y-s))
+             (when (not-any? #{:northeast} cell)
+               (draw-line x-near-east y-near x-far-east cy))
+             (when (not-any? #{:southeast} cell)
+               (draw-line x-far-east cy x-near-east y-s))))))
      (ImageIO/write img "png" (File. file-name)))))
