@@ -7,6 +7,11 @@ is a re-thinking of the approaches in a Clojure style.
 
 Each maze generation algorithm is in its own namespace.
 
+[Usage](#usage)
+[Algorithms](#algorithms)
+[Solutions](#solutions)
+[Utilities](#utilities)
+
 
 ## Usage
 
