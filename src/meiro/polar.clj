@@ -69,12 +69,3 @@
     (= col-2 (inc col-1)) :clockwise
     (zero? col-1) :counter-clockwise  ; wrap around
     (zero? col-2) :clockwise))  ; wrap around
-
-
-(defn link
-  "Link two adjacent cells in a maze."
-  ;; TODO Difference from core is no adjacency check.
-  [maze pos-1 pos-2]
-  (-> maze
-      (update-in pos-1 conj (direction pos-1 pos-2))
-      (update-in pos-2 conj (direction pos-2 pos-1))))

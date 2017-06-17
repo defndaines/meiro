@@ -38,12 +38,3 @@
     (and (< row-1 row-2) (> col-1 col-2)) :southwest
     (and (> row-1 row-2) (< col-1 col-2)) :northeast
     (and (> row-1 row-2) (> col-1 col-2)) :northwest))
-
-
-(defn link
-  "Link two adjacent cells in a maze."
-  ;; TODO Difference from core is no adjacency check.
-  [maze pos-1 pos-2]
-  (-> maze
-      (update-in pos-1 conj (direction pos-1 pos-2))
-      (update-in pos-2 conj (direction pos-2 pos-1))))

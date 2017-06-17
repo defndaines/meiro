@@ -8,11 +8,11 @@
 (defn create
   "Create a random maze using the Recursive Backtracker algorithm.
   If a `pos` is passed, then the random walk will begin at that position.
-  `neighbor-fn` and `link-fn` allow for alternative (e.g., polar) mazes to use
-  the algorithm."
+  `neighbor-fn` and `direction-fn` allow for alternative (e.g., polar) mazes
+  to use the algorithm."
   ([grid] (create grid (m/random-pos grid)))
-  ([grid pos] (create grid pos m/neighbors m/link))
-  ([grid pos neighbor-fn link-fn]
+  ([grid pos] (create grid pos m/neighbors m/direction))
+  ([grid pos neighbor-fn direction-fn]
    (loop [maze grid
           pos pos
           stack (list pos)]
@@ -20,6 +20,12 @@
        (let [unvisited (m/empty-neighbors maze neighbor-fn pos)]
          (if (seq unvisited)
            (let [neighbor (rand-nth unvisited)]
-             (recur (link-fn maze pos neighbor) neighbor (conj stack neighbor)))
-           (recur maze (second stack) (rest stack))))
+             (recur
+               (m/link maze direction-fn pos neighbor)
+               neighbor
+               (conj stack neighbor)))
+           (recur
+             maze
+             (second stack)
+             (rest stack))))
        maze))))

@@ -126,7 +126,7 @@
   "Render a sigma (hex) maze as a PNG image."
   ([maze] (render-hex maze default-file))
   ([maze ^String file-name]
-   (let [size 10
+   (let [size cell-size
          a-size (/ size 2.0)
          b-size (/ (* size (Math/sqrt 3)) 2.0)
          width (* size 2)

@@ -222,12 +222,14 @@
            (not (empty?) (get-in (:ret %) (-> % :args :pos-2))))))
 (defn link
   "Link two adjacent cells in a maze."
-  [maze pos-1 pos-2]
-  (if (and (adjacent? pos-1 pos-2) (in? maze pos-1) (in? maze pos-2))
-    (-> maze
-        (update-in pos-1 conj (direction pos-1 pos-2))
-        (update-in pos-2 conj (direction pos-2 pos-1)))
-    maze))
+  ([maze pos-1 pos-2]
+   (if (and (adjacent? pos-1 pos-2) (in? maze pos-1) (in? maze pos-2))
+     (link maze direction pos-1 pos-2)
+     maze))
+  ([maze direction-fn pos-1 pos-2]
+   (-> maze
+       (update-in pos-1 conj (direction-fn pos-1 pos-2))
+       (update-in pos-2 conj (direction-fn pos-2 pos-1)))))
 
 
 (spec/fdef dead-ends
