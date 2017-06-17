@@ -121,3 +121,13 @@
                  [:west :east] [:north :west :east] [:north :west :east]
                  [:north :west]]]]
       (is (= 8 (count (dead-ends maze)))))))
+
+(deftest braid-test
+  (let [maze (meiro.backtracker/create (init 15 20))]
+    (testing "Braid a maze."
+      (is (> (count (dead-ends maze))
+             (count (dead-ends (braid maze)))))
+      (is (zero? (count (dead-ends (braid maze 1.0))))))
+    (testing "0.0 rate doesn't braid."
+      (is (= (count (dead-ends maze))
+             (count (dead-ends (braid maze 0.0))))))))

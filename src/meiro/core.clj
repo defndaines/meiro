@@ -239,6 +239,31 @@
   "Filter for the dead ends in a maze.
   Fewer dead ends contribute to 'river', more flowing and meandering in a maze."
   [maze]
-  (mapcat
-    (fn [row] (filter #(= 1 (count %)) row))
-    maze))
+  (for [[y row] (map-indexed vector maze)
+        [x cell] (map-indexed vector row)
+        :when (= 1 (count cell))]
+    [y x]))
+
+
+(defn braid
+  "Braid a maze.
+  Braiding introduces loops into a maze by removing dead ends. A rate can be
+  passed in to indicate a percentage of dead ends to link, otherwise all dead
+  end will be linked to an adjacent cell."
+  ([maze] (braid maze 1.0))
+  ([maze rate]
+   (loop [acc maze
+          positions (dead-ends maze)]
+     (if (seq positions)
+       (if (> rate (rand))
+         (let [pos (first positions)
+               adj (filter #(adjacent? pos %) (rest positions))
+               neighbor (if (seq adj)
+                          (rand-nth adj)
+                          (rand-nth (neighbors maze pos)))
+               remaining (if (seq adj)
+                           (remove #{neighbor} (rest positions))
+                           (rest positions))]
+           (recur (link acc pos neighbor) remaining))
+         (recur maze (rest positions)))
+       acc))))

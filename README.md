@@ -351,6 +351,62 @@ Which will produce a maze like:
 ```
 
 
+## Utilities
+
+There are a few additional utilities besides deriving solutions.
+
+
+### Longest Path
+
+TBD
+
+
+### Braid
+
+By default, the algorithms produce "perfect" mazes, i.e., every position in the
+grid has one path to any other position in the grid. This inevitably produces
+dead ends. "Braiding" is the act of removing dead ends from a maze by linking
+them with neighbors.
+
+To enumerate the dead ends in a maze:
+```clojure
+(def maze (b/create (m/init 8 22)))
+(m/dead-ends maze)
+
+([0 10] [0 16] [1 1] [1 21] [2 5] [2 13] [3 0] [3 7] [4 2] [4 13] [4 15] [5 3]
+ [5 10] [6 1] [6 15] [6 19] [7 11] [7 21])
+```
+
+You can remove all dead ends with the `braid` function.
+```clojure
+(m/braid maze)
+```
+
+If you don't want to remove all dead ends, you can pass in a rate which will determine what percentage of the dead ends should be removed (randomly).
+```clojure
+(def braided (m/braid maze 0.4))
+(ascii/render braided)
+
++---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+|                               |           |       |           |    |
++   +---+---+---+---+   +---+   +   +---+---+   +   +   +   +   +---+---+---+---++   +
+|   |               |       |   |           |   |       |   |       ||   |
++   +---+   +---+   +---+   +   +---+---+   +   +---+---+   +---+   +   +---+---+---+---+
+|       |   |       |   |   |       |       |   |       |       |   |    |
++---+   +   +   +   +   +   +---+   +   +---+   +   +---+---+   +   +---+---+---+---+   +
+|   |   |   |   |       |   |           |       |   |           |               |    |
++   +   +   +   +---+   +   +---+---+---+   +---+   +   +   +---+---+---+---+   ++   +
+|   |   |   |       |   |                   |       |   |   |                   ||   |
++   +   +---+   +   +   +---+---+---+---+---+   +---+---+   +---+---+   +---+---++   +
+|   |       |   |   |               |       |           |           |   ||   |
++   +---+   +---+   +---+---+---+   +   +---+---+---+   +   +---+   +   +   +---++   +
+|       |       |       |           |               |   |       |   |   |       ||   |
++   +---+---+   +---+   +   +---+---+---+   +---+   +   +---+---+   +   +---+---++   +
+|                       |                   |       |               ||   |
++---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+```
+
+
 ## License
 
 Copyright © 2017 Michael S. Daines
