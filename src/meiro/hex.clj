@@ -24,12 +24,6 @@
           )))))
 
 
-(defn empty-neighbors
-  "Get all positions neighboring `pos` which have not been visited."
-  [maze pos]
-  (filter #(empty? (get-in maze %)) (neighbors maze pos)))
-
-
 (defn direction
   "Get the direction from pos-1 to pos-2."
   [[row-1 col-1] [row-2 col-2]]

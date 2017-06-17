@@ -78,4 +78,4 @@
   (testing "Ensure all cells are linked."
     (is (every?
           #(not-any? empty? %)
-          (backtracker/create (init 10) [0 0] empty-neighbors link)))))
+          (backtracker/create (init 10) [0 0] neighbors link)))))

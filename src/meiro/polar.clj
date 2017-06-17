@@ -58,12 +58,6 @@
           :else [[(inc row) (* 2 col)] [(inc row) (inc (* 2 col))]])))))
 
 
-(defn empty-neighbors
-  "Get all positions neighboring `pos` which have not been visited."
-  [maze pos]
-  (filter #(empty? (get-in maze %)) (neighbors maze pos)))
-
-
 (defn direction
   "Get the direction from pos-1 to pos-2.
   Assumes [0 0] is the center."

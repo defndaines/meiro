@@ -208,8 +208,9 @@
   :fn #(every? adjacent? %))
 (defn empty-neighbors
   "Get all positions neighboring `pos` which have not been visited."
-  [maze pos]
-  (filter #(empty? (get-in maze %)) (neighbors maze pos)))
+  ([maze pos](empty-neighbors maze neighbors pos))
+  ([maze neighbor-fn pos]
+   (filter #(empty? (get-in maze %)) (neighbor-fn maze pos))))
 
 
 (spec/fdef link
