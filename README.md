@@ -74,7 +74,6 @@ To print a circular (polar) maze:
 
 ![Polar Maze](polar-maze.png)
 
-
 To print a sigma (hex) maze:
 ```clojure
 (png/render-hex
@@ -82,6 +81,15 @@ To print a sigma (hex) maze:
 ```
 
 ![Sigma Maze](sigma-maze.png)
+
+To print a delta (triangle) maze:
+```clojure
+(def grid (ascii/read-grid "test/meiro/triangle.txt"))
+(png/render-delta
+  (b/create grid [0 12] triangle/neighbors m/direction))
+```
+
+![Delta Maze](delta-maze.png)
 
 
 ## Algorithms

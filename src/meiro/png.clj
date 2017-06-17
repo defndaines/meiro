@@ -27,6 +27,13 @@
            (* cell-size x')
            (* cell-size y'))))
 
+
+(defn- draw-line
+  "Draw a line using float-based coordinates."
+  [graphic x y x' y']
+  (.draw graphic (Line2D$Double. x y x' y')))
+
+
 ;; This method is optimized not to draw a line more than once.
 ;; Because of this, it has to assume a rectangular grid with no masking.
 
@@ -137,8 +144,7 @@
          img-height (inc (+ (* height rows) b-size 0.5))
          img (BufferedImage. img-width img-height
                              BufferedImage/TYPE_INT_ARGB)
-         graphic (.createGraphics img)
-         draw-line (fn [x y x' y'] (.draw graphic (Line2D$Double. x y x' y')))]
+         graphic (.createGraphics img)]
      (.setColor graphic Color/BLACK)
      (doseq [[y row] (map-indexed vector maze)]
        (doseq [[x cell] (map-indexed vector row)]
@@ -152,15 +158,50 @@
                  y-near (- cy b-size)
                  y-s (+ cy b-size)]
              (when (not-any? #{:north} cell)
-               (draw-line x-near-west y-near x-near-east y-near))
+               (draw-line graphic x-near-west y-near x-near-east y-near))
              (when (not-any? #{:south} cell)
-               (draw-line x-near-east y-s x-near-west y-s))
+               (draw-line graphic x-near-east y-s x-near-west y-s))
              (when (not-any? #{:northwest} cell)
-               (draw-line x-far-west cy x-near-west y-near))
+               (draw-line graphic x-far-west cy x-near-west y-near))
              (when (not-any? #{:southwest} cell)
-               (draw-line x-far-west cy x-near-west y-s))
+               (draw-line graphic x-far-west cy x-near-west y-s))
              (when (not-any? #{:northeast} cell)
-               (draw-line x-near-east y-near x-far-east cy))
+               (draw-line graphic x-near-east y-near x-far-east cy))
              (when (not-any? #{:southeast} cell)
-               (draw-line x-far-east cy x-near-east y-s))))))
+               (draw-line graphic x-far-east cy x-near-east y-s))))))
+     (ImageIO/write img "png" (File. file-name)))))
+
+
+(defn render-delta
+  "Render a delta (triangle) maze as a PNG image."
+  ([maze] (render-delta maze default-file))
+  ([maze file-name]
+   (let [size cell-size
+         half-width  (/ size 2.0)
+         height (/ (* size (Math/sqrt 3)) 2.0)
+         half-height (/ height 2)
+         rows (count maze)
+         columns (count (first maze))
+         img-width (inc (/ (* size (inc columns)) 2))
+         img-height (inc (* height rows))
+         img (BufferedImage. img-width img-height
+                             BufferedImage/TYPE_INT_ARGB)
+         graphic (.createGraphics img)]
+     (.setColor graphic Color/BLACK)
+     (doseq [[y row] (map-indexed vector maze)]
+       (doseq [[x cell] (map-indexed vector row)]
+         (if (not-any? #{:mask} cell)
+           (let [cx (+ half-width (* x half-width))
+                 cy (+ half-height (* y height))
+                 west-x (- cx half-width)
+                 east-x (+ cx half-width)
+                 upright? (even? (+ x y))
+                 apex-y ((if upright? - +) cy half-height)
+                 base-y ((if upright? + -) cy half-height)]
+             (when (not-any? #{:west} cell)
+               (draw-line graphic west-x base-y cx apex-y))
+             (when (not-any? #{:east} cell)
+               (draw-line graphic east-x base-y cx apex-y))
+             (when (not-any? #{:north :south} cell)
+               (draw-line graphic east-x base-y west-x base-y))))))
      (ImageIO/write img "png" (File. file-name)))))
