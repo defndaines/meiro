@@ -218,3 +218,47 @@
              (draw-line graphic east-x base-y cx apex-y))
            (when (not-any? #{:north :south} cell)
              (draw-line graphic east-x base-y west-x base-y))))))))
+
+
+(defn- coordinates-with-inset
+  "Derive the eight coordinates needed for rendering insets.
+  [x1 x2 x3 x4 y1 y2 y3 y4]"
+  [x y size inset]
+  (let [x1 (* x size)
+        y1 (* y size)
+        x4 (+ x1 size)
+        y4 (+ y1 size)]
+    [x1 (+ x1 inset) (- x4 inset) x4
+     y1 (+ y1 inset) (- y4 inset) y4]))
+
+
+(defn render-inset
+  "Render a maze to PNG with insets."
+  ([maze inset] (render-inset maze default-file inset))
+  ([maze ^String file-name inset]
+   (render-cells
+     maze file-name
+     (inc (* cell-size (count (first maze))))
+     (inc (* cell-size (count maze)))
+     (fn [graphic x y cell]
+       (let [[x1 x2 x3 x4 y1 y2 y3 y4] (coordinates-with-inset x y cell-size inset)]
+         (if (not-any? #{:north} cell)
+           (draw-line graphic x2 y2 x3 y2)
+           (do
+             (draw-line graphic x2 y1 x2 y2)
+             (draw-line graphic x3 y1 x3 y2)))
+         (if (not-any? #{:west} cell)
+           (draw-line graphic x2 y2 x2 y3)
+           (do
+             (draw-line graphic x1 y2 x2 y2)
+             (draw-line graphic x1 y3 x2 y3)))
+         (if (not-any? #{:east} cell)
+           (draw-line graphic x3 y2 x3 y3)
+           (do
+             (draw-line graphic x3 y2 x4 y2)
+             (draw-line graphic x3 y3 x4 y3)))
+         (if (not-any? #{:south} cell)
+           (draw-line graphic x2 y3 x3 y3)
+           (do 
+             (draw-line graphic x2 y3 x2 y4)
+             (draw-line graphic x3 y3 x3 y4))))))))
