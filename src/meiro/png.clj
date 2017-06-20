@@ -8,9 +8,17 @@
            (javax.imageio ImageIO)
            (java.io File)))
 
+
+;; NOTE: All the grid logic at this point is built up using [row column].
+;;  This means that positions, when mapped to coordinates, are flipped from
+;;  what one might normally expect, i.e., [y x] instead of [x y].
+;;  "Fixing" this would break a lot, so I may not refactor this.
+
+
 (def ^:private cell-size
   "Cell size constant which determines cell width and height in image."
   20)
+
 
 (def ^:private default-file
   "Default file name to use if none is provided."
@@ -32,6 +40,25 @@
   "Draw a line using float-based coordinates."
   [graphic x y x' y']
   (.draw graphic (Line2D$Double. x y x' y')))
+
+
+(defn- render-cells
+  "Use a function to render each cell into a PNG image.
+
+  This function extracts out the common rendering pattern for PNGs.
+  Most rendering cares only about rendering one cell at a time, and can do
+  that with the four arguments passed: graphic, x, y, cell.
+  Since masking prevent cell rendering, it is integrated in here."
+  ([maze file-name img-width img-height cell-fn]
+   (let [img (BufferedImage. img-width img-height
+                             BufferedImage/TYPE_INT_ARGB)
+         graphic (.createGraphics img)]
+     (.setColor graphic Color/BLACK)
+     (doseq [[y row] (map-indexed vector maze)]
+       (doseq [[x cell] (map-indexed vector row)]
+         (if (not-any? #{:mask} cell)
+           (cell-fn graphic x y cell))))
+     (ImageIO/write img "png" (File. file-name)))))
 
 
 ;; This method is optimized not to draw a line more than once.
@@ -64,28 +91,21 @@
   "Render a maze as a PNG image, but not printing masked cells."
   ([maze] (render-masked maze default-file))
   ([maze ^String file-name]
-   (let [rows (count maze)
-         cols (count (first maze))
-         img (BufferedImage.
-               (inc (* cell-size cols))
-               (inc (* cell-size rows))
-               BufferedImage/TYPE_INT_ARGB)
-         graphic (.createGraphics img)]
-     (.setColor graphic Color/BLACK)
-     (doseq [[y row] (map-indexed vector maze)]
-       (doseq [[x cell] (map-indexed vector row)]
-         (if (not-any? #{:mask} cell)
-           (let [x+ (inc x)
-                 y+ (inc y)]
-             (when (not-any? #{:north} cell)
-               (draw graphic x y x+ y))
-             (when (not-any? #{:west} cell)
-               (draw graphic x y x y+))
-             (when (not-any? #{:east} cell)
-               (draw graphic x+ y x+ y+))
-             (when (not-any? #{:south} cell)
-               (draw graphic x y+ x+ y+))))))
-     (ImageIO/write img "png" (File. file-name)))))
+   (render-cells
+     maze file-name
+     (inc (* cell-size (count (first maze))))
+     (inc (* cell-size (count maze)))
+     (fn [graphic x y cell]
+       (let [x+ (inc x)
+             y+ (inc y)]
+         (when (not-any? #{:north} cell)
+           (draw graphic x y x+ y))
+         (when (not-any? #{:west} cell)
+           (draw graphic x y x y+))
+         (when (not-any? #{:east} cell)
+           (draw graphic x+ y x+ y+))
+         (when (not-any? #{:south} cell)
+           (draw graphic x y+ x+ y+)))))))
 
 
 (defn- square
@@ -98,6 +118,7 @@
 
 (defn render-polar
   "Render a polar grid maze as a PNG image."
+  ;; Doesn't use render-cells because outside circle is drawn once.
   ([maze] (render-polar maze default-file))
   ([maze ^String file-name]
    (let [image-size (* 2 cell-size (count maze))
@@ -141,35 +162,31 @@
          rows (count maze)
          columns (count (first maze))
          img-width (inc (+ (* 3 a-size columns) a-size 0.5))
-         img-height (inc (+ (* height rows) b-size 0.5))
-         img (BufferedImage. img-width img-height
-                             BufferedImage/TYPE_INT_ARGB)
-         graphic (.createGraphics img)]
-     (.setColor graphic Color/BLACK)
-     (doseq [[y row] (map-indexed vector maze)]
-       (doseq [[x cell] (map-indexed vector row)]
-         (if (not-any? #{:mask} cell)
-           (let [cx (+ size (* 3 x a-size))
-                 cy (+ b-size (* y height) (if (odd? x) b-size 0))
-                 x-far-west (- cx size)
-                 x-near-west (- cx a-size)
-                 x-near-east (+ cx a-size)
-                 x-far-east (+ cx size)
-                 y-near (- cy b-size)
-                 y-s (+ cy b-size)]
-             (when (not-any? #{:north} cell)
-               (draw-line graphic x-near-west y-near x-near-east y-near))
-             (when (not-any? #{:south} cell)
-               (draw-line graphic x-near-east y-s x-near-west y-s))
-             (when (not-any? #{:northwest} cell)
-               (draw-line graphic x-far-west cy x-near-west y-near))
-             (when (not-any? #{:southwest} cell)
-               (draw-line graphic x-far-west cy x-near-west y-s))
-             (when (not-any? #{:northeast} cell)
-               (draw-line graphic x-near-east y-near x-far-east cy))
-             (when (not-any? #{:southeast} cell)
-               (draw-line graphic x-far-east cy x-near-east y-s))))))
-     (ImageIO/write img "png" (File. file-name)))))
+         img-height (inc (+ (* height rows) b-size 0.5))]
+     (render-cells
+       maze file-name
+       img-width img-height
+       (fn [graphic x y cell]
+         (let [cx (+ size (* 3 x a-size))
+               cy (+ b-size (* y height) (if (odd? x) b-size 0))
+               x-far-west (- cx size)
+               x-near-west (- cx a-size)
+               x-near-east (+ cx a-size)
+               x-far-east (+ cx size)
+               y-near (- cy b-size)
+               y-s (+ cy b-size)]
+           (when (not-any? #{:north} cell)
+             (draw-line graphic x-near-west y-near x-near-east y-near))
+           (when (not-any? #{:south} cell)
+             (draw-line graphic x-near-east y-s x-near-west y-s))
+           (when (not-any? #{:northwest} cell)
+             (draw-line graphic x-far-west cy x-near-west y-near))
+           (when (not-any? #{:southwest} cell)
+             (draw-line graphic x-far-west cy x-near-west y-s))
+           (when (not-any? #{:northeast} cell)
+             (draw-line graphic x-near-east y-near x-far-east cy))
+           (when (not-any? #{:southeast} cell)
+             (draw-line graphic x-far-east cy x-near-east y-s))))))))
 
 
 (defn render-delta
@@ -183,25 +200,21 @@
          rows (count maze)
          columns (count (first maze))
          img-width (inc (/ (* size (inc columns)) 2))
-         img-height (inc (* height rows))
-         img (BufferedImage. img-width img-height
-                             BufferedImage/TYPE_INT_ARGB)
-         graphic (.createGraphics img)]
-     (.setColor graphic Color/BLACK)
-     (doseq [[y row] (map-indexed vector maze)]
-       (doseq [[x cell] (map-indexed vector row)]
-         (if (not-any? #{:mask} cell)
-           (let [cx (+ half-width (* x half-width))
-                 cy (+ half-height (* y height))
-                 west-x (- cx half-width)
-                 east-x (+ cx half-width)
-                 upright? (even? (+ x y))
-                 apex-y ((if upright? - +) cy half-height)
-                 base-y ((if upright? + -) cy half-height)]
-             (when (not-any? #{:west} cell)
-               (draw-line graphic west-x base-y cx apex-y))
-             (when (not-any? #{:east} cell)
-               (draw-line graphic east-x base-y cx apex-y))
-             (when (not-any? #{:north :south} cell)
-               (draw-line graphic east-x base-y west-x base-y))))))
-     (ImageIO/write img "png" (File. file-name)))))
+         img-height (inc (* height rows))]
+     (render-cells
+       maze file-name
+       img-width img-height
+       (fn [graphic x y cell]
+         (let [cx (+ half-width (* x half-width))
+               cy (+ half-height (* y height))
+               west-x (- cx half-width)
+               east-x (+ cx half-width)
+               upright? (even? (+ x y))
+               apex-y ((if upright? - +) cy half-height)
+               base-y ((if upright? + -) cy half-height)]
+           (when (not-any? #{:west} cell)
+             (draw-line graphic west-x base-y cx apex-y))
+           (when (not-any? #{:east} cell)
+             (draw-line graphic east-x base-y cx apex-y))
+           (when (not-any? #{:north :south} cell)
+             (draw-line graphic east-x base-y west-x base-y))))))))
