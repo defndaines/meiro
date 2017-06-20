@@ -3,6 +3,7 @@
   find solutions as well as shortest and longest paths."
   (:require [meiro.core :as m]))
 
+
 (defn- empty-neighbors
   "Given a grid of distances, find neighbors of a pos which haven't been
   calculated yet."
@@ -10,6 +11,7 @@
   (filter
     #(nil? (get-in grid %))
     (map #(m/pos-to % pos) neighbors)))
+
 
 (defn distances
   "Calculate distances to each pos relative from starting pos.
@@ -25,6 +27,7 @@
        (empty-neighbors acc pos (get-in maze pos)))
      acc)))
 
+
 (defn solution
   "Provide the path between to two cells in the maze."
   [maze start end]
@@ -39,6 +42,7 @@
           (conj acc pos)
           (recur (conj acc pos) (step pos n)))))))
 
+
 (defn farthest-pos
   "Find the farthest position from a given position, using [0 0] if none is
   provided."
@@ -51,6 +55,7 @@
                   (for [[x row] (map-indexed vector dist)
                         [y v] (map-indexed vector row)]
                     [v [x y]])))))))
+
 
 (defn longest-path
   "Provide the path between the cells farthest apart in the maze."

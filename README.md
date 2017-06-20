@@ -261,7 +261,35 @@ There are a few additional utilities besides deriving solutions.
 
 ### Longest Path
 
-TBD
+Dijkstra's distances calculation can be used to find the position furthest from
+a given start point. If none is provided, it will assume the upper left-hand
+corner position.
+```clojure
+(d/farthest-pos maze)
+
+[2 20]
+```
+
+By running this algorithm twice, the second time with the output of the first
+run, you can determine the longest path in a maze. This can be useful if you are
+looking to determine start and end points. This function returns a path with
+all the positions.
+```clojure
+(d/longest-path maze)
+
+([6 20] [6 19] [7 19] [7 20] [7 21] [6 21] [5 21] [5 20] [5 19] [5 18] [6 18]
+ [7 18] [7 17] [6 17] [6 16] [7 16] [7 15] [6 15] [6 14] [7 14] [7 13] [6 13]
+ [5 13] [5 14] [5 15] [4 15] [4 16] [3 16] [2 16] [1 16] [1 15] [2 15] [2 14]
+ [2 13] [3 13] [3 14] [4 14] [4 13] [4 12] [4 11] [5 11] [5 12] [6 12] [7 12]
+ [7 11] [6 11] [6 10] [7 10] [7 9] [6 9] [6 8] [7 8] [7 7] [7 6] [7 5] [7 4]
+ [7 3] [7 2] [7 1] [7 0] [6 0] [5 0] [4 0] [3 0] [2 0] [2 1] [1 1] [1 0] [0 0]
+ [0 1] [0 2] [1 2] [1 3] [1 4] [1 5] [1 6] [1 7] [0 7] [0 8] [1 8] [1 9] [2 9]
+ [2 8] [2 7] [2 6] [3 6] [4 6] [4 5] [4 4] [5 4] [5 3] [4 3] [3 3] [3 2] [3 1]
+ [4 1] [5 1] [6 1] [6 2] [6 3] [6 4] [6 5] [5 5] [5 6] [5 7] [4 7] [4 8] [4 9]
+ [5 9] [5 10] [4 10] [3 10] [3 11] [3 12] [2 12] [1 12] [1 13] [0 13] [0 14]
+ [0 15][0 16] [0 17] [0 18] [1 18] [2 18] [2 19] [3 19] [3 20] [4 20] [4 21]
+ [3 21] [2 21] [1 21] [0 21] [0 20] [0 19] [1 19] [1 20] [2 20])
+```
 
 
 ### Braid
