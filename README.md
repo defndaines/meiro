@@ -285,6 +285,8 @@ You can remove all dead ends with the `braid` function.
 (m/braid maze)
 ```
 
+![Fully Braided Maze](img/fully-braided-maze.png)
+
 If you don't want to remove all dead ends, you can pass in a rate which will determine what percentage of the dead ends should be removed (randomly).
 ```clojure
 (def braided (m/braid maze 0.4))

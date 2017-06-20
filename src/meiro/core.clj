@@ -265,5 +265,5 @@
                            (remove #{neighbor} (rest positions))
                            (rest positions))]
            (recur (link acc pos neighbor) remaining))
-         (recur maze (rest positions)))
+         (recur acc (rest positions)))
        acc))))
