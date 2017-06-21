@@ -96,6 +96,13 @@ To print a delta (triangle) maze:
 
 ![Delta Maze](img/delta-maze.png)
 
+To print a maze with an inset:
+```clojure
+(png/render-inset (b/create (m/init 8 25)) 3)
+```
+
+![Inset Maze](img/inset-maze.png)
+
 
 ## Algorithms
 
