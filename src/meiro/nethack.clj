@@ -9,6 +9,8 @@
 (def ^:private cell-link ".")
 (def ^:private start-cell "@")
 (def ^:private end-cell "$")
+(def ^:private corridor "#")
+(def ^:private corridor-wall " ")
 
 
 (defn- top-level
@@ -20,15 +22,15 @@
       horizontal-wall)))
 
 
-(defn- cell-level
+(defn- cell-room-level
   "Render the cell level, i.e., where the 'inside' of the cell is displayed."
-  ([cell] (cell-level cell inside-cell))
+  ([cell] (cell-room-level cell inside-cell))
   ([cell inside]
    (concat inside
            (if (some #{:east} cell) cell-link verticle-wall))))
 
 
-(defn- bottom-level
+(defn- bottom-room-level
   "Render the bottom edge of a cell, or precisely the south and south-east
   edge."
   [cell]
@@ -37,13 +39,40 @@
     horizontal-wall))
 
 
-(defn render
-  "Render a maze in NetHack style. Uses the cell-fn if provided."
+(defn render-room
+  "Render a maze in NetHack style as if it was the interior of a room."
   ([maze]
    (apply str
           (top-level maze) \newline
           (mapcat
             (fn [row]
-              (concat verticle-wall (mapcat cell-level row) "\n"
-                      verticle-wall (mapcat bottom-level row) "\n"))
+              (concat verticle-wall (mapcat cell-room-level row) "\n"
+                      verticle-wall (mapcat bottom-room-level row) "\n"))
             maze))))
+
+
+(defn cell-corridor-level
+  "Render the cell level, i.e., where the 'inside of the cell is displayed."
+  [cell]
+  (concat corridor
+          (if (some #{:east} cell) corridor corridor-wall)))
+
+
+(defn bottom-corridor-level
+  "Render the bottom edge of a cell, or precisely the south and south-east
+  edge."
+  [cell]
+  (concat
+    (if (some #{:south} cell) corridor corridor-wall)
+    corridor-wall))
+
+
+(defn render-corridor
+  "Render a maze in NetHack style as if it was a series of corridors."
+  [maze]
+  (apply str
+         (mapcat
+           (fn [row]
+             (concat (mapcat cell-corridor-level row) "\n"
+                     (mapcat bottom-corridor-level row) "\n"))
+           maze)))
