@@ -136,12 +136,14 @@
 (defn in?
   "Is the position within the bounds of the grid."
   [grid pos]
-  (let [[row col] pos
-        max-row (dec (count grid))
-        max-col (dec (count (get grid row)))]
-    (and
-      (<= 0 row max-row)
-      (<= 0 col max-col))))
+  (if (seq pos)
+    (let [[row col] pos
+          max-row (dec (count grid))
+          max-col (dec (count (get grid row)))]
+      (and
+        (<= 0 row max-row)
+        (<= 0 col max-col)))
+    false))
 
 
 (spec/fdef neighbors
@@ -200,8 +202,6 @@
     [pos]))
 
 
-;; TODO This is different from the same named function defined in dijkstra.
-;;      May rethink.
 (spec/fdef empty-neighbors
   :args (spec/cat :maze ::maze :pos ::pos)
   :ret (spec/coll-of ::pos)

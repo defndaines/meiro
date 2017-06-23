@@ -43,21 +43,77 @@
 
 (deftest cell-west-test
   (testing "Pick up a cell to the west if available."
-    (is (nil? (#'meiro.weave/cell-west
-                [[[:north :south] [:north :south] [:start]]]
-                [0 2])))
+    (is (nil?
+          (cell-west
+            [[[:north :south] [:north :south] [:start]]]
+            [0 2])))
     (is (= [0 0]
-           (#'meiro.weave/cell-west
+           (cell-west
              [[[] [:north :south] [:start]]]
              [0 2])))
     (is (= [0 0]
-           (#'meiro.weave/cell-west
+           (cell-west
              [[[] [:north :south] [:north :south] [:north :south] [:start]]]
              [0 4])))
-    (is (nil? (#'meiro.weave/cell-west
-                [[[] [:north] [:north :south] [:north :south] [:start]]]
-                [0 4])))
+    (is (nil?
+          (cell-west
+            [[[] [:north] [:north :south] [:north :south] [:start]]]
+            [0 4])))
     (is (= [0 1]
-           (#'meiro.weave/cell-west
+           (cell-west
              [[[] [] [:north :south] [:north :south] [:start]]]
              [0 4])))))
+
+
+(deftest cell-east-test
+  (testing "Pick up a cell to the east if available."
+    (is (nil?
+          (cell-east
+            [[[:start] [:north :south] [:north :south]]]
+            [0 0])))
+    (is (= [0 3]
+           (cell-east
+             [[[:north :south] [:start] [:north :south] []]]
+             [0 1])))))
+
+
+(deftest cell-north-test
+  (testing "Pick up a cell to the north if available."
+    (is (nil?
+          (cell-north
+            [[[:east :west]] [[:east :west]] [[:start]]]
+            [2 0])))
+    (is (= [0 0]
+           (cell-north
+             [[[]] [[:east :west]] [[:start]]]
+             [2 0])))))
+
+
+(deftest cell-south-test
+  (testing "Pick up a cell to the south if available."
+    (is (nil?
+          (cell-south
+            [[[:start]] [[:east :west]] [[:east :west]]]
+            [0 0])))
+    (is (= [2 0]
+           (cell-south
+             [[[:start]] [[:east :west]] [[]]]
+             [0 0])))))
+
+
+(deftest neighbors-test
+  (testing "Weave cells are available as neighbors when appropriate."
+    (let [maze [[[] [] [] [] []]
+                [[] [] [:east :west] [] []]
+                [[] [:north :south] [] [:north :south] []]
+                [[] [] [:east :west] [] []]
+                [[] [] [] [] []]]]
+      (is (= [[0 2] [1 2] [3 2] [4 2] [2 3] [2 4] [2 0] [2 1]]
+             (neighbors maze [2 2]))))
+    (let [maze [[[] [] [:north] [] []]
+                [[] [] [:east :west] [] []]
+                [[:west] [:north :south] [] [:north :south] [:east]]
+                [[] [] [:east :west] [] []]
+                [[] [] [:south] [] []]]]
+      (is (= [[1 2] [3 2] [2 3] [2 1]]
+             (neighbors maze [2 2])))) ))

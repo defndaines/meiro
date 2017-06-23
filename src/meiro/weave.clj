@@ -30,23 +30,54 @@
           (lazy-seq (cells-to maze dir-fn (dir-fn pos))))))
 
 
-(defn cell-west
-  "Return a cell to the west if it matches under-path conditions."
-  [maze [row col]]
-  (when (north-south? (get-in maze [row (dec col)]))
-    (first
-      (take-while
-        (fn [pos]
-          (empty? (get-in maze pos)))
-        (drop-while
+(defn- weave-cell-fn
+  "Generate a function which which check for a weave candidate in a given
+  direction."
+  [corridor-fn dir-fn next-fn]
+  (fn
+    [maze pos]
+    (when (corridor-fn (get-in maze (next-fn pos)))
+      (first
+        (take-while
           (fn [pos]
-            (north-south? (get-in maze pos)))
-          (cells-to maze m/west [row (dec col)]))))))
+            (empty? (get-in maze pos)))
+          (drop-while
+            (fn [pos]
+              (corridor-fn (get-in maze pos)))
+            (cells-to maze dir-fn (next-fn pos))))))))
+
+
+(def cell-west
+  "Return a cell to the west if it matches weave conditions."
+  (weave-cell-fn north-south? m/west
+                 (fn [[row col]] [row (dec col)])))
+
+
+(def cell-east
+  "Return a cell to the east if it matches weave conditions."
+  (weave-cell-fn north-south? m/east
+                 (fn [[row col]] [row (inc col)])))
+
+
+(def cell-north
+  "Return a cell to the north if it matches weave conditions."
+  (weave-cell-fn east-west? m/north
+                 (fn [[row col]] [(dec row) col])))
+
+
+(def cell-south
+  "Return a cell to the south if it matches weave conditions."
+  (weave-cell-fn east-west? m/south
+                 (fn [[row col]] [(inc row) col])))
 
 
 (defn neighbors
   "Get all potential neighbors of a position in a given maze."
-  [maze [row col]]
+  [maze pos]
   (filter
     #(m/in? maze %)
-    #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]}))
+    (list
+      (cell-north maze pos) (m/north pos)
+      (m/south pos) (cell-south maze pos)
+      (m/east pos) (cell-east maze pos)
+      (cell-west maze pos) (m/west pos))))
