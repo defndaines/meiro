@@ -36,7 +36,9 @@
   [cell]
   (concat
     (if (some #{:south} cell) cell-link horizontal-wall)
-    horizontal-wall))
+    (if (some #{:south} cell)
+      (if (not-any? #{:east} cell) verticle-wall horizontal-wall)
+      horizontal-wall)))
 
 
 (defn render-room
