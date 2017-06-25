@@ -93,6 +93,22 @@
       (is (empty? (empty-neighbors maze [1 0])))
       (is (empty? (empty-neighbors maze [0 2]))))))
 
+
+(deftest link-with-test
+  (testing "Adjacent cells linked by opposite directions."
+    (let [above [2 2]
+          below [3 2]
+          link-fn (link-with direction)
+          m (link-fn (init 6 4) below above)]
+      (is (some (comp = :north) (get-in m below)))
+      (is (some (comp = :south) (get-in m above))))
+    (let [left [1 2]
+          right [1 3]
+          m (link (init 6 4) left right)]
+      (is (some (comp = :east) (get-in m left)))
+      (is (some (comp = :west) (get-in m right))))))
+
+
 (deftest link-test
   (testing "Adjacent cells linked by opposite directions."
     (let [above [2 2]
@@ -104,10 +120,8 @@
           right [1 3]
           m (link (init 6 4) left right)]
       (is (some (comp = :east) (get-in m left)))
-      (is (some (comp = :west) (get-in m right)))))
-  (testing "Non-adjacent cells do not link."
-    (let [m (init 5 5)]
-      (is (= m (link m [0 0] [1 1]))))))
+      (is (some (comp = :west) (get-in m right))))))
+
 
 (deftest dead-end-test
   (testing "No linked cell to the west"
@@ -121,6 +135,7 @@
                  [:west :east] [:north :west :east] [:north :west :east]
                  [:north :west]]]]
       (is (= 8 (count (dead-ends maze)))))))
+
 
 (deftest braid-test
   (let [maze (meiro.backtracker/create (init 15 20))]

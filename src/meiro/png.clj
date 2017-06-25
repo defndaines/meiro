@@ -241,7 +241,8 @@
      (inc (* cell-size (count (first maze))))
      (inc (* cell-size (count maze)))
      (fn [graphic x y cell]
-       (let [[x1 x2 x3 x4 y1 y2 y3 y4] (coordinates-with-inset x y cell-size inset)]
+       (let [[x1 x2 x3 x4 y1 y2 y3 y4]
+             (coordinates-with-inset x y cell-size inset)]
          (if (not-any? #{:north} cell)
            (draw-line graphic x2 y2 x3 y2)
            (do
@@ -259,6 +260,6 @@
              (draw-line graphic x3 y3 x4 y3)))
          (if (not-any? #{:south} cell)
            (draw-line graphic x2 y3 x3 y3)
-           (do 
+           (do
              (draw-line graphic x2 y3 x2 y4)
              (draw-line graphic x3 y3 x3 y4))))))))

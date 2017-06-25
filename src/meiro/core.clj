@@ -213,23 +213,25 @@
    (filter #(empty? (get-in maze %)) (neighbor-fn maze pos))))
 
 
+(defn link-with
+  "Create a link function which uses the provided direction-fn."
+  [direction-fn]
+  (fn [maze pos-1 pos-2]
+    (-> maze
+        (update-in pos-1 conj (direction-fn pos-1 pos-2))
+        (update-in pos-2 conj (direction-fn pos-2 pos-1)))))
+
+
 (spec/fdef link
   :args (spec/cat :maze ::maze :pos-1 ::pos :pos-2 ::pos)
   :ret ::maze
-  :fn #(if (adjacent? (-> % :args :pos-1) (-> % :args :pos-2))
-         (and
-           (not (empty?) (get-in (:ret %) (-> % :args :pos-1)))
-           (not (empty?) (get-in (:ret %) (-> % :args :pos-2))))))
+  :fn #(and
+         (not (empty?) (get-in (:ret %) (-> % :args :pos-1)))
+         (not (empty?) (get-in (:ret %) (-> % :args :pos-2)))))
 (defn link
   "Link two adjacent cells in a maze."
   ([maze pos-1 pos-2]
-   (if (and (adjacent? pos-1 pos-2) (in? maze pos-1) (in? maze pos-2))
-     (link maze direction pos-1 pos-2)
-     maze))
-  ([maze direction-fn pos-1 pos-2]
-   (-> maze
-       (update-in pos-1 conj (direction-fn pos-1 pos-2))
-       (update-in pos-2 conj (direction-fn pos-2 pos-1)))))
+   ((link-with direction) maze pos-1 pos-2)))
 
 
 (spec/fdef dead-ends

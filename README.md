@@ -74,7 +74,7 @@ To print a maze with masked cells:
 To print a circular (polar) maze:
 ```clojure
 (png/render-polar
-  (b/create (polar/init 10) [0 0] polar/neighbors polar/direction))
+  (b/create (polar/init 10) [0 0] polar/neighbors polar/link))
 ```
 
 ![Polar Maze](img/polar-maze.png)
@@ -82,7 +82,7 @@ To print a circular (polar) maze:
 To print a sigma (hex) maze:
 ```clojure
 (png/render-hex
-  (b/create (m/init 15 20) [7 9] hex/neighbors hex/direction))
+  (b/create (m/init 15 20) [7 9] hex/neighbors hex/link))
 ```
 
 ![Sigma Maze](img/sigma-maze.png)
@@ -91,7 +91,7 @@ To print a delta (triangle) maze:
 ```clojure
 (def grid (ascii/read-grid "test/meiro/triangle.txt"))
 (png/render-delta
-  (b/create grid [0 12] triangle/neighbors m/direction))
+  (b/create grid [0 12] triangle/neighbors m/link))
 ```
 
 ![Delta Maze](img/delta-maze.png)

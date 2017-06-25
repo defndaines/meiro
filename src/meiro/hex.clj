@@ -38,3 +38,8 @@
     (and (< row-1 row-2) (> col-1 col-2)) :southwest
     (and (> row-1 row-2) (< col-1 col-2)) :northeast
     (and (> row-1 row-2) (> col-1 col-2)) :northwest))
+
+
+(def link
+  "Link cells in a hex grid."
+  (m/link-with direction))

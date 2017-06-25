@@ -69,3 +69,8 @@
     (= col-2 (inc col-1)) :clockwise
     (zero? col-1) :counter-clockwise  ; wrap around
     (zero? col-2) :clockwise))  ; wrap around
+
+
+(def link
+  "Link cells in a polar grid."
+  (m/link-with direction))

@@ -70,7 +70,7 @@
   (testing "Cells link."
     (let [center [0 0]
           south [1 3]
-          maze (m/link (init 3) direction center south)]
+          maze (link (init 3) center south)]
       (is (= [south] (get-in maze center)))
       (is (= [:inward] (get-in maze south))))))
 
@@ -79,4 +79,5 @@
   (testing "Ensure all cells are linked."
     (is (every?
           #(not-any? empty? %)
-          (backtracker/create (init 10) [0 0] neighbors direction)))))
+          (backtracker/create
+            (init 10) [0 0] neighbors link)))))
