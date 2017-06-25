@@ -117,3 +117,42 @@
                 [[] [] [:south] [] []]]]
       (is (= [[1 2] [3 2] [2 3] [2 1]]
              (neighbors maze [2 2])))) ))
+
+
+(deftest positions-between-test
+  (testing "Enumerate all positions between two positions."
+    (is (= [[0 1] [0 2]]
+           (#'meiro.weave/positions-between [0 0] [0 3])))
+    (is (= [[0 1] [0 2]]
+           (#'meiro.weave/positions-between [0 3] [0 0])))
+    (is (= [[2 1] [3 1]]
+           (#'meiro.weave/positions-between [1 1] [4 1])))
+    (is (= [[2 1] [3 1]]
+           (#'meiro.weave/positions-between [4 1] [1 1])))
+    (is (= []
+           (#'meiro.weave/positions-between [4 1] [3 1])))
+    (is (= []
+           (#'meiro.weave/positions-between [4 1] [4 2])))))
+
+
+(deftest link-test
+  (testing "Adjacent cells link with opposite directions."
+    (let [above [2 2]
+          below [3 2]
+          m (link (m/init 6 4) below above)]
+      (is (some (comp = :north) (get-in m below)))
+      (is (some (comp = :south) (get-in m above))))
+    (let [left [1 2]
+          right [1 3]
+          m (link (m/init 6 4) left right)]
+      (is (some (comp = :east) (get-in m left)))
+      (is (some (comp = :west) (get-in m right)))))
+  (testing "Non-adjacent link by position and path between marked as under."
+    (let [base [[[] [:north :south] [:north :south] []]]
+          maze (link base [0 0] [0 3])]
+      (is (= [[0 0]]
+             (get-in maze [0 3])))
+      (is (some #{:under} (get-in maze [0 1])))
+      (is (some #{:under} (get-in maze [0 2])))
+      (is (= [[0 3]]
+             (get-in maze [0 0]))))))

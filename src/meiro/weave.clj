@@ -81,3 +81,30 @@
       (m/south pos) (cell-south maze pos)
       (m/east pos) (cell-east maze pos)
       (cell-west maze pos) (m/west pos))))
+
+
+(defn- positions-between
+  "Get the path between two positions, not including the provided positions."
+  [[row-1 col-1] [row-2 col-2]]
+  (if (= row-1 row-2)
+    (if (< col-1 col-2)
+      (map (fn [col] [row-1 col]) (range (inc col-1) col-2))
+      (map (fn [col] [row-1 col]) (range (inc col-2) col-1)))
+    (if (< row-1 row-2)
+      (map (fn [row] [row col-1]) (range (inc row-1) row-2))
+      (map (fn [row] [row col-1]) (range (inc row-2) row-1)))))
+
+
+(defn link
+  "Link two cells in a maze, including creating under passages to weave."
+  ([maze pos-1 pos-2]
+   (if (m/adjacent? pos-1 pos-2)
+     (-> maze
+         (update-in pos-1 conj (m/direction pos-1 pos-2))
+         (update-in pos-2 conj (m/direction pos-2 pos-1)))
+     (as-> maze $
+       (update-in $ pos-1 conj pos-2)
+       (update-in $ pos-2 conj pos-1)
+       (reduce
+         (fn [acc e] (update-in acc e conj :under))
+         $ (positions-between pos-1 pos-2))))))
