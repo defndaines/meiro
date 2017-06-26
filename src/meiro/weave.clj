@@ -9,13 +9,13 @@
   (:require [meiro.core :as m]))
 
 
-(defn- north-south?
+(defn north-south?
   "Check if a cell is a north-south corridor."
   [cell]
   (= #{:north :south} (into #{} cell)))
 
 
-(defn- east-west?
+(defn east-west?
   "Check if a cell is an east-west corridor."
   [cell]
   (= #{:east :west} (into #{} cell)))
@@ -108,3 +108,16 @@
        (reduce
          (fn [acc e] (update-in acc e conj :under))
          $ (positions-between pos-1 pos-2))))))
+
+
+(defn direction
+  "Get the direction from pos-1 to pos-2, even if not adjacent.
+  Assumes [0 0] is the north-west corner."
+  [[row-1 col-1] [row-2 col-2]]
+  (if (= row-1 row-2)
+    (if (> col-1 col-2)
+      :west
+      :east)
+    (if (> row-1 row-2)
+      :north
+      :south)))

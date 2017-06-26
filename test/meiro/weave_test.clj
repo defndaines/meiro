@@ -7,24 +7,24 @@
 
 (deftest east-west-test
   (testing "Check for east-west corridors."
-    (is (#'meiro.weave/east-west? [:east :west]))
-    (is (#'meiro.weave/east-west? [:west :east]))
-    (is (not (#'meiro.weave/east-west? [:east :west :south])))
-    (is (not (#'meiro.weave/east-west? [:east :west :north])))
-    (is (not (#'meiro.weave/east-west? [:south :north])))
-    (is (not (#'meiro.weave/east-west? [:east])))
-    (is (not (#'meiro.weave/east-west? [:west])))))
+    (is (east-west? [:east :west]))
+    (is (east-west? [:west :east]))
+    (is (not (east-west? [:east :west :south])))
+    (is (not (east-west? [:east :west :north])))
+    (is (not (east-west? [:south :north])))
+    (is (not (east-west? [:east])))
+    (is (not (east-west? [:west])))))
 
 
 (deftest north-south-test
   (testing "Check for north-south corridors."
-    (is (#'meiro.weave/north-south? [:north :south]))
-    (is (#'meiro.weave/north-south? [:south :north]))
-    (is (not (#'meiro.weave/north-south? [:north :south :east])))
-    (is (not (#'meiro.weave/north-south? [:north :south :west])))
-    (is (not (#'meiro.weave/north-south? [:east :west])))
-    (is (not (#'meiro.weave/north-south? [:north])))
-    (is (not (#'meiro.weave/north-south? [:south])))))
+    (is (north-south? [:north :south]))
+    (is (north-south? [:south :north]))
+    (is (not (north-south? [:north :south :east])))
+    (is (not (north-south? [:north :south :west])))
+    (is (not (north-south? [:east :west])))
+    (is (not (north-south? [:north])))
+    (is (not (north-south? [:south])))))
 
 
 (deftest cells-to-test

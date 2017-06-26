@@ -370,6 +370,26 @@ If you don't want to remove all dead ends, you can pass in a rate which will det
 ![Braided Maze](img/braided-maze.png)
 
 
+### Weave
+
+A weave maze can connect to non-adjacent cells provided certain conditions are
+met.
+- Passages cannot dead end while underneath another cell.
+- Passages must be perpendicular, one north-south, one east-west.
+- Passages cannot change direction while traveling under other passages.
+
+A weave maze will need to be rendered using "inset", otherwise it won't be
+possible to visually identify the under passages.
+
+```clojure
+(require '[meiro.weave :as weave])
+(def maze (b/create (m/init 8 25) [0 0] weave/neighbors weave/link))
+(png/render-inset maze 2)
+```
+
+![Weave Maze](img/weave-maze.png)
+
+
 ## License
 
 Copyright © 2017 Michael S. Daines

@@ -1,5 +1,6 @@
 (ns meiro.png
   "Generate a PNG image of a maze."
+  (:require [meiro.weave :as weave])
   (:import (java.awt Color Graphics2D)
            (java.awt.geom Line2D$Double Rectangle2D$Double
                           Arc2D Arc2D$Double Ellipse2D$Double)
@@ -232,8 +233,45 @@
      y1 (+ y1 inset) (- y4 inset) y4]))
 
 
+(defn- open?
+  "Does the given cell link to a cell to the north, either directly or
+  by passing underneath."
+  [dir x y cell]
+  (or (some #{dir} cell)
+      (some #{dir} (map #(weave/direction [y x] %)
+                           (filter vector? cell)))))
+
+(defn- link-north
+  "Draw inset link to the cell to the north."
+  [graphic [_ x2 x3 _ y1 y2 _ _]]
+  (draw-line graphic x2 y1 x2 y2)
+  (draw-line graphic x3 y1 x3 y2))
+
+
+(defn- link-south
+  "Draw inset link to the cell to the south."
+  [graphic [_ x2 x3 _ _ _ y3 y4]]
+  (draw-line graphic x2 y3 x2 y4)
+  (draw-line graphic x3 y3 x3 y4))
+
+
+(defn- link-east
+  "Draw inset link to the cell to the east."
+  [graphic [_ _ x3 x4 _ y2 y3 _]]
+  (draw-line graphic x3 y2 x4 y2)
+  (draw-line graphic x3 y3 x4 y3))
+
+
+(defn- link-west
+  "Draw inset link to the cell to the west"
+  [graphic [x1 x2 _ _ _ y2 y3 _]]
+  (draw-line graphic x1 y2 x2 y2)
+  (draw-line graphic x1 y3 x2 y3))
+
+
 (defn render-inset
-  "Render a maze to PNG with insets."
+  "Render a maze to PNG with insets.
+  Inset mazes will handle weave mazes by default."
   ([maze inset] (render-inset maze default-file inset))
   ([maze ^String file-name inset]
    (render-cells
@@ -241,25 +279,25 @@
      (inc (* cell-size (count (first maze))))
      (inc (* cell-size (count maze)))
      (fn [graphic x y cell]
-       (let [[x1 x2 x3 x4 y1 y2 y3 y4]
+       (let [[x1 x2 x3 x4 y1 y2 y3 y4 :as coords]
              (coordinates-with-inset x y cell-size inset)]
-         (if (not-any? #{:north} cell)
-           (draw-line graphic x2 y2 x3 y2)
-           (do
-             (draw-line graphic x2 y1 x2 y2)
-             (draw-line graphic x3 y1 x3 y2)))
-         (if (not-any? #{:west} cell)
-           (draw-line graphic x2 y2 x2 y3)
-           (do
-             (draw-line graphic x1 y2 x2 y2)
-             (draw-line graphic x1 y3 x2 y3)))
-         (if (not-any? #{:east} cell)
-           (draw-line graphic x3 y2 x3 y3)
-           (do
-             (draw-line graphic x3 y2 x4 y2)
-             (draw-line graphic x3 y3 x4 y3)))
-         (if (not-any? #{:south} cell)
-           (draw-line graphic x2 y3 x3 y3)
-           (do
-             (draw-line graphic x2 y3 x2 y4)
-             (draw-line graphic x3 y3 x3 y4))))))))
+         (if (open? :north x y cell)
+           (link-north graphic coords)
+           (draw-line graphic x2 y2 x3 y2))
+         (if (open? :west x y cell)
+           (link-west graphic coords)
+           (draw-line graphic x2 y2 x2 y3))
+         (if (open? :east x y cell)
+           (link-east graphic coords)
+           (draw-line graphic x3 y2 x3 y3))
+         (if (open? :south x y cell)
+           (link-south graphic coords)
+           (draw-line graphic x2 y3 x3 y3))
+         (if (some #{:under} cell)
+           (if (some #{:north} cell)
+             (do
+               (link-east graphic coords)
+               (link-west graphic coords))
+             (do
+               (link-north graphic coords)
+               (link-south graphic coords)))))))))
