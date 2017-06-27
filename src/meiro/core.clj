@@ -243,7 +243,7 @@
   [maze]
   (for [[y row] (map-indexed vector maze)
         [x cell] (map-indexed vector row)
-        :when (= 1 (count cell))]
+        :when (and (= 1 (count cell)) (not= [:mask] cell))]
     [y x]))
 
 
@@ -267,5 +267,38 @@
                            (remove #{neighbor} (rest positions))
                            (rest positions))]
            (recur (link acc pos neighbor) remaining))
+         (recur acc (rest positions)))
+       acc))))
+
+
+(defn- unlink
+  "Unlink two cells in a maze. Will replace dead ends with a mask to facilitate
+  rendering."
+  [maze pos-1 pos-2]
+  (let [cell (get-in maze pos-1)]
+    (assoc-in
+      maze pos-1
+      (if (= 1 (count cell))
+        [:mask]
+        (remove #{(direction pos-1 pos-2)} (get-in maze pos-1))))))
+
+
+(defn cull
+  "Cull dead ends from a maze by unlinking them.
+  This results in a sparse maze. A rate can be passed in to indicate a
+  percentage of dead ends to unlink, otherwise all dead end will be unlinked."
+  ([maze] (cull maze 1.0))
+  ([maze rate]
+   (loop [acc maze
+          positions (dead-ends maze)]
+     (if (seq positions)
+       (if (> rate (rand))
+         (let [pos (first positions)
+               neighbor (pos-to (first (get-in maze pos)) pos)]
+           (recur
+             (-> acc
+                 (unlink pos neighbor)
+                 (unlink neighbor pos))
+             (rest positions)))
          (recur acc (rest positions)))
        acc))))

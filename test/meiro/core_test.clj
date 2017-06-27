@@ -146,3 +146,13 @@
     (testing "0.0 rate doesn't braid."
       (is (= (count (dead-ends maze))
              (count (dead-ends (braid maze 0.0))))))))
+
+
+(deftest cull-test
+  (let [maze (meiro.hunt-and-kill/create (init 15 20))]
+    (testing "Cull dead ends."
+      (is (> (count (dead-ends maze))
+             (count (dead-ends (cull maze))))))
+    (testing "0.0 rate doesn't cull."
+      (is (= (count (dead-ends maze))
+             (count (dead-ends (cull maze 0.0))))))))

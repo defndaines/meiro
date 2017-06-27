@@ -361,13 +361,29 @@ You can remove all dead ends with the `braid` function.
 
 ![Fully Braided Maze](img/fully-braided-maze.png)
 
-If you don't want to remove all dead ends, you can pass in a rate which will determine what percentage of the dead ends should be removed (randomly).
+If you don't want to remove all dead ends, you can pass in a rate which will
+determine what percentage of the dead ends should be removed (randomly).
 ```clojure
 (def braided (m/braid maze 0.4))
 (png/render braided)
 ```
 
 ![Braided Maze](img/braided-maze.png)
+
+
+### Cull Dead Ends
+
+Whereas braiding eliminates dead ends by connecting them to neighbors, it is
+also possible to `cull` dead ends, creating a sparse maze. A maze can be culled
+multiple times to remove more ends. Culled cells will be marked as masked, so
+you will need to use a rendering function which handles this sensibly.
+Culled mazes will remain perfect mazes.
+```clojure
+(def maze (hk/create (m/init 8 22)))
+(png/render-inset (m/cull (m/cull maze 0.6) 0.6) 3)
+```
+
+![Culled Maze](img/culled-maze.png)
 
 
 ### Weave
