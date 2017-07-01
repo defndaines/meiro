@@ -239,6 +239,25 @@ Which will produce a maze like:
 ![Recursive Backtracker Maze](img/backtracker-maze.png)
 
 
+### Kruskal's
+
+Kruskal's algorithm is focused on generating a minimum spanning tree. I decided
+to use a more graph-centric approach, so the `create` function returns a
+collection of edges. At this time, this requires that it be converted to a
+grid-style maze in order to render it. It also uses `x, y` coordinates, so is
+"backward" from the other algorithms to this point.
+```clojure
+(require '[meiro.kruskal :as k])
+(def edges (k/create 25 8))
+(def maze (k/edges-to-grid edges 25 8))
+(png/render maze)
+```
+
+Which will produce a maze like:
+
+![Kruskal's Maze](img/kruskal-maze.png)
+
+
 ## Solutions
 
 To calculate the distance from the north-east cell to each cell using Dijkstra's

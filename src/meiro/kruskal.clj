@@ -48,23 +48,24 @@
 
 (defn create
   "Create a maze with the provided dimensions."
-  [width height]
-  (loop [forests (init-forests width height)
-         edges (shuffle (all-edges width height))]
-    (if (> (count forests) 1)
-      (let [[pos-1 pos-2 :as edge] (first edges)
-            f-1 (find-forest forests pos-1)
-            f-2 (find-forest forests pos-2)]
-        (recur
-          (if (= f-1 f-2)
-            forests
-            (let [merged (merge-forests f-1 f-2 edge)]
-              (-> forests
-                  (disj f-1)
-                  (disj f-2)
-                  (conj merged))))
-          (rest edges)))
-      (:edges (first forests)))))
+  ([width height] (create width height (init-forests width height)))
+  ([width height forests]
+   (loop [forests forests
+          edges (shuffle (all-edges width height))]
+     (if (> (count forests) 1)
+       (let [[pos-1 pos-2 :as edge] (first edges)
+             f-1 (find-forest forests pos-1)
+             f-2 (find-forest forests pos-2)]
+         (recur
+           (if (= f-1 f-2)
+             forests
+             (let [merged (merge-forests f-1 f-2 edge)]
+               (-> forests
+                   (disj f-1)
+                   (disj f-2)
+                   (conj merged))))
+           (rest edges)))
+       (:edges (first forests))))))
 
 
 (defn edges-to-grid

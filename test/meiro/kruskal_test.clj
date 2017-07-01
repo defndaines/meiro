@@ -40,4 +40,8 @@
 (deftest create-test
   (testing "Creating a maze using Kruskal's Algorithm."
     (is (= (dec (* 8 12))
-           (count (create 8 12))))))
+           (count (create 8 12)))))
+  (testing "Ensure all cells are linked."
+    (is (every?
+          #(not-any? empty? %)
+          (edges-to-grid (create 10 12) 10 12)))))
