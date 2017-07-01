@@ -5,7 +5,8 @@
   maze.
   This algorithm is not designed to work with the other approaches.
   Instead of using a row-column arrangement, this algorithm uses x y
-  coordinates aligned with the needs of a renderer.")
+  coordinates aligned with the needs of a renderer."
+  (:require [meiro.core :as m]))
 
 
 (defn- all-edges
@@ -64,3 +65,14 @@
                   (conj merged))))
           (rest edges)))
       (:edges (first forests)))))
+
+
+(defn edges-to-grid
+  "Convert a set of edges to the standard maze format used in the png
+  functions."
+  [edges width height]
+  (reduce
+    (fn [maze [[x y] [x' y']]]
+      (m/link maze [y x] [y' x']))
+    (m/init height width)
+    edges))
