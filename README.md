@@ -424,6 +424,20 @@ possible to visually identify the under passages.
 
 ![Weave Maze](img/weave-maze.png)
 
+Kruskal's is set up to allow weave to be injected into a maze. This is done by
+pre-seeding the algorithm with cells already combined, and then letting the maze
+build around it.
+
+```clojure
+(require '[meiro.kruskal :as k])
+(def forests (k/init-forests 25 8))
+(def seeded (reduce k/weave forests
+  (for [x (range 1 25 3) y (range 1 8 3)] [x y])))
+(def edges (k/create 25 8 seeded))
+(def maze (k/edges-to-grid edges 25 8))
+(png/render-inset maze 2)
+```
+
 
 ## License
 

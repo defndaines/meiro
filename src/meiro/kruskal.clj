@@ -6,7 +6,8 @@
   This algorithm is not designed to work with the other approaches.
   Instead of using a row-column arrangement, this algorithm uses x y
   coordinates aligned with the needs of a renderer."
-  (:require [meiro.core :as m]))
+  (:require [meiro.core :as m]
+            [meiro.weave :as w]))
 
 
 (defn- all-edges
@@ -28,7 +29,7 @@
     (for [x (range width) y (range height)] [x y])))
 
 
-(defn- find-forest
+(defn find-forest
   "Get the forest containing the position."
   [forests pos]
   (first
@@ -74,12 +75,12 @@
   [edges width height]
   (reduce
     (fn [maze [[x y] [x' y']]]
-      (m/link maze [y x] [y' x']))
+      (w/link maze [y x] [y' x']))
     (m/init height width)
     edges))
 
 
-(defn- eligible-to-weave?
+(defn- can-weave?
   "Are the given forests eligible to weave?"
   [north south east west middle dir]
   (not
@@ -95,7 +96,7 @@
 
 
 (defn- disj-all
-  "Remove the forests."
+  "Convenience function for removing multiple forests."
   [forests & sets]
   (reduce
     (fn [acc e] (disj acc e))
@@ -120,7 +121,7 @@
          east (find-forest forests e-pos)
          w-pos [(dec x) y]
          west (find-forest forests w-pos)]
-     (if (eligible-to-weave? north south east west middle dir)
+     (if (can-weave? north south east west middle dir)
        (if (= dir :horizontal)
          (let [vertical (merge-forests
                           (merge-forests north middle [n-pos pos])
