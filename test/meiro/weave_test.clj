@@ -122,17 +122,17 @@
 (deftest positions-between-test
   (testing "Enumerate all positions between two positions."
     (is (= [[0 1] [0 2]]
-           (#'meiro.weave/positions-between [0 0] [0 3])))
+           (positions-between [0 0] [0 3])))
     (is (= [[0 1] [0 2]]
-           (#'meiro.weave/positions-between [0 3] [0 0])))
+           (positions-between [0 3] [0 0])))
     (is (= [[2 1] [3 1]]
-           (#'meiro.weave/positions-between [1 1] [4 1])))
+           (positions-between [1 1] [4 1])))
     (is (= [[2 1] [3 1]]
-           (#'meiro.weave/positions-between [4 1] [1 1])))
+           (positions-between [4 1] [1 1])))
     (is (= []
-           (#'meiro.weave/positions-between [4 1] [3 1])))
+           (positions-between [4 1] [3 1])))
     (is (= []
-           (#'meiro.weave/positions-between [4 1] [4 2])))))
+           (positions-between [4 1] [4 2])))))
 
 
 (deftest link-test

@@ -47,12 +47,54 @@
      :edges (concat es-1 es-2 [edge])}))
 
 
+(defn- partition-edges
+  "Partition non-adjacent edges from a weave."
+  [non-adj]
+  (reduce
+    (fn [acc [pos-1 pos-2]]
+      (concat
+        acc
+        (partition
+          2 1
+          (concat [pos-1]
+                  (w/positions-between pos-1 pos-2)
+                  [pos-2]))))
+    [] non-adj))
+
+
+(defn- weave-edges
+  "Get all the edges associated with a weave from a collection of forests."
+  [forests]
+  (partition-edges
+    (reduce
+      (fn [acc e]
+        (let [es (:edges e)]
+          (concat
+            acc
+            (filter (fn [[a b]] (not (m/adjacent? a b))) es))))
+      [] forests)))
+
+
+(defn- rm-weave-edges
+  "Remove non-adjacent edges to prevent invalid links against a weave."
+  [edges weave-edges]
+  (reduce
+    (fn [acc e]
+      (if (some #{e} weave-edges)
+        acc
+        (conj acc e)))
+    [] edges))
+
+
 (defn create
   "Create a maze with the provided dimensions."
   ([width height] (create width height (init-forests width height)))
   ([width height forests]
    (loop [forests forests
-          edges (shuffle (all-edges width height))]
+          edges (shuffle
+                  (rm-weave-edges
+                    (all-edges width height)
+                    (weave-edges forests)))]
      (if (> (count forests) 1)
        (let [[pos-1 pos-2 :as edge] (first edges)
              f-1 (find-forest forests pos-1)

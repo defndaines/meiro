@@ -432,11 +432,13 @@ build around it.
 (require '[meiro.kruskal :as k])
 (def forests (k/init-forests 25 8))
 (def seeded (reduce k/weave forests
-  (for [x (range 1 25 3) y (range 1 8 3)] [x y])))
+  (for [x (range 1 25 2) y (range 1 8 2)] [x y])))
 (def edges (k/create 25 8 seeded))
 (def maze (k/edges-to-grid edges 25 8))
 (png/render-inset maze 2)
 ```
+
+![Kruskal's Weave Maze](img/kruskal-weave-maze.png)
 
 
 ## License

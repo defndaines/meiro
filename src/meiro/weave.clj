@@ -83,7 +83,7 @@
       (cell-west maze pos) (m/west pos))))
 
 
-(defn- positions-between
+(defn positions-between
   "Get the path between two positions, not including the provided positions."
   [[row-1 col-1] [row-2 col-2]]
   (if (= row-1 row-2)

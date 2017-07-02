@@ -37,6 +37,36 @@
              [[2 4] [2 5]])))))
 
 
+(deftest weave-edges-test
+  (testing "Able to identify non-adjacent edges in forests."
+    (let [forests #{{:nodes #{[4 3]} :edges []} {:nodes #{[4 4]} :edges []}
+                    {:nodes #{[2 3]}:edges []} {:nodes #{[2 4]} :edges []}
+                    {:nodes #{[2 0]} :edges []} {:nodes #{[0 0]} :edges []}
+                    {:nodes #{[1 0] [1 2]} :edges [[[1 0] [1 2]]]}
+                    {:nodes #{[1 4]} :edges []} {:nodes #{[4 2]} :edges []}
+                    {:nodes #{[0 2]} :edges []}
+                    {:nodes #{[1 1] [4 1] [3 1] [2 1] [0 1]}
+                     :edges [[[0 1] [1 1]] [[1 1] [2 1]]
+                             [[2 1] [3 1]] [[3 1] [4 1]]]}
+                    {:nodes #{[3 0] [3 2]} :edges [[[3 0] [3 2]]]}
+                    {:nodes #{[0 3]} :edges []} {:nodes #{[2 2]} :edges []}
+                    {:nodes #{[1 3]} :edges []} {:nodes #{[3 3]} :edges []}
+                    {:nodes #{[3 4]} :edges []} {:nodes #{[4 0]} :edges []}
+                    {:nodes #{[0 4]} :edges []}}]
+      (is (= [[[1 0] [1 1]] [[1 1] [1 2]] [[3 0] [3 1]] [[3 1] [3 2]]]
+             (#'meiro.kruskal/weave-edges forests))))))
+
+
+(deftest rm-weave-edges-test
+  (testing "Remove weave edges for collection of edges."
+    (let [weave-edges [[[1 0] [1 1]] [[1 1] [1 2]] [[3 0] [3 1]] [[3 1] [3 2]]]
+          all (#'meiro.kruskal/all-edges 5 5)
+          without (#'meiro.kruskal/rm-weave-edges all weave-edges)]
+      (is (every?
+            (fn [e] (not-any? #{e} without))
+            weave-edges)))))
+
+
 (deftest create-test
   (testing "Creating a maze using Kruskal's Algorithm."
     (is (= (dec (* 8 12))
