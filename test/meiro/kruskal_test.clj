@@ -14,9 +14,9 @@
 (deftest init-forests-test
   (testing "Forest initialization for a grid."
     (is (= (* 5 4)
-           (count (#'meiro.kruskal/init-forests 5 4))))
+           (count (init-forests 5 4))))
     (is (= (* 6 15)
-           (count (#'meiro.kruskal/init-forests 6 15))))))
+           (count (init-forests 6 15))))))
 
 
 (deftest find-forest-test
@@ -45,3 +45,33 @@
     (is (every?
           #(not-any? empty? %)
           (edges-to-grid (create 10 12) 10 12)))))
+
+
+(deftest weave-test
+  (let [forests (init-forests 3 3)]
+    (testing "Can add weaves to forests for a Kruskal's maze."
+      (is (= [[[0 1] [2 1]]]
+             (-> forests
+                 (weave [1 1] :horizontal)
+                 (#'meiro.kruskal/find-forest [0 1])
+                 :edges)))
+      (is (= [[[1 0] [1 1]] [[1 1] [1 2]]]
+             (-> forests
+                 (weave [1 1] :horizontal)
+                 (#'meiro.kruskal/find-forest [1 1])
+                 :edges)))
+      (is (= [[[0 1] [1 1]] [[1 1] [2 1]]]
+             (-> forests
+                 (weave [1 1] :vertical)
+                 (#'meiro.kruskal/find-forest [1 1])
+                 :edges)))
+      (is (= [[[1 0] [1 2]]]
+             (-> forests
+                 (weave [1 1] :vertical)
+                 (#'meiro.kruskal/find-forest [1 0])
+                 :edges))))
+    (testing "Invalid requests return original forests."
+      (is (= forests
+             (weave forests [0 0])))
+      (is (= forests
+             (weave forests [0 1]))))))

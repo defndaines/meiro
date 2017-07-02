@@ -19,7 +19,7 @@
       [[x y] [x (inc y)]])))
 
 
-(defn- init-forests
+(defn init-forests
   "Get all the nodes in a grid and put them into forest maps."
   [width height]
   (reduce
@@ -69,7 +69,7 @@
 
 
 (defn edges-to-grid
-  "Convert a set of edges to the standard maze format used in the png
+  "Convert a set of edges to the standard maze format used in the PNG
   functions."
   [edges width height]
   (reduce
@@ -77,3 +77,69 @@
       (m/link maze [y x] [y' x']))
     (m/init height width)
     edges))
+
+
+(defn- eligible-to-weave?
+  "Are the given forests eligible to weave?"
+  [north south east west middle dir]
+  (not
+    (or
+      (some nil? [north south east west])
+      (= east north)
+      (= east south)
+      (= west north)
+      (= west south)
+      (if (= dir :vertical)
+        (or (= middle east) (= middle west))
+        (or (= middle north) (= middle south))))))
+
+
+(defn- disj-all
+  "Remove the forests."
+  [forests & sets]
+  (reduce
+    (fn [acc e] (disj acc e))
+    forests
+    sets))
+
+
+(defn weave
+  "Add a weave to the forests centered on the provided `pos`.
+  A direction can also be passed, either `:horizontal` or `:vertical`.
+  If :horizontal is indicated, the weave will pass under horizontally.
+  If the forests already have edges which would violate the requested weave,
+  the original forests will be return unchanged."
+  ([forests pos] (weave forests pos :vertical))
+  ([forests [x y :as pos] dir]
+   (let [middle (find-forest forests pos)
+         n-pos [x (dec y)]
+         north (find-forest forests n-pos)
+         s-pos [x (inc y)]
+         south (find-forest forests s-pos)
+         e-pos [(inc x) y]
+         east (find-forest forests e-pos)
+         w-pos [(dec x) y]
+         west (find-forest forests w-pos)]
+     (if (eligible-to-weave? north south east west middle dir)
+       (if (= dir :horizontal)
+         (let [vertical (merge-forests
+                          (merge-forests north middle [n-pos pos])
+                          south [pos s-pos])
+               horizontal (merge-forests east west [w-pos e-pos])]
+           (-> forests
+               (disj-all north south east west middle)
+               (conj vertical)
+               (conj horizontal)))
+         ; (= dir :vertical)
+         (let [horizontal (merge-forests
+                            (merge-forests west middle [w-pos pos])
+                            east [pos e-pos])
+               vertical (merge-forests north south [n-pos s-pos])]
+           (-> forests
+               (disj-all north south east west middle)
+               (conj horizontal)
+               (conj vertical))))
+       ; ineligible
+       forests))))
+
+;; TODO Keep height and width in forests map
