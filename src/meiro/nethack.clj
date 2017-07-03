@@ -72,7 +72,7 @@
 (defn render-corridor
   "Render a maze in NetHack style as if it was a series of corridors."
   [maze]
-  (apply str
+  (clojure.string/join
          (mapcat
            (fn [row]
              (concat (mapcat cell-corridor-level row) "\n"

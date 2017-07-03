@@ -12,13 +12,13 @@
 (defn north-south?
   "Check if a cell is a north-south corridor."
   [cell]
-  (= #{:north :south} (into #{} cell)))
+  (= #{:north :south} (set cell)))
 
 
 (defn east-west?
   "Check if a cell is an east-west corridor."
   [cell]
-  (= #{:east :west} (into #{} cell)))
+  (= #{:east :west} (set cell)))
 
 
 (defn- cells-to
