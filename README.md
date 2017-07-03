@@ -258,6 +258,24 @@ Which will produce a maze like:
 ![Kruskal's Maze](img/kruskal-maze.png)
 
 
+### Prim's
+
+Prim's algorithm generates a minimum spanning tree by starting with a position
+and adding the "cheapest" edge available. Weights are assigned randomly to
+ensure a less biased maze. Like Kruskal's, the approach is graph-centric and
+`create` returns a collection of edges.
+```clojure
+(require '[meiro.prim :as prim])
+(def edges (prim/create 25 8))
+(def maze (graph/edges-to-grid edges 25 8))
+(png/render maze)
+```
+
+Which will produce a maze like:
+
+![Prim's Maze](img/prim-maze.png)
+
+
 ## Solutions
 
 To calculate the distance from the north-east cell to each cell using Dijkstra's
