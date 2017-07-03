@@ -7,44 +7,8 @@
   Instead of using a row-column arrangement, this algorithm uses x y
   coordinates aligned with the needs of a renderer."
   (:require [meiro.core :as m]
+            [meiro.graph :as graph]
             [meiro.weave :as w]))
-
-
-(defn- all-edges
-  "Get all edges in a grid."
-  [width height]
-  (concat
-    (for [x (range (dec width)) y (range height)]
-      [[x y] [(inc x) y]])
-    (for [x (range width) y (range (dec height))]
-      [[x y] [x (inc y)]])))
-
-
-(defn init-forests
-  "Get all the nodes in a grid and put them into forest maps."
-  [width height]
-  (reduce
-    (fn [acc e] (conj acc {:nodes #{e} :edges []}))
-    #{}
-    (for [x (range width) y (range height)] [x y])))
-
-
-(defn find-forest
-  "Get the forest containing the position."
-  [forests pos]
-  (first
-    (filter
-      (fn [f] (contains? (:nodes f) pos))
-      forests)))
-
-
-(defn- merge-forests
-  "Merge two forests into forest set."
-  [f-1 f-2 edge]
-  (let [{ns-1 :nodes es-1 :edges} f-1
-        {ns-2 :nodes es-2 :edges} f-2]
-    {:nodes (clojure.set/union ns-1 ns-2)
-     :edges (concat es-1 es-2 [edge])}))
 
 
 (defn- partition-edges
@@ -88,24 +52,23 @@
 
 (defn create
   "Create a maze with the provided dimensions."
-  ([width height] (create width height (init-forests width height)))
+  ([width height] (create width height (graph/init-forests width height)))
   ([width height forests]
    (loop [forests forests
           edges (shuffle
                   (rm-weave-edges
-                    (all-edges width height)
+                    (graph/all-edges width height)
                     (weave-edges forests)))]
      (if (> (count forests) 1)
        (let [[pos-1 pos-2 :as edge] (first edges)
-             f-1 (find-forest forests pos-1)
-             f-2 (find-forest forests pos-2)]
+             f-1 (graph/find-forest forests pos-1)
+             f-2 (graph/find-forest forests pos-2)]
          (recur
            (if (= f-1 f-2)
              forests
-             (let [merged (merge-forests f-1 f-2 edge)]
+             (let [merged (graph/merge-forests f-1 f-2 edge)]
                (-> forests
-                   (disj f-1)
-                   (disj f-2)
+                   (disj f-1 f-2)
                    (conj merged))))
            (rest edges)))
        (:edges (first forests))))))
@@ -137,15 +100,6 @@
         (or (= middle north) (= middle south))))))
 
 
-(defn- disj-all
-  "Convenience function for removing multiple forests."
-  [forests & sets]
-  (reduce
-    (fn [acc e] (disj acc e))
-    forests
-    sets))
-
-
 (defn weave
   "Add a weave to the forests centered on the provided `pos`.
   A direction can also be passed, either `:horizontal` or `:vertical`.
@@ -154,32 +108,32 @@
   the original forests will be return unchanged."
   ([forests pos] (weave forests pos :vertical))
   ([forests [x y :as pos] dir]
-   (let [middle (find-forest forests pos)
+   (let [middle (graph/find-forest forests pos)
          n-pos [x (dec y)]
-         north (find-forest forests n-pos)
+         north (graph/find-forest forests n-pos)
          s-pos [x (inc y)]
-         south (find-forest forests s-pos)
+         south (graph/find-forest forests s-pos)
          e-pos [(inc x) y]
-         east (find-forest forests e-pos)
+         east (graph/find-forest forests e-pos)
          w-pos [(dec x) y]
-         west (find-forest forests w-pos)]
+         west (graph/find-forest forests w-pos)]
      (if (can-weave? north south east west middle dir)
        (if (= dir :horizontal)
-         (let [vertical (merge-forests
-                          (merge-forests north middle [n-pos pos])
+         (let [vertical (graph/merge-forests
+                          (graph/merge-forests north middle [n-pos pos])
                           south [pos s-pos])
-               horizontal (merge-forests east west [w-pos e-pos])]
+               horizontal (graph/merge-forests east west [w-pos e-pos])]
            (-> forests
-               (disj-all north south east west middle)
+               (disj north south east west middle)
                (conj vertical)
                (conj horizontal)))
          ; (= dir :vertical)
-         (let [horizontal (merge-forests
-                            (merge-forests west middle [w-pos pos])
+         (let [horizontal (graph/merge-forests
+                            (graph/merge-forests west middle [w-pos pos])
                             east [pos e-pos])
-               vertical (merge-forests north south [n-pos s-pos])]
+               vertical (graph/merge-forests north south [n-pos s-pos])]
            (-> forests
-               (disj-all north south east west middle)
+               (disj north south east west middle)
                (conj horizontal)
                (conj vertical))))
        ; ineligible
