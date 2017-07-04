@@ -28,7 +28,7 @@
   (reduce
     (fn [[q es] e]
       (let [remaining (disj es e)]
-        (if (= es remaining)  ; edge is used or invalid
+        (if (= es remaining)  ; edge was already used or is invalid
           [q es]
           [(do
              (.offer q [(rand-int 10) e])
@@ -50,6 +50,15 @@
       edge)))
 
 
+(defn- poll
+  "Retrieves and removes the head of the queue, or returns nil if this queue is
+  empty.
+  Wrapper function to abstract PriorityQueue interface."
+  [queue]
+  (let [[_ edge] (.poll queue)]
+    edge))
+
+
 (defn create
   "Create a maze with the provided dimensions using Prim's algorithm."
   [width height]
@@ -63,9 +72,9 @@
            queue start-queue
            edges start-edges]
       ;; Maze is complete when all nodes are accounted for or queue is empty.
-      (if (or (= node-total (count (:nodes forest))) (.isEmpty queue))
+      (if (or (= node-total (count (:nodes forest))) (empty? queue))
         (:edges forest)
-        (let [[_ edge] (.poll queue)
+        (let [edge (poll queue) 
               pos (newer-pos (:nodes forest) edge)]
           ;; Only add the edge if it links to a new position.
           (if (seq pos)
