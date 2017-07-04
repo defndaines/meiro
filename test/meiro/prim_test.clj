@@ -8,7 +8,7 @@
   (testing "Valid edges transfer from known edges into queue."
     ;; North-west corner
     (let [queue (java.util.PriorityQueue.)
-          known-edges (into #{} (graph/all-edges 3 4))
+          known-edges (set (graph/all-edges 3 4))
           [after-queue after-edges] (#'meiro.prim/to-active!
                                       (#'meiro.prim/pos-edges [0 0])
                                       queue
@@ -21,7 +21,7 @@
                 (= [[0 0] [1 0]] edge)))))
     ;; South-east corner
     (let [queue (java.util.PriorityQueue.)
-          known-edges (into #{} (graph/all-edges 3 4))
+          known-edges (set (graph/all-edges 3 4))
           [after-queue after-edges] (#'meiro.prim/to-active!
                                       (#'meiro.prim/pos-edges [2 3])
                                       queue
@@ -34,7 +34,7 @@
                 (= [[2 2] [2 3]] edge)))))
     ;; Middle
     (let [queue (java.util.PriorityQueue.)
-          known-edges (into #{} (graph/all-edges 3 4))
+          known-edges (set (graph/all-edges 3 4))
           [after-queue after-edges] (#'meiro.prim/to-active!
                                       (#'meiro.prim/pos-edges [1 2])
                                       queue
