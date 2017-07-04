@@ -45,8 +45,8 @@
   positions are not in the provided nodes."
   [nodes edge]
   (first
-    (filter
-      (fn [pos] (not (contains? nodes pos)))
+    (remove
+      (fn [pos] (contains? nodes pos))
       edge)))
 
 

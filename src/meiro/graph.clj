@@ -4,6 +4,7 @@
   these functions work in direct terms of nodes and edges."
   (:require [meiro.core :as m]
             [meiro.weave :as w]
+            [clojure.set]
             [clojure.spec.alpha :as spec]))
 
 

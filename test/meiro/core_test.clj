@@ -1,7 +1,8 @@
 (ns meiro.core-test
   (:require [clojure.test :refer :all]
             [clojure.test.check.clojure-test :refer :all]
-            [meiro.core :refer :all]))
+            [meiro.core :refer :all]
+            [meiro.hunt-and-kill :as hunt]))
 
 ;;; Position Functions
 
@@ -149,7 +150,7 @@
 
 
 (deftest cull-test
-  (let [maze (meiro.hunt-and-kill/create (init 15 20))]
+  (let [maze (hunt/create (init 15 20))]
     (testing "Cull dead ends."
       (is (> (count (dead-ends maze))
              (count (dead-ends (cull maze))))))
