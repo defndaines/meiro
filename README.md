@@ -276,6 +276,63 @@ Which will produce a maze like:
 ![Prim's Maze](img/prim-maze.png)
 
 
+### Growing Tree
+
+The Growing Tree algorithm is an abstraction over the approach in Prim's
+algorithm.
+It needs to be passed a `queue` which holds the active edges of the growing tree
+(forest), a `poll-fn` which removes an edge from the `queue`, and a `shift-fn`
+which transfers the edges of a newly added node from the set of remaining,
+unexplored edges to the `queue`.
+
+To implement Prim's algorithm using Growing Tree:
+```clojure
+(require '[meiro.growing-tree :as grow])
+(require '[meiro.prim :as prim])
+(def edges (grow/create 25 8
+                        (java.util.PriorityQueue.)
+                        prim/poll
+                        prim/to-active!))
+(def maze (graph/edges-to-grid edges 25 8))
+(png/render maze)
+```
+
+Which will produce a maze like:
+
+![Growing Prim's Maze](img/growing-prim-maze.png)
+
+But, Growing Tree can also be used to implement Recursive Backtracker.
+_Note: if you do not suffle the new edges, the resulting "maze" will mostly be a
+series of connected corridors._
+```clojure
+(require '[meiro.growing-tree :as grow])
+
+(defn back-poll
+  [q]
+  [(first q) (rest q)])
+
+(defn back-shift
+  [new-edges queue remaining-edges]
+  (reduce
+    (fn [[q es] e]
+      (let [remaining (disj es e)]
+        (if (= es remaining)
+          [q es]
+          [(conj q e)
+           remaining])))
+    [queue remaining-edges]
+    (shuffle new-edges)))
+
+(def edges (grow/create 25 8 '() back-poll back-shift))
+(def maze (graph/edges-to-grid edges 25 8))
+(png/render maze)
+```
+
+Which will produce a maze like:
+
+![Growing Recursive Backtracker Maze](img/growing-backtracker-maze.png)
+
+
 ## Solutions
 
 To calculate the distance from the north-east cell to each cell using Dijkstra's

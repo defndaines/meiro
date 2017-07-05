@@ -21,7 +21,7 @@
    [[(dec x) y] pos]])
 
 
-(defn- newer-pos
+(defn- outside-forest
   "Retrieve the newer position from an edge.
   Returns nil if both positions in an edge are already in the nodes set.
   Will only return one position, so expect undefined behavior elsewhere if post
@@ -56,7 +56,7 @@
       (if (or (= node-total (count (:nodes forest))) (empty? queue))
         (:edges forest)
         (let [[edge rest-q] (poll-fn queue)
-              pos (newer-pos (:nodes forest) edge)]
+              pos (outside-forest (:nodes forest) edge)]
           ;; Only add the edge if it links to a new position.
           (if (seq pos)
             (let [[q es] (shift-fn (pos-edges pos) rest-q edges)]
