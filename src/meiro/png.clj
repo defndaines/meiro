@@ -301,3 +301,47 @@
              (do
                (link-north graphic coords)
                (link-south graphic coords)))))))))
+
+
+(defn- fill-square
+  [graphic x y]
+  (let [x' (inc (* x cell-size))
+        y' (inc (* y cell-size))
+        length (- cell-size 2)]
+    (.fill graphic
+           (Rectangle2D$Double. x' y' length length))))
+
+
+(defn- fill-passage
+  [graphic x y x' y']
+  (let [start-x (inc (* x cell-size))
+        start-y (inc (* y cell-size))
+        length-x (+ cell-size (- (* x' cell-size) start-x 1))
+        length-y (+ cell-size (- (* y' cell-size) start-y 1))]
+    (.fill graphic
+           (Rectangle2D$Double. start-x start-y length-x length-y))))
+
+
+(defn render-forest
+  "Render a forest to PNG.
+  Because forests are a collection of edges, other render functions (which are
+  position-aware) cannot render them without conversion. To work around that,
+  this function bores out the maze by iterating through the edges whereever they
+  are."
+  [forest]
+  (let [{:keys [width height edges]} forest
+        img-width (* cell-size width)
+        img-height (* cell-size height)
+        img (BufferedImage. img-width img-height
+                            BufferedImage/TYPE_INT_ARGB)
+        graphic (.createGraphics img)]
+    ;; Color entire image black.
+    (.setColor graphic Color/BLACK)
+    (.fill graphic (Rectangle2D$Double. 0 0 img-width img-height))
+    ;; Then bore out cells and passages with white.
+    (.setColor graphic Color/WHITE)
+    (doseq [[[x y] [x' y']] edges]
+      (fill-square graphic x y)
+      (fill-square graphic x' y')
+      (fill-passage graphic x y x' y'))
+    (ImageIO/write img "png" (File. default-file))))

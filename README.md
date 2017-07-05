@@ -103,6 +103,16 @@ To print a maze with an inset:
 
 ![Inset Maze](img/inset-maze.png)
 
+To print a maze composed of edges, the image must be bored out of a background
+image. Use the following:
+```clojure
+(require '[meiro.prim :as prim])
+(def forest (prim/create 25 8))
+(png/render-forest forest)
+```
+
+![Bore Maze](img/bore-maze.png)
+
 If you want to print an ASCII maze as if it were a series of corridors in
 NetHack:
 ```clojure
@@ -503,7 +513,8 @@ possible to visually identify the under passages.
 
 Kruskal's is set up to allow weave to be injected into a maze. This is done by
 pre-seeding the algorithm with cells already combined, and then letting the maze
-build around it.
+build around it. In order to render a weave maze, it has to be converted to the
+standard grid format.
 
 ```clojure
 (require '[meiro.kruskal :as k])
