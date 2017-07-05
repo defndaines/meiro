@@ -17,9 +17,11 @@
 
 ;; Forests are a map of nodes and edges. A spanning tree is complete when there
 ;; is only one forest remaining.
+(spec/def ::width pos-int?)
+(spec/def ::height pos-int?)
 (spec/def ::nodes (spec/coll-of ::node :kind set?))
 (spec/def ::edges (spec/coll-of :edge :kind vector?))
-(spec/def ::forest (spec/keys :req [::nodes ::edges]))
+(spec/def ::forest (spec/keys :req [::width ::height ::nodes ::edges]))
 
 
 (defn all-edges
@@ -36,7 +38,7 @@
   "Get all the nodes in a grid and put them into forest maps."
   [width height]
   (reduce
-    (fn [acc e] (conj acc {:nodes #{e} :edges []}))
+    (fn [acc e] (conj acc {:width width :height height :nodes #{e} :edges []}))
     #{}
     (for [x (range width) y (range height)] [x y])))
 
@@ -55,16 +57,17 @@
   [f-1 f-2 edge]
   (let [{ns-1 :nodes es-1 :edges} f-1
         {ns-2 :nodes es-2 :edges} f-2]
-    {:nodes (clojure.set/union ns-1 ns-2)
+    {:width (:width f-1)
+     :height (:height f-1)
+     :nodes (clojure.set/union ns-1 ns-2)
      :edges (concat es-1 es-2 [edge])}))
 
 
-(defn edges-to-grid
-  "Convert a set of edges to the standard maze format used in most PNG
-  functions."
-  [edges width height]
+(defn forest-to-maze
+  "Convert a forest map to the standard maze format used in most PNG functions."
+  [forest]
   (reduce
     (fn [maze [[x y] [x' y']]]
       (w/link maze [y x] [y' x']))
-    (m/init height width)
-    edges))
+    (m/init (:height forest) (:width forest))
+    (:edges forest)))

@@ -243,13 +243,14 @@ Which will produce a maze like:
 
 Kruskal's algorithm is focused on generating a minimum spanning tree. I decided
 to use a more graph-centric approach, so the `create` function returns a
-collection of edges. At this time, this requires that it be converted to a
-grid-style maze in order to render it. It also uses `x, y` coordinates, so is
-"backward" from the other algorithms to this point.
+"forest", a map which includes the nodes and edges. At this time, this requires
+that it be converted to a grid-style maze in order to render it. It also uses
+`x, y` coordinates, so is "backward" from the other algorithms to this point.
 ```clojure
 (require '[meiro.kruskal :as k])
-(def edges (k/create 25 8))
-(def maze (k/edges-to-grid edges 25 8))
+(require '[meiro.graph :as graph])
+(def forest (k/create 25 8))
+(def maze (graph/forest-to-maze forest))
 (png/render maze)
 ```
 
@@ -266,8 +267,9 @@ ensure a less biased maze. Like Kruskal's, the approach is graph-centric and
 `create` returns a collection of edges.
 ```clojure
 (require '[meiro.prim :as prim])
-(def edges (prim/create 25 8))
-(def maze (graph/edges-to-grid edges 25 8))
+(require '[meiro.graph :as graph])
+(def forest (prim/create 25 8))
+(def maze (graph/forest-to-maze forest))
 (png/render maze)
 ```
 
@@ -289,11 +291,11 @@ To implement Prim's algorithm using Growing Tree:
 ```clojure
 (require '[meiro.growing-tree :as grow])
 (require '[meiro.prim :as prim])
-(def edges (grow/create 25 8
-                        (java.util.PriorityQueue.)
-                        prim/poll
-                        prim/to-active!))
-(def maze (graph/edges-to-grid edges 25 8))
+(def forest (grow/create 25 8
+                         (java.util.PriorityQueue.)
+                         prim/poll
+                         prim/to-active!))
+(def maze (graph/forest-to-maze forest))
 (png/render maze)
 ```
 
@@ -323,8 +325,8 @@ series of connected corridors._
     [queue remaining-edges]
     (shuffle new-edges)))
 
-(def edges (grow/create 25 8 '() back-poll back-shift))
-(def maze (graph/edges-to-grid edges 25 8))
+(def forest (grow/create 25 8 '() back-poll back-shift))
+(def maze (graph/forest-to-maze forest))
 (png/render maze)
 ```
 
@@ -505,11 +507,12 @@ build around it.
 
 ```clojure
 (require '[meiro.kruskal :as k])
-(def forests (k/init-forests 25 8))
+(require '[meiro.graph :as graph])
+(def forests (graph/init-forests 25 8))
 (def seeded (reduce k/weave forests
   (for [x (range 1 25 2) y (range 1 8 2)] [x y])))
-(def edges (k/create 25 8 seeded))
-(def maze (k/edges-to-grid edges 25 8))
+(def forest (k/create 25 8 seeded))
+(def maze (graph/forest-to-maze forest))
 (png/render-inset maze 2)
 ```
 

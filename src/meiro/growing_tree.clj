@@ -49,12 +49,12 @@
         [start-queue start-edges] (shift-fn (pos-edges start-pos)
                                             queue
                                             every-edge)]
-    (loop [forest {:nodes #{start-pos} :edges []}
+    (loop [forest {:width width :height height :nodes #{start-pos} :edges []}
            queue start-queue
            edges start-edges]
       ;; Maze is complete when all nodes are accounted for or queue is empty.
       (if (or (= node-total (count (:nodes forest))) (empty? queue))
-        (:edges forest)
+        forest
         (let [[edge rest-q] (poll-fn queue)
               pos (outside-forest (:nodes forest) edge)]
           ;; Only add the edge if it links to a new position.

@@ -17,26 +17,25 @@
 (deftest recreate-prims-algorithm-test
   (testing "Creating a maze using Prim's Algorithm."
     (is (= (dec (* 8 12))
-           (count (create 8 12
-                          (java.util.PriorityQueue.)
-                          #'meiro.prim/poll
-                          #'meiro.prim/to-active!)))))
+           (count (:edges (create 8 12
+                                  (java.util.PriorityQueue.)
+                                  #'meiro.prim/poll
+                                  #'meiro.prim/to-active!))))))
   (testing "Ensure all cells are linked."
     (is (every?
           #(not-any? empty? %)
-          (graph/edges-to-grid
+          (graph/forest-to-maze
             (create 10 12
                     (java.util.PriorityQueue.)
                     #'meiro.prim/poll
-                    #'meiro.prim/to-active!)
-            10 12)))))
+                    #'meiro.prim/to-active!))))))
 
 
 (deftest recreate-recursive-backtracker-test
   (testing "Creating a maze using recursive backtracker."
     (is (every?
           #(not-any? empty? %)
-          (graph/edges-to-grid
+          (graph/forest-to-maze
             (create 18 10
                     '()
                     (fn [q] [(first q) (rest q)])
@@ -49,5 +48,4 @@
                               [(conj q e)
                                remaining])))
                         [queue remaining-edges]
-                        (shuffle new-edges))))
-            18 10)))))
+                        (shuffle new-edges)))))))))

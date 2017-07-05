@@ -71,18 +71,7 @@
                    (disj f-1 f-2)
                    (conj merged))))
            (rest edges)))
-       (:edges (first forests))))))
-
-
-(defn edges-to-grid
-  "Convert a set of edges to the standard maze format used in the PNG
-  functions."
-  [edges width height]
-  (reduce
-    (fn [maze [[x y] [x' y']]]
-      (w/link maze [y x] [y' x']))
-    (m/init height width)
-    edges))
+       (first forests)))))
 
 
 (defn- can-weave?
@@ -138,5 +127,3 @@
                (conj vertical))))
        ; ineligible
        forests))))
-
-;; TODO Keep height and width in forests map
