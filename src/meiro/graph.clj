@@ -57,10 +57,10 @@
   [f-1 f-2 edge]
   (let [{ns-1 :nodes es-1 :edges} f-1
         {ns-2 :nodes es-2 :edges} f-2]
-    {:width (:width f-1)
-     :height (:height f-1)
+    {:width (or (:width f-1) (:width f-2))
+     :height (or (:height f-1) (:height f-2))
      :nodes (clojure.set/union ns-1 ns-2)
-     :edges (concat es-1 es-2 [edge])}))
+     :edges (conj (into es-1 es-2) edge)}))
 
 
 (defn forest-to-maze

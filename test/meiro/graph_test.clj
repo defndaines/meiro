@@ -34,4 +34,25 @@
            (merge-forests
              {:width 3 :height 6 :nodes #{[2 4]} :edges []}
              {:width 3 :height 6 :nodes #{[2 5]} :edges []}
-             [[2 4] [2 5]])))))
+             [[2 4] [2 5]]))))
+  (testing "Set width and height if missing from one forest."
+    (is (= 4
+           (:width (merge-forests
+                     {:nodes #{[1 0]} :edges []}
+                     {:width 4 :height 5 :nodes #{[0 0]} :edges []}
+                     [[0 0] [1 0]]))))
+    (is (= 4
+           (:width (merge-forests
+                     {:width 4 :height 5 :nodes #{[0 0]} :edges []}
+                     {:nodes #{[1 0]} :edges []}
+                     [[0 0] [1 0]]))))
+    (is (= 5
+           (:height (merge-forests
+                      {:nodes #{[1 0]} :edges []}
+                      {:width 4 :height 5 :nodes #{[0 0]} :edges []}
+                      [[0 0] [1 0]]))))
+    (is (= 5
+           (:height (merge-forests
+                      {:width 4 :height 5 :nodes #{[0 0]} :edges []}
+                      {:nodes #{[1 0]} :edges []}
+                      [[0 0] [1 0]]))))))
