@@ -81,6 +81,7 @@
 
 (defn link-vertical
   "Randomly link some cells in a row to the next row."
+  ;; TODO Currently only links once per corridor. Refactor to change this bias?
   ([forests row] (link-vertical forests row vertical-weight))
   ([forests row weight]
   (let [next-row (inc row)

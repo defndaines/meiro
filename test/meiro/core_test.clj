@@ -149,6 +149,19 @@
              (count (dead-ends (braid maze 0.0))))))))
 
 
+(deftest unlink-test
+  (testing "Can unlink two cells from each other."
+    (let [maze [[[:east :south] [:west :south]]]
+          unlinked (unlink maze [0 0] [0 1])]
+      (is (= [:south] (get-in unlinked [0 0])))
+      (is (= [:south] (get-in unlinked [0 1])))))
+  (testing "Dead ends are replace with :mask."
+    (let [maze [[[:east] [:west]]]
+          unlinked (unlink maze [0 0] [0 1])]
+      (is (= [:mask] (get-in unlinked [0 0])))
+      (is (= [:mask] (get-in unlinked [0 1]))))))
+
+
 (deftest cull-test
   (let [maze (hunt/create (init 15 20))]
     (testing "Cull dead ends."

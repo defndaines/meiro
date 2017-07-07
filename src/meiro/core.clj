@@ -271,16 +271,23 @@
        acc))))
 
 
-(defn- unlink
+(defn unlink
   "Unlink two cells in a maze. Will replace dead ends with a mask to facilitate
   rendering."
   [maze pos-1 pos-2]
-  (let [cell (get-in maze pos-1)]
-    (assoc-in
-      maze pos-1
-      (if (= 1 (count cell))
-        [:mask]
-        (remove #{(direction pos-1 pos-2)} (get-in maze pos-1))))))
+  (let [cell-1 (get-in maze pos-1)
+        cell-2 (get-in maze pos-2)]
+    (-> maze
+        (assoc-in
+          pos-1
+          (if (= 1 (count cell-1))
+            [:mask]
+            (remove #{(direction pos-1 pos-2)} (get-in maze pos-1))))
+        (assoc-in
+          pos-2
+          (if (= 1 (count cell-2))
+            [:mask]
+            (remove #{(direction pos-2 pos-1)} (get-in maze pos-2)))))))
 
 
 (defn cull
@@ -296,9 +303,7 @@
          (let [pos (first positions)
                neighbor (pos-to (first (get-in maze pos)) pos)]
            (recur
-             (-> acc
-                 (unlink pos neighbor)
-                 (unlink neighbor pos))
+             (unlink acc pos neighbor)
              (rest positions)))
          (recur acc (rest positions)))
        acc))))
