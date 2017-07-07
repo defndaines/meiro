@@ -60,3 +60,49 @@
                         y (range (:height forest))]
                     [x y]))
              (:nodes forest))))))
+
+
+(deftest horizontal-link-test
+  (testing "Link cells in a row."
+    (is (= #{{:width 3 :height 1
+              :nodes #{[0 0] [1 0] [2 0]}
+              :edges [[[0 0] [1 0]] [[1 0] [2 0]]]}}
+           (#'meiro.eller/link-horizontal
+             (for-forests #{} 0 3 1)
+             0 1.0))))
+  (testing "No links in a row."
+    (let [forests (for-forests #{} 0 3 1)]
+      (is (= forests
+             (#'meiro.eller/link-horizontal forests 0 0.0))))))
+
+
+(deftest vertical-link-test
+  (testing "Link cells vertically."
+    (is (= #{{:width 2 :height 2 :nodes #{[0 0] [0 1]} :edges [[[0 0] [0 1]]]}
+             {:width 2 :height 2 :nodes #{[1 0] [1 1]} :edges [[[1 0] [1 1]]]}}
+           (#'meiro.eller/link-vertical
+             (for-forests #{} 0 2 2)
+             0 1.0))))
+  (testing "Only one cell per corridor links south."
+    (is (= 2
+           (-> (for-forests #{} 0 2 2)
+             (#'meiro.eller/link-horizontal 0 1.0)
+             (#'meiro.eller/link-vertical 0 1.0)
+             first
+             :edges
+             count)))))
+
+
+(deftest create-test
+  (let [width 2
+        height 5
+        forest (create width height)]
+    (testing "Creating a maze using Eller's Algorithm."
+      (is (= (* width height)
+             (count (:nodes forest))))
+      (is (= (dec (* width height))
+             (count (:edges forest)))))
+    (testing "Ensure all cells are linked."
+      (is (every?
+            #(not-any? empty? %)
+            (graph/forest-to-maze forest))))))

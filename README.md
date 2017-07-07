@@ -345,6 +345,24 @@ Which will produce a maze like:
 ![Growing Recursive Backtracker Maze](img/growing-backtracker-maze.png)
 
 
+### Eller's
+
+Eller's algorithm processes a row at a time, creating forests as it goes. It
+also behaves like Sidewinder, in that it will connect to the next row from one
+random position in a horizontal corridor.
+
+To create a maze using Eller's:
+```clojure
+(require '[meiro.eller :as eller])
+(def forest (eller/create 25 8))
+(png/render (graph/forest-to-maze forest))
+```
+
+Which will produce a maze like:
+
+![Eller's Maze](img/eller-maze.png)
+
+
 ## Solutions
 
 To calculate the distance from the north-east cell to each cell using Dijkstra's
