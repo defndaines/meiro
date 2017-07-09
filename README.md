@@ -363,6 +363,23 @@ Which will produce a maze like:
 ![Eller's Maze](img/eller-maze.png)
 
 
+### Recursive Division
+
+The Recursive Division algorithm generates fractal mazes and is distinct among
+all the algorithms here in that is adds walls instead of carving passages.
+
+To create a maze using Recursive Division:
+```clojure
+(require '[meiro.division :as division])
+(def maze (division/create (m/init 8 25)))
+(png/render maze)
+```
+
+Which will produce a maze like:
+
+![Recursive Division Maze](img/division-maze.png)
+
+
 ## Solutions
 
 To calculate the distance from the north-east cell to each cell using Dijkstra's

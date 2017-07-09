@@ -282,12 +282,12 @@
           pos-1
           (if (= 1 (count cell-1))
             [:mask]
-            (remove #{(direction pos-1 pos-2)} (get-in maze pos-1))))
+            (vec (remove #{(direction pos-1 pos-2)} (get-in maze pos-1)))))
         (assoc-in
           pos-2
           (if (= 1 (count cell-2))
             [:mask]
-            (remove #{(direction pos-2 pos-1)} (get-in maze pos-2)))))))
+            (vec (remove #{(direction pos-2 pos-1)} (get-in maze pos-2))))))))
 
 
 (defn cull

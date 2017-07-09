@@ -20,34 +20,48 @@
               (for [row (range rows) col (range 1 columns)] [row col])))))
 
 
+(declare divide)
+
+
 (defn- divide-horizontal
   "Divide a grid horizontally."
   [grid row col height width]
   (let [south-of (rand-int (dec height))
-        passage-at (rand-int width)]
-    (reduce
-      (fn [acc e]
-        (m/unlink acc e (m/south e)))
-      grid
-      (for [x (range width) :when (not= x passage-at)] [(+ row south-of) x]))))
+        passage-at (+ col (rand-int width))]
+    (->
+      (reduce
+        (fn [acc e]
+          (m/unlink acc e (m/south e)))
+        grid
+        (for [x (range col (+ col width))
+              :when (not= x passage-at)]
+          [(+ row south-of) x]))
+      (divide row col (inc south-of) width)
+      (divide (+ row south-of 1) col (- height south-of 1) width))))
 
 
 (defn- divide-vertical
   "Divide a grid vertically."
   [grid row col height width]
   (let [east-of (rand-int (dec width))
-        passage-at (rand-int height)]
-    (reduce
-      (fn [acc e]
-        (m/unlink acc e (m/east e)))
-      grid
-      (for [y (range height) :when (not= y passage-at)] [y (+ col east-of)]))))
+        passage-at (+ row (rand-int height))]
+    (->
+      (reduce
+        (fn [acc e]
+          (m/unlink acc e (m/east e)))
+        grid
+        (for [r (range row (+ row height))
+              :when (not= r passage-at)]
+          [r (+ col east-of)]))
+      (divide row col height (inc east-of))
+      (divide row (+ col east-of 1) height (- width east-of 1)))))
 
 
 (defn- divide
   "Divide a grid."
   [grid row column height width]
-  (when (and (< 1 width) (< 1 height))
+  (if (or (<= height 1) (<= width 1))
+    grid
     (if (> height width)
       (divide-horizontal grid row column height width)
       (divide-vertical grid row column height width))))
@@ -56,4 +70,4 @@
 (defn create
   "Create a random maze using the Recursive Division algorithm."
   [grid]
-  (link-all grid))
+  (divide (link-all grid) 0 0 (count grid) (count (first grid))))
