@@ -17,7 +17,7 @@
   (testing "Grid can be split horizontally."
     (let [divided (#'meiro.division/divide-horizontal
                     (#'meiro.division/link-all (m/init 2 10))
-                    0 0 2 10)]
+                    0 0 2 10 #'meiro.division/divide?)]
       (is (= 1
              (count (filter #(some #{:south} %) (get divided 0)))))
       (is (= 1
@@ -28,7 +28,7 @@
   (testing "Grid can be split vertically."
     (let [divided (#'meiro.division/divide-vertical
                     (#'meiro.division/link-all (m/init 10 2))
-                    0 0 10 2)]
+                    0 0 10 2 #'meiro.division/divide?)]
       (is (= 1
              (count (filter #(some #{:east} %)
                             (map (fn [row] (get row 0)) divided)))))
@@ -37,7 +37,25 @@
                             (map (fn [row] (get row 1)) divided))))))))
 
 
+(deftest division-fn-test
+  (testing "Rate of 0% only returns true for height and width of 1."
+    (let [div? (#'meiro.division/divide-fn 5 0.0)]
+      (is (div? 1 8))
+      (is (div? 8 1))
+      (is (not (div? 2 2)))))
+  (testing "Rate of 100% will create rooms below size threshold."
+    (let [div? (#'meiro.division/divide-fn 4 1.0)]
+      (is (div? 4 4))
+      (is (not (div? 4 5)))
+      (is (not (div? 5 4)))
+      (is (not (div? 5 5))))))
+
+
 (deftest create-test
   (testing "Ensure all cells are linked."
     (is (every? #(not-any? empty? %)
-                (create (m/init 12 10))))))
+                (create (m/init 12 10)))))
+  ; (testing "Even with rooms, all mazes should be perfect."
+    ; (is (every? #(not-any? empty %)
+                ; (create (m/init 25 25) 4 0.5))))
+  )

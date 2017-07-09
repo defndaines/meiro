@@ -379,6 +379,18 @@ Which will produce a maze like:
 
 ![Recursive Division Maze](img/division-maze.png)
 
+Recursive Division also enables the creation of rooms inside the maze. Do this
+by passing a maximum room size and a creation rate (a percentage of the time
+when the subdivision will stop when height and width are below the size).
+```clojure
+(def maze (division/create (m/init 8 25) 4 0.4))
+(png/render maze)
+```
+
+Which will produce a maze like:
+
+![Recursive Division with Rooms Maze](img/division-room-maze.png)
+
 
 ## Solutions
 
