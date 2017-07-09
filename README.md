@@ -7,6 +7,11 @@ is a re-thinking of the approaches in a Clojure style.
 
 Each maze generation algorithm is in its own namespace.
 
+Except where otherwise noted, all algorithms produce "perfect" mazes. Perfect
+mazes have exactly one path between any two cells in the maze. This also means
+that you designate any two cells as the start and end and guarantee that there
+is a solution.
+
 | [Usage](#usage)
 | [Algorithms](#algorithms)
 | [Solutions](#solutions)
@@ -16,14 +21,16 @@ Each maze generation algorithm is in its own namespace.
 ## Usage
 
 Project is currently _under development_ and does not have functions exposed for
-external use.
+external use (such as through a command-line executable JAR file). All the
+examples below assume that you are importing into a REPL for execution.
 
 
 ### Displaying Mazes
 
-There are several ways to display a maze. The data structure used to store a
-maze is a vector of vectors, where each cell indicates which directions you can
-navigate out of the cell to.
+There are several ways to display a maze. The primary data structure used here
+to store a maze is a vector of vectors, where each cell indicates which
+directions you can navigate out of the cell to. Each of these cells is
+position-aware, with cells accessed by `[row column]`.
 
 Here is a 5x5 maze:
 ```clojure
@@ -160,9 +167,10 @@ There are a number of different algorithms for generating mazes.
 
 ### Binary Tree
 
-Binary Tree produces mazes with a bias toward paths which flow down and to the
-right. They will always have a single corridor along both the southern and
-eastern edges.
+Binary Tree produces mazes by visiting each cell in a grid and opening a
+passage either south or east. This causes a bias toward paths which flow down
+and to the right. They will always have a single corridor along both the
+southern and eastern edges.
 
 If you wish to generate and print a random binary-tree maze, you can start up a
 REPL and try to following:
@@ -198,6 +206,13 @@ Which will produce a maze like:
 
 ### Aldous-Broder
 
+Aldous-Broder picks a random cell in the grid and the moves randomly. If it
+visits a cell which has not been visited before, it links it to the previous
+cell. The algorithm ends when all cells have been visited.
+
+Because movement is random, it can take a long time for this algorithm to
+finish. Because movement is completely random, the generated maze has no bias.
+
 To generate a random-walk maze using Aldous-Broder:
 ```clojure
 (require '[meiro.aldous-broder :as ab])
@@ -211,7 +226,12 @@ Which will produce a maze like:
 
 ### Wilson's
 
-To generate a loop-erasing, random-walk maze using Wilson's:
+Wilson's starts at a random cell and then does a random walk. When it introduces
+a loop by coming back to a visited cell, it erases the loop then continues the
+random walk from that point. The algorithm starts slowly, but produces a
+completely unbiased maze.
+
+To generate a loop-erasing, random-walk maze:
 ```clojure
 (require '[meiro.wilson :as w])
 (png/render (w/create (m/init 8 25)))
@@ -222,9 +242,19 @@ Which will produce a maze like:
 ![Wilson's Maze](img/wilsons-maze.png)
 
 
-### Hunt and Kill
+### Hunt-and-Kill
 
-To generate a random-walk maze biased to first visited cell using Hunt and Kill:
+Hunt-and-Kill performs a random walk, but avoids visiting cells which are
+already linked. When it reaches a dead end but there are still cells to visit,
+it will look for an unvisited cell neighboring a visited cell and begin walking
+again from there.
+
+Hunt-and-kill mazes tend to have long, twisty passages with fewer dead ends than
+most of the algorithms here. It can be slower because it can visit cells many
+times.
+
+To generate a random-walk maze biased to the first visited cell using
+Hunt-and-Kill:
 ```clojure
 (require '[meiro.hunt-and-kill :as hk])
 (png/render (hk/create (m/init 8 25)))
@@ -237,8 +267,10 @@ Which will produce a maze like:
 
 ### Recursive Backtracker
 
-To generate a random-walk maze biased to last unvisited cell on the path using
-the Recursive Backtracker:
+Recursive Backtracker uses a random-walk algorithm. When it encounters a dead end, it backtracks to the last unvisited cell and resumes the random walk from that position. It completes when it backtracks to the starting cell. Resulting mazes have long, twisty passages and fewer dead ends. It should be faster than hunt-and-kill, but has to maintain the stack of all visited cells.
+
+To generate a random-walk maze biased to the last unvisited cell on the path
+using Recursive Backtracker:
 ```clojure
 (require '[meiro.backtracker :as b])
 (png/render (b/create (m/init 8 25)))
@@ -253,9 +285,16 @@ Which will produce a maze like:
 
 Kruskal's algorithm is focused on generating a minimum spanning tree. I decided
 to use a more graph-centric approach, so the `create` function returns a
-"forest", a map which includes the nodes and edges. At this time, this requires
-that it be converted to a grid-style maze in order to render it. It also uses
-`x, y` coordinates, so is "backward" from the other algorithms to this point.
+"forest", a map which includes the nodes and edges. It uses `x, y` coordinates,
+so is "backward" from the other algorithms to this point.
+
+The algorithm assigns every cell to a distinct forest, and then merges forests
+one at a time until there is only one forest remaining.
+
+The `png/render-forest` function will render a forest directly, or the results
+can be converted to the standard, grid-style maze using `graph/forest-to-maze`
+before passing to other `png` functions.
+
 ```clojure
 (require '[meiro.kruskal :as k])
 (require '[meiro.graph :as graph])
@@ -274,7 +313,10 @@ Which will produce a maze like:
 Prim's algorithm generates a minimum spanning tree by starting with a position
 and adding the "cheapest" edge available. Weights are assigned randomly to
 ensure a less biased maze. Like Kruskal's, the approach is graph-centric and
-`create` returns a collection of edges.
+`create` returns a collection of edges. The implementation here is a "True
+Prim's" approach, using weighted edges. (There are other versions possible, like
+Simplified Prim's, which produce more biased mazes.)
+
 ```clojure
 (require '[meiro.prim :as prim])
 (require '[meiro.graph :as graph])
@@ -296,6 +338,9 @@ It needs to be passed a `queue` which holds the active edges of the growing tree
 (forest), a `poll-fn` which removes an edge from the `queue`, and a `shift-fn`
 which transfers the edges of a newly added node from the set of remaining,
 unexplored edges to the `queue`.
+
+The bias of this algorithm will depend on how edges are added to and removed
+from the queue
 
 To implement Prim's algorithm using Growing Tree:
 ```clojure
@@ -349,7 +394,11 @@ Which will produce a maze like:
 
 Eller's algorithm processes a row at a time, creating forests as it goes. It
 also behaves like Sidewinder, in that it will connect to the next row from one
-random position in a horizontal corridor.
+random position in a horizontal corridor. When a forest is orphaned, because it
+does not have a link to the next row, then it is merged with an adjacent forest.
+When the last row is reached, all forests are merged. Note that when forests are
+merged, they can be linked at any two adjacent nodes (i.e., not necessarily the
+southernmost cell).
 
 To create a maze using Eller's:
 ```clojure
