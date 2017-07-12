@@ -20,8 +20,8 @@
 
 (deftest direction-test
   (testing "Cardinal directions."
-    (is (= :up (direction [2 2 3] [1 2 3])))
-    (is (= :down (direction [2 2 3] [3 2 3])))
+    (is (= :down (direction [2 2 3] [1 2 3])))
+    (is (= :up (direction [2 2 3] [3 2 3])))
     (is (= :north (direction [2 2 3] [2 1 3])))
     (is (= :south (direction [2 3 1] [2 4 1])))
     (is (= :east (direction [2 5 1] [2 5 2])))

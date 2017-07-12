@@ -24,11 +24,11 @@
 
 (defn direction
   "Get the direction from pos-1 to pos-2.
-  Assumes [0 0 0] is the upper-north-west corner."
+  Assumes [0 0 0] is the lower-north-west corner."
   [[level-1 row-1 col-1] [level-2 row-2 col-2]]
   (case [(- level-1 level-2) (- row-1 row-2) (- col-1 col-2)]
-    [1 0 0] :up
-    [-1 0 0] :down
+    [1 0 0] :down
+    [-1 0 0] :up
     [0 1 0] :north
     [0 -1 0] :south
     [0 0 1] :west
@@ -38,7 +38,7 @@
 
 (defn init
   "Initialize a grid of cells with the given number of levels, rows, and
-  columns, which can be accessed by index. Conceptually, [0 0 0] is the upper
+  columns, which can be accessed by index. Conceptually, [0 0 0] is the lower
   north-west corner."
   ([levels rows columns] (init levels rows columns []))
   ([levels rows columns v]
