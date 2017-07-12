@@ -629,14 +629,32 @@ standard grid format.
 ### Three-dimensional Mazes
 
 The `grid-3d` namespace can be used to generate three-dimensional mazes.
+The example below takes advantage of the controls which can be passed to the
+`create` function to favor spreading out on a level before ascending or
+descending.
 
 ```clojure
 (require '[meiro.grid-3d :as grid-3d])
 (def grid (grid-3d/init 3 4 5))
+
 (def link-3d (m/link-with grid-3d/direction))
-(def maze (b/create grid (grid-3d/random-pos grid) grid-3d/neighbors link-3d))
+
+(defn select-fn
+  "Favor selecting neighbors on the same level."
+  [neighbors]
+  (let [n (count neighbors)]
+    (if (and (< 2 n) (< 0.1 (rand)))
+      (rand-nth (take (- n 2) (rest (sort neighbors))))
+      (rand-nth neighbors))))
+
+(def maze (b/create grid
+                    (grid-3d/random-pos grid)
+                    grid-3d/neighbors link-3d select-fn))
+
 (png/render-3d maze)
 ```
+
+![3D Maze](img/3d-maze.png)
 
 
 ## License
