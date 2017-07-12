@@ -626,6 +626,18 @@ standard grid format.
 ![Kruskal's Weave Maze](img/kruskal-weave-maze.png)
 
 
+### Three-dimensional Mazes
+
+The `grid-3d` namespace can be used to generate three-dimensional mazes.
+
+```clojure
+(require '[meiro.grid-3d :as grid-3d])
+(def grid (grid-3d/init 3 4 5))
+(def link-3d (m/link-with grid-3d/direction))
+(def maze (b/create grid (grid-3d/random-pos grid) grid-3d/neighbors link-3d))
+```
+
+
 ## License
 
 Copyright © 2017 Michael S. Daines
