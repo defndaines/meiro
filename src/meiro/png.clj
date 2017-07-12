@@ -345,3 +345,75 @@
       (fill-square graphic x' y')
       (fill-passage graphic x y x' y'))
     (ImageIO/write img "png" (File. default-file))))
+
+
+(defn- draw-up-arrow
+  "Draw an up arrow (pointing right)."
+  [graphic x y]
+  (let [offset 4
+        half-x (+ (* cell-size x) (/ cell-size 2))
+        x' (- (* cell-size (inc x)) offset)
+        half-y (+ (* cell-size y) (/ cell-size 2))]
+    (.draw graphic
+           (Line2D$Double.
+             half-x (+ (* cell-size y) offset)
+             x' half-y))
+    (.draw graphic
+           (Line2D$Double.
+             x' half-y
+             half-x (- (* cell-size (inc y)) offset)))))
+
+
+(defn- draw-down-arrow
+  "Draw a down arrow (pointing left)."
+  [graphic x y]
+  (let [offset 4
+        half-x (+ (* cell-size x) (/ cell-size 2))
+        x' (+ (* cell-size x) offset)
+        half-y (+ (* cell-size y) (/ cell-size 2))]
+    (.draw graphic
+           (Line2D$Double.
+             half-x (+ (* cell-size y) offset)
+             x' half-y))
+    (.draw graphic
+           (Line2D$Double.
+             x' half-y
+             half-x (- (* cell-size (inc y)) offset)))))
+
+
+(defn render-3d
+  "Lay out a three-dimensional maze with each level side by side. Uses arrows to
+  indicate when to move between levels."
+  [maze]
+  (let [levels (count maze)
+        height (count (first maze))
+        width (count (ffirst maze))
+        gap-size (/ cell-size 2)
+        img-width (+ (* gap-size levels)
+                     (* levels (* cell-size width)))
+        img-height (inc (* cell-size height))
+        img (BufferedImage. img-width img-height
+                            BufferedImage/TYPE_INT_ARGB)
+        graphic (.createGraphics img)]
+    (.setColor graphic Color/BLACK)
+    (doseq [[z level] (map-indexed vector maze)]
+      (let [offset (+ (* z 0.5) (* z width))]
+        (doseq [[y row] (map-indexed vector level)]
+          (doseq [[x' cell] (map-indexed vector row)]
+            (if (not-any? #{:mask} cell)
+              (let [x (+ offset x')
+                    x+ (inc x)
+                    y+ (inc y)]
+                (when (not-any? #{:north} cell)
+                  (draw graphic x y x+ y))
+                (when (not-any? #{:west} cell)
+                  (draw graphic x y x y+))
+                (when (not-any? #{:east} cell)
+                  (draw graphic x+ y x+ y+))
+                (when (not-any? #{:south} cell)
+                  (draw graphic x y+ x+ y+))
+                (when (some #{:up} cell)
+                  (draw-up-arrow graphic x y))
+                (when (some #{:down} cell)
+                  (draw-down-arrow graphic x y))))))))
+    (ImageIO/write img "png" (File. default-file))))

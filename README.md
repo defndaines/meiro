@@ -635,6 +635,7 @@ The `grid-3d` namespace can be used to generate three-dimensional mazes.
 (def grid (grid-3d/init 3 4 5))
 (def link-3d (m/link-with grid-3d/direction))
 (def maze (b/create grid (grid-3d/random-pos grid) grid-3d/neighbors link-3d))
+(png/render-3d maze)
 ```
 
 
