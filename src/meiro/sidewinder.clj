@@ -23,28 +23,30 @@
       {(m/south pos) :south (m/east pos) :east})))
 
 
-(defn- link-neighbor
-  "Link to a random neighbor to south or east.
-  When linking to south, the link will be created from any position in the
-  current east-west corridor, not necessarily from `pos`."
-  [maze pos]
-  (let [directions (possible-directions maze pos)]
-    (if (seq directions)
-      (case (gen/weighted (select-keys default-weights directions))
-        :east (m/link maze pos (m/east pos))
-        :south (let [from (rand-nth (m/path-west maze pos))]
-                 (m/link maze from (m/south from))))
-      maze)))
+(defn- link-fn
+  "Generate a function which will link a given position to a random neighbor to
+  the south or east. When linking to south, the link will be created from any
+  position in the current east-west corridor, not necessarily from `pos`."
+  [weights]
+  (fn [maze pos]
+    (let [directions (possible-directions maze pos)]
+      (if (seq directions)
+        (case (gen/weighted (select-keys weights directions))
+          :east (m/link maze pos (m/east pos))
+          :south (let [from (rand-nth (m/path-west maze pos))]
+                   (m/link maze from (m/south from))))
+        maze))))
 
 
 (defn create
   "Create a random maze using the sidewinder algorithm."
-  [grid]
-  (reduce
-    link-neighbor
-    grid
-    (for [row (range (count grid)) col (range (count (first grid)))]
-      [row col])))
+  ([grid] (create grid default-weights))
+  ([grid weights]
+   (reduce
+     (link-fn weights)
+     grid
+     (for [row (range (count grid)) col (range (count (first grid)))]
+       [row col]))))
 
 
 (defn- corridor
