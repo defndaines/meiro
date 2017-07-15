@@ -657,6 +657,33 @@ descending.
 ![3D Maze](img/3d-maze.png)
 
 
+### Wrapping Mazes
+
+Sometimes you may want to have maze wrap around, meaning if you step off the
+left edge of the maze, it re-enters on the right edge. You could use this to
+create a maze on a cylinder. You could use this approach to create a Pac-Man
+style maze as well.
+
+This will only wrap along the vertical walls:
+```clojure
+(require '[meiro.wrap :as wrap])
+(def maze (b/create (m/init 8 25) [3 13]
+                    wrap/neighbors-horizontal
+                    wrap/link))
+(png/render-inset maze 2)
+```
+
+![Horizontal Wrap Maze](img/horizontal-wrap-maze.png)
+
+To wrap off any direction:
+```clojure
+(def maze (b/create (m/init 8 25) [3 13] wrap/neighbors wrap/link))
+(png/render-inset maze 2)
+```
+
+![Wrap Maze](img/wrap-maze.png)
+
+
 ## License
 
 Copyright © 2017 Michael S. Daines
