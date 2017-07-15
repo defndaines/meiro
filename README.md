@@ -203,6 +203,23 @@ Which will produce a maze like:
 
 ![Sidewinder Maze](img/sidewinder-maze.png)
 
+Because Sidewinder creates a maze one row at a time, it is possible to create
+infinite mazes. The mazes won't be perfect mazes unless completed, though.
+These mazes only link south or east, so you'll only be able to use certain
+render functions, like `ascii/render` and `png/render`, which are already
+optimized to only render the east and south walls per cell. Optional weights can
+be passed to the function.
+
+```clojure
+(def infini-maze (sw/create-lazy 25 {:south 2 :east 5}))
+(def maze (conj (vec (take 7 infini-maze)) (sw/last-row 25)))
+(png/render maze)
+```
+
+Which will produce a maze like:
+
+![Infinite Sidewinder Maze](img/infinite-sidewinder-maze.png)
+
 
 ### Aldous-Broder
 
