@@ -58,24 +58,8 @@
     (is (= #{[1 0] [2 1]} (set (neighbors (init 3 3) [2 0]))))
     (is (= #{[2 1] [1 2]} (set (neighbors (init 3 3) [2 2]))))))
 
-;;; Maze Functions
 
-(deftest western-path-test
-  (let [maze [[[:south] [:south] [:east] [:west :east]
-               [:west :south] [:south] [:east]
-               [:west :south]]
-              [[:north :east] [:north :west :south] [:east] [:west :east]
-               [:north :west :east] [:north :west :south] [:south]
-               [:north :south]]
-              [[:east] [:north :west :east] [:west :east] [:west :east]
-               [:west :east] [:north :west :east] [:north :west :east]
-               [:north :west]]]]
-    (testing "No linked cell to the west"
-      (is (= '([0 0]) (path-west maze [0 0]))))
-    (testing "One linked cell to the west"
-      (is (= '([0 3] [0 2]) (path-west maze [0 3]))))
-    (testing "Multiple linked cells to the west"
-      (is (= '([1 5] [1 4] [1 3] [1 2]) (path-west maze [1 5]))))))
+;;; Maze Functions
 
 (deftest empty-neighbor-test
   (testing "All neighbors are empty."

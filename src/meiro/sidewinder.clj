@@ -23,6 +23,15 @@
       {(m/south pos) :south (m/east pos) :east})))
 
 
+(defn- path-west
+  "Get a path sequence of positions west of the provided position,
+  including that position."
+  [maze pos]
+  (if (seq (filter #{:west} (get-in maze pos)))
+    (cons pos (path-west maze (m/west pos)))
+    [pos]))
+
+
 (defn- link-fn
   "Generate a function which will link a given position to a random neighbor to
   the south or east. When linking to south, the link will be created from any
@@ -33,7 +42,7 @@
       (if (seq directions)
         (case (gen/weighted (select-keys weights directions))
           :east (m/link maze pos (m/east pos))
-          :south (let [from (rand-nth (m/path-west maze pos))]
+          :south (let [from (rand-nth (path-west maze pos))]
                    (m/link maze from (m/south from))))
         maze))))
 

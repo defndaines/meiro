@@ -65,9 +65,8 @@
 (defn north
   "Get position to the north of a given position.
   No bounds checking, so may return an invalid position."
-  [pos]
-  (let [[row col] pos]
-    [(dec row) col]))
+  [[row col]]
+  [(dec row) col])
 
 (spec/fdef south
   :args (spec/cat :pos ::pos)
@@ -75,9 +74,8 @@
 (defn south
   "Get position to the south of a given position.
   No bounds checking, so may return an invalid position."
-  [pos]
-  (let [[row col] pos]
-    [(inc row) col]))
+  [[row col]]
+  [(inc row) col])
 
 (spec/fdef east
   :args (spec/cat :pos ::pos)
@@ -85,9 +83,8 @@
 (defn east
   "Get position to the east of a given position.
   No bounds checking, so may return an invalid position."
-  [pos]
-  (let [[row col] pos]
-    [row (inc col)]))
+  [[row col]]
+  [row (inc col)])
 
 (spec/fdef west
   :args (spec/cat :pos ::pos)
@@ -95,9 +92,8 @@
 (defn west
   "Get position to the west of a given position.
   No bounds checking, so may return an invalid position."
-  [pos]
-  (let [[row col] pos]
-    [row (dec col)]))
+  [[row col]]
+  [row (dec col)])
 
 
 (spec/fdef pos-to
@@ -107,13 +103,12 @@
 (defn pos-to
   "Get neighboring position given a direction.
   No bounds checking, so may return invalid position."
-  [cardinal pos]
-  (let [[row col] pos]
-    (case cardinal
-      :north [(dec row) col]
-      :south [(inc row) col]
-      :east [row (inc col)]
-      :west [row (dec col)])))
+  [cardinal [row col]]
+  (case cardinal
+    :north [(dec row) col]
+    :south [(inc row) col]
+    :east [row (inc col)]
+    :west [row (dec col)]))
 
 
 ;;; Grid Functions
@@ -152,11 +147,10 @@
   :fn #(every? adjacent? %))
 (defn neighbors
   "Get all potential neighbors of a position in a given grid"
-  [grid pos]
-  (let [[row col] pos]
-    (filter
-      #(in? grid %)
-      #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]})))
+  [grid [row col]]
+  (filter
+    #(in? grid %)
+    #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]}))
 
 
 (spec/fdef all-positions
@@ -189,26 +183,13 @@
 
 ;;; Maze Functions
 
-(spec/fdef path-west
-  :args (spec/cat :maze ::maze :pos ::pos)
-  :ret ::path
-  :fn #(= 1 (count (reduce (fn [acc [col _]] (conj acc col)) #{} %))))
-(defn path-west
-  "Get a path sequence of positions west of the provided position,
-  including that position."
-  [maze pos]
-  (if (seq (filter #{:west} (get-in maze pos)))
-    (cons pos (path-west maze (west pos)))
-    [pos]))
-
-
 (spec/fdef empty-neighbors
   :args (spec/cat :maze ::maze :pos ::pos)
   :ret (spec/coll-of ::pos)
   :fn #(every? adjacent? %))
 (defn empty-neighbors
   "Get all positions neighboring `pos` which have not been visited."
-  ([maze pos](empty-neighbors maze neighbors pos))
+  ([maze pos] (empty-neighbors maze neighbors pos))
   ([maze neighbor-fn pos]
    (filter #(empty? (get-in maze %)) (neighbor-fn maze pos))))
 
