@@ -172,11 +172,12 @@
   :ret ::pos
   :fn #(in? (-> % :args :grid) (:ret %)))
 (defn random-pos
-  "Select a random position from the grid."
+  "Select a random position from the grid.
+  Will not return a masked cell if there are any in the grid."
   [grid]
   (let [pos [(rand-int (count grid)) (rand-int (count (first grid)))]]
     ;; When grids contain masked cells, make sure to return an unmasked cell.
-    (if (empty? (get-in grid pos))
+    (if (not-any? #{:mask} (get-in grid pos))
       pos
       (random-pos grid))))
 
