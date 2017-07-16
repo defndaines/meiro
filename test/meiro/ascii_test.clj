@@ -1,8 +1,8 @@
 (ns meiro.ascii-test
-	(:require [clojure.test :refer :all]
-						[meiro.core :as m]
-						[meiro.ascii :refer :all]
-						[clojure.string :as string]))
+  (:require [clojure.test :refer :all]
+            [meiro.core :as m]
+            [meiro.ascii :refer :all]
+            [clojure.string :as string]))
 
 (deftest cell-level-test
   (testing "Default rendering."
@@ -17,13 +17,13 @@
            (#'meiro.ascii/cell-level [:south] " 2 ")))))
 
 (deftest ascii-art
-	(testing "Ensure rows and columns match."
-		(is (= (string/join \newline ["+---+---+---+"
+  (testing "Ensure rows and columns match."
+    (is (= (string/join \newline ["+---+---+---+"
                                   "|   |   |   |"
                                   "+---+---+---+"
                                   "|   |   |   |"
                                   "+---+---+---+\n"])
-					 (render (m/init 2 3))))
+           (render (m/init 2 3))))
     (is (= (string/join \newline ["+---+---+"
                                   "|   |   |"
                                   "+---+---+"
@@ -35,20 +35,20 @@
                                   "+---+---+"
                                   "|   |   |"
                                   "+---+---+\n"])
-					 (render (m/init 5 2)))))
-	(testing "Links are represented as gaps in the wall."
+           (render (m/init 5 2)))))
+  (testing "Links are represented as gaps in the wall."
     (is (= (string/join \newline ["+---+---+"
                                   "|   |   |"
                                   "+---+---+"
                                   "|       |"
                                   "+---+---+\n"])
-					 (render (m/link (m/init 2 2) [1 1] [1 0]))))
+           (render (m/link (m/init 2 2) [1 1] [1 0]))))
     (is (= (string/join \newline ["+---+---+"
                                   "|   |   |"
                                   "+---+   +"
                                   "|   |   |"
                                   "+---+---+\n"])
-					 (render (m/link (m/init 2 2) [1 1] [0 1]))))))
+           (render (m/link (m/init 2 2) [1 1] [0 1]))))))
 
 (deftest include-distances
   (testing "When distances are provided."
