@@ -156,3 +156,16 @@
       (is (some #{:under} (get-in maze [0 2])))
       (is (= [[0 3]]
              (get-in maze [0 0]))))))
+
+
+(deftest direction-test
+  (testing "Identify adjacent directions."
+    (is (= :north (direction [2 3] [1 3])))
+    (is (= :south (direction [2 3] [3 3])))
+    (is (= :east (direction [2 3] [2 4])))
+    (is (= :west (direction [2 3] [2 2]))))
+  (testing "Identify non-adjacent directions."
+    (is (= :north (direction [2 3] [0 3])))
+    (is (= :south (direction [2 3] [5 3])))
+    (is (= :east (direction [2 3] [2 9])))
+    (is (= :west (direction [2 3] [2 0])))))

@@ -4,10 +4,12 @@
   until all cells have been visited."
   (:require [meiro.core :as m]))
 
+
 (defn- visited-neighbors
   "Get all positions neighboring `pos` which have been visited."
   [maze pos]
   (remove #(empty? (get-in maze %)) (m/neighbors maze pos)))
+
 
 (defn- hunt
   "Find first unvisited position with a visited neighbor."
@@ -17,6 +19,7 @@
           neighbor (visited-neighbors maze pos)
           :when (seq (get-in maze neighbor))]
       [pos neighbor])))
+
 
 (defn create
   "Create a random maze using the Hunt and Kill algorithm."

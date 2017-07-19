@@ -5,12 +5,14 @@
   generate, especially on large mazes."
   (:require [meiro.core :as m]))
 
+
 (defn- pop-rand
   "Remove a random element from a collection of positions.
   Used to identify the starting position of the maze."
   [positions]
   (let [pos (rand-nth positions)]
     (remove #{pos} positions)))
+
 
 (defn- walk
   "Perform a loop-erasing random walk."
@@ -26,6 +28,7 @@
                  (subvec path 0 (inc index)))))
       (conj path pos))))
 
+
 (defn- link-path
   "Create links in the maze between each step in a path."
   [maze path]
@@ -33,6 +36,7 @@
     (fn [acc [pos-1 pos-2]] (m/link acc pos-1 pos-2))
     maze
     (partition 2 1 path)))
+
 
 (defn create
   "Create a random maze using Wilson's algorithm."

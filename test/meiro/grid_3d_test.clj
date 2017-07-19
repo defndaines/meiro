@@ -68,3 +68,16 @@
              (neighbors grid [2 3 2])))
       (is (= [[1 3 1] [1 1 1] [2 2 1] [1 2 0] [1 2 2] [0 2 1]]
              (neighbors grid [1 2 1]))))))
+
+
+(deftest random-pos-test
+  (testing "Random position is from within the grid."
+    (let [grid (init 6 5 4)]
+      (is (in? grid (random-pos grid)))))
+  (testing "Ignore masked cells."
+    (let [base (init 2 2 2)
+          grid (reduce (fn [acc e] (update-in acc e conj :mask)) base
+                       (for [z [0 1] y [0 1] x [0 1]
+                             :when (not= 0 z y x)]
+                         [z y x]))]
+      (is (= [0 0 0] (random-pos grid))))))

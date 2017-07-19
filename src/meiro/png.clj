@@ -234,8 +234,8 @@
 
 
 (defn- open?
-  "Does the given cell link to a cell to the north, either directly or
-  by passing underneath."
+  "Does the given cell link to a cell in the provided direction, either directly
+  or by passing underneath."
   [dir x y cell]
   (or (some #{dir} cell)
       (some #{dir} (map #(weave/direction [y x] %)

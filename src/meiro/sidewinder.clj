@@ -14,7 +14,7 @@
   {:south 4 :east 5})
 
 
-(defn possible-directions
+(defn- possible-directions
   "Determine which directions are valid from the provided pos."
   [maze pos]
   (vals
