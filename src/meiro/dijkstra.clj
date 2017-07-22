@@ -13,12 +13,18 @@
     (map #(m/pos-to % pos) neighbors)))
 
 
+(defn- init-distances
+  "Initialize the distance calculation grid."
+  [grid]
+  (m/init (count grid) (count (first grid)) nil))
+
+
 (defn distances
   "Calculate distances to each pos relative from starting pos.
   Assumes a perfect maze."
   ([maze] (distances maze [0 0]))
   ([maze pos]
-   (distances maze pos (m/init (count maze) (count (first maze)) nil) 0))
+   (distances maze pos (init-distances maze) 0))
   ([maze pos acc dist]
    (if (seq pos)
      (reduce
@@ -26,6 +32,26 @@
        (assoc-in acc pos dist)
        (empty-neighbors acc pos (get-in maze pos)))
      acc)))
+
+
+(defn distances-by-breadth
+  "Calculate distances to each position relative from the starting position
+  (defaults to [0 0] if not provided. Does a breadth-first search, so it can
+  handle non-perfect mazes or mazes with rooms."
+  ([maze] (distances-by-breadth maze [0 0]))
+  ([maze pos]
+   (loop [neighbors (list pos)
+          acc (init-distances maze)
+          dist 0]
+     (if (seq neighbors)
+       (let [level (reduce (fn [a e] (assoc-in a e dist)) acc neighbors)]
+         (recur
+           (set (mapcat
+                  (fn [pos] (empty-neighbors level pos (get-in maze pos)))
+                  neighbors))
+           level
+           (inc dist)))
+       acc))))
 
 
 (defn solution
