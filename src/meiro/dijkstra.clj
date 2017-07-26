@@ -69,6 +69,29 @@
           (recur (conj acc pos) (step pos n)))))))
 
 
+(defn shortest-path
+  "Get the shortest path between two positions in a maze.
+  Accommodates non-perfect mazes."
+  ([maze start end]
+   (let [dist (distances-by-breadth maze start)
+         step (fn [pos n]
+                (filter #(= (dec n) (get-in dist %))
+                        (map #(m/pos-to % pos) (get-in maze pos))))]
+     ((fn get-shorty [paths]
+        (let [n (get-in dist (ffirst paths))]
+          (if (zero? n)
+            (first paths)
+            (get-shorty
+              (reduce
+                (fn [acc [head &_ :as path]]
+                  (let [steps (step head n)]
+                    (if (seq steps)
+                      (map (fn [e] (conj path e)) steps)
+                      acc)))
+                '() paths)))))
+      (list (list end))))))
+
+
 (defn farthest-pos
   "Find the farthest position from a given position, using [0 0] if none is
   provided."

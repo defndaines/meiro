@@ -79,6 +79,58 @@
              (solution maze [0 0] [0 4]))))))
 
 
+(deftest shortest-path-test
+  (testing "On a perfect maze, should be same as solution."
+    (let [maze [[[:east] [:west :east :south] [:west] [:south]
+                 [:south]]
+                [[:east :south] [:north :west] [:south] [:north :east]
+                 [:north :west :south]]
+                [[:north :east :south] [:west] [:north :east :south] [:west]
+                 [:north :south]]
+                [[:north :east] [:west :east] [:north :west :east] [:west :east]
+                 [:north :west]]]]
+      (is (= '([0 0] [0 1] [1 1] [1 0] [2 0] [3 0] [3 1] [3 2] [3 3] [3 4] [2 4]
+               [1 4] [0 4])
+             (shortest-path maze [0 0] [0 4])))))
+  (testing "Find shortest path (solution) when the maze has rooms."
+    (let [maze
+          [[[:south :east] [:south :east :west] [:south :west] [:south :east]
+            [:south :west]]
+           [[:north :south :east] [:north :south :east :west]
+            [:north :south :east :west] [:north :south :east :west]
+            [:north :south :west]]
+           [[:north :south :east] [:north :south :east :west]
+            [:north :south :west] [:north :south :east] [:north :west]]
+           [[:north :east] [:north :south :east :west] [:north :west]
+            [:north :south :east] [:south :west]]
+           [[:east] [:north :east :west] [:west] [:north :east]
+            [:north :west]]]]
+      (is (= '([0 0] [1 0] [1 1] [1 2] [1 3] [2 3] [3 3] [4 3] [4 4])
+             (shortest-path maze [0 0] [4 4])))
+      (is (= '([4 0] [4 1] [3 1] [2 1] [1 1] [1 2] [1 3] [2 3] [3 3] [4 3]
+               [4 4])
+             (shortest-path maze [4 0] [4 4])))))
+  (testing "Find shortest path when the maze is braided."
+    (let [maze
+          [[[:east :south] [:east :west] [:east :west] [:south :east :west]
+            [:west :south]]
+           [[:north :south] [:south :east] [:south :east :west]
+            [:west :north :south] [:north :south]]
+           [[:north :east] [:west :north] [:south :north] [:north :south]
+            [:south :north]]
+           [[:south :east] [:west :east] [:west :north] [:north :south]
+            [:north :south]]
+           [[:east :north] [:east :west] [:east :west] [:east :west :north]
+            [:north :west]]]]
+      (is  (= '([0 0] [0 1] [0 2] [0 3] [1 3] [2 3] [3 3] [4 3] [4 4])
+              (shortest-path maze [0 0] [4 4])))
+      (is  (= '([0 0] [1 0] [2 0] [2 1] [1 1] [1 2] [2 2] [3 2] [3 1] [3 0]
+                [4 0])
+              (shortest-path maze [0 0] [4 0])))
+      (is  (= '([0 4] [0 3] [1 3] [1 2] [2 2] [3 2] [3 1] [3 0] [4 0])
+              (shortest-path maze [0 4] [4 0]))))))
+
+
 (deftest farthest-test
   (let [maze [[[:east :south] [:west] [:south]]
               [[:north :east] [:west :east :south] [:north :west]]
