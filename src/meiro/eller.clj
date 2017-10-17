@@ -3,7 +3,8 @@
   the end into a single result. It behaves like Sidewinder in that it can merge
   cells left to right, but then only one passage will link south."
   (:require [meiro.core :as m]
-            [meiro.graph :as graph]))
+            [meiro.graph :as graph]
+            [clojure.spec.alpha :as spec]))
 
 
 (def ^:private horizontal-weight
@@ -19,6 +20,12 @@
   0.5)
 
 
+(spec/fdef for-forests
+  :args (spec/cat :forests :meiro.graph/forest
+                  :row nat-int?
+                  :width :meiro.graph/width
+                  :height :meiro.graph/height)
+  :ret :meiro.graph/forest)
 (defn for-forests
   "Get the forests for a row. If there is no forest yet for a node in the row,
   a new forest will be generated."
@@ -32,6 +39,9 @@
     (for [col (range width)] [col row])))
 
 
+(spec/fdef neighboring-forests
+  :args (spec/cat :forests :meiro.graph/forest :node :meiro.graph/node)
+  :ret :meiro.graph/forest)
 (defn- neighboring-forests
   "Get all forests with nodes adjancent to the provided node."
   [forests node]
@@ -40,6 +50,9 @@
     forests))
 
 
+(spec/fdef merge-all
+  :args (spec/cat :forests :meiro.graph/forest)
+  :ret :meiro.graph/forest)
 (defn merge-all
   "Merge all forests by finding an adjacent node in another forest to link."
   [forests]
@@ -59,6 +72,13 @@
       forest)))
 
 
+(spec/fdef link-horizontal
+  :args (spec/alt
+          :2-args (spec/cat :forests :meiro.graph/forest :row nat-int?)
+          :3-args (spec/cat :forests :meiro.graph/forest
+                            :row nat-int?
+                            :weight :meiro.core/rate))
+  :ret :meiro.graph/forest)
 (defn link-horizontal
   "Randomly link some cells in a row."
   ([forests row] (link-horizontal forests row horizontal-weight))
@@ -79,6 +99,13 @@
      (for [x (range (:width (first forests)))] [x row]))))
 
 
+(spec/fdef link-vertical
+  :args (spec/alt
+          :2-args (spec/cat :forests :meiro.graph/forest :row nat-int?)
+          :3-args (spec/cat :forests :meiro.graph/forest
+                            :row nat-int?
+                            :weight :meiro.core/rate))
+  :ret :meiro.graph/forest)
 (defn link-vertical
   "Randomly link some cells in a row to the next row."
   ;; TODO Currently only links once per corridor. Refactor to change this bias?
@@ -107,6 +134,9 @@
         forests)))))
 
 
+(spec/fdef create
+  :args (spec/cat :width :meiro.graph/width :height :meiro.graph/height)
+  :ret :meiro.graph/forest)
 (defn create
   "Create a maze using Eller's algorithm. Returns a forest."
   [width height]

@@ -15,7 +15,7 @@
 
 ;; Difference between a "cell" and "pos" (or position).
 ;; A position is the [row col] index of a cell.
-(spec/def ::pos (spec/cat :row nat-int? :col nat-int?))
+(spec/def ::pos (spec/tuple :row nat-int? :col nat-int?))
 (spec/def ::path (spec/+ ::pos))
 
 ;; A cell has links to neighbors, such as [:east :north].
@@ -26,6 +26,8 @@
 (spec/def ::grid (spec/coll-of vector? :kind vector? :min-count 1))
 (spec/def ::row (spec/coll-of ::cell :kind vector? :min-count 1))
 (spec/def ::maze (spec/coll-of ::row :kind vector? :min-count 1))
+
+(spec/def ::rate (spec/double-in :min 0.0 :max 1.0 :NaN? false :infinite? false))
 
 
 ;;; Position Functions
@@ -77,6 +79,7 @@
   [[row col]]
   [(inc row) col])
 
+
 (spec/fdef east
   :args (spec/cat :pos ::pos)
   :ret ::pos)
@@ -85,6 +88,7 @@
   No bounds checking, so may return an invalid position."
   [[row col]]
   [row (inc col)])
+
 
 (spec/fdef west
   :args (spec/cat :pos ::pos)
@@ -114,7 +118,9 @@
 ;;; Grid Functions
 
 (spec/fdef init
-  :args (spec/cat :rows pos-int? :columns pos-int? :v (spec/? any?))
+  :args (spec/alt
+          :2-args (spec/cat :rows pos-int? :columns pos-int?)
+          :3-args (spec/cat :rows pos-int? :columns pos-int? :v (spec/? any?)))
   :ret ::grid)
 (defn init
   "Initialize a grid of cells with the given number of rows and columns,
@@ -185,7 +191,13 @@
 ;;; Maze Functions
 
 (spec/fdef empty-neighbors
-  :args (spec/cat :maze ::maze :pos ::pos)
+  :args (spec/alt
+          :2-args (spec/cat :maze ::maze :pos ::pos))
+          ;; The 3-arg ::maze can contain
+          ;;   #{::pos :north :south :east :west
+          ;;     :northeast :northwest :southeast :southwest
+          ;;     :inward :clockwise :counter-clockwise :mask}}
+          :3-args (spec/cat :maze ::maze :neighbor-fn ifn? :pos ::pos)
   :ret (spec/coll-of ::pos)
   :fn #(every? adjacent? %))
 (defn empty-neighbors
@@ -195,6 +207,9 @@
    (filter #(empty? (get-in maze %)) (neighbor-fn maze pos))))
 
 
+(spec/fdef link-with
+  :args (spec/cat :direction-fn ifn?)
+  :ret ifn?)
 (defn link-with
   "Create a link function which uses the provided direction-fn."
   [direction-fn]
@@ -218,7 +233,7 @@
 
 (spec/fdef dead-ends
   :args (spec/cat :maze ::maze)
-  :ret int?)
+  :ret (spec/coll-of ::pos))
 (defn dead-ends
   "Filter for the dead ends in a maze.
   Fewer dead ends contribute to 'river', more flowing and meandering in a maze."
@@ -229,6 +244,11 @@
     [y x]))
 
 
+(spec/fdef braid
+  :args (spec/alt
+          :1-arg (spec/cat :maze ::maze)
+          :2-args (spec/cat :maze ::maze :rate ::rate))
+  :ret ::maze)
 (defn braid
   "Braid a maze.
   Braiding introduces loops into a maze by removing dead ends. A rate can be
@@ -253,6 +273,9 @@
        acc))))
 
 
+(spec/fdef unlink
+  :args (spec/cat :maze ::maze :pos-1 ::pos :pos-2 ::pos)
+  :ret ::maze)
 (defn unlink
   "Unlink two cells in a maze. Will replace dead ends with a mask to facilitate
   rendering."
@@ -272,6 +295,11 @@
             (vec (remove #{(direction pos-2 pos-1)} (get-in maze pos-2))))))))
 
 
+(spec/fdef cull
+  :args (spec/alt
+          :1-arg (spec/cat :maze ::maze)
+          :2-args (spec/cat :maze ::maze :rate ::rate))
+  :ret ::maze)
 (defn cull
   "Cull dead ends from a maze by unlinking them.
   This results in a sparse maze. A rate can be passed in to indicate a

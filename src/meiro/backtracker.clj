@@ -3,9 +3,26 @@
   maze. While there are unvisited cells, it chooses one at random, but when it
   encounters a dead end, it backtracks on its path until it finds a cell with
   unvisited neighbors and walks, repeating until all cells have been linked."
-  (:require [meiro.core :as m]))
+  (:require [meiro.core :as m]
+            [clojure.spec.alpha :as spec]))
 
 
+(spec/fdef create
+  :args (spec/alt
+          :1-arg (spec/cat :grid :meiro.core/grid)
+          :2-args (spec/cat :grid :meiro.core/grid :pos :meiro.core/pos)
+          :4-args (spec/cat
+                    :grid :meiro.core/grid
+                    :pos :meiro.core/pos
+                    :neighbor-fn ifn?
+                    :link-fn ifn?)
+          :5-args (spec/cat
+                    :grid :meiro.core/grid
+                    :pos :meiro.core/pos
+                    :neighbor-fn ifn?
+                    :link-fn ifn?
+                    :select-fn ifn?))
+  :ret :meiro.core/maze)
 (defn create
   "Create a random maze using the Recursive Backtracker algorithm.
   If a `pos` is passed, then the random walk will begin at that position.

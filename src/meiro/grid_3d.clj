@@ -1,11 +1,27 @@
 (ns meiro.grid-3d
   "Utilities for generating three dimensional mazes.
   In addition to the four cardinal directions, cells can link up and down.
-  Positions are identified by [level, row, column].")
+  Positions are identified by [level, row, column]."
+  (:require [clojure.spec.alpha :as spec]))
+
+
+(spec/def ::pos (spec/tuple :level nat-int? :row nat-int? :col nat-int?))
+
+(spec/def ::direction #{:up :down :north :south :east :west})
+
+(spec/def ::grid
+  (spec/coll-of
+    (spec/coll-of
+      (spec/coll-of (spec/and coll? empty?) :kind vector? :into vector?)
+      :kind vector? :into vector?)
+    :kind vector? :into vector?))
 
 
 ;;; Position Functions
 
+(spec/fdef adjacent?
+  :args (spec/cat :pos-0 ::pos :pos-1 ::pos)
+  :ret boolean?)
 (defn adjacent?
   "Are two positions adjacent.
   Function does not check that positions are within the bounds of a grid."
@@ -22,6 +38,9 @@
          (= col-1 col-2))))
 
 
+(spec/fdef direction
+  :args (spec/cat :pos-0 ::pos :pos-1 ::pos)
+  :ret ::direction)
 (defn direction
   "Get the direction from pos-1 to pos-2.
   Assumes [0 0 0] is the lower-north-west corner."
@@ -36,6 +55,12 @@
     nil))
 
 
+(spec/fdef init
+  :args (spec/alt
+          :3-args (spec/cat :level nat-int? :row nat-int? :col nat-int?)
+          :4-args (spec/cat :level nat-int? :row nat-int? :col nat-int?
+                            :v (spec/and coll? empty?)))
+  :ret ::grid)
 (defn init
   "Initialize a grid of cells with the given number of levels, rows, and
   columns, which can be accessed by index. Conceptually, [0 0 0] is the lower
@@ -47,6 +72,9 @@
                              (vec (repeat columns v))))))))
 
 
+(spec/fdef in?
+  :args (spec/cat :grid ::grid :pos ::pos)
+  :ret boolean?)
 (defn in?
   "Is the position within the bounds of the grid."
   [grid [level row col]]
@@ -59,6 +87,9 @@
       (<= 0 col max-col))))
 
 
+(spec/fdef neighbors
+  :args (spec/cat :grid ::grid :pos ::pos)
+  :ret (spec/coll-of ::pos))
 (defn neighbors
   "Get all potential neighbors of a position in a given grid"
   [grid [level row col]]
@@ -69,6 +100,9 @@
       [level row (dec col)] [level row (inc col)]}))
 
 
+(spec/fdef random-pos
+  :args (spec/cat :grid ::grid)
+  :ret ::pos)
 (defn random-pos
   "Select a random position from the grid."
   [grid]
