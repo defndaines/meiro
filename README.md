@@ -20,7 +20,7 @@ is a solution.
 
 ## Usage
 
-Project is currently _under development_ and does not have functions exposed for
+Project is pretty much complete and does not have functions exposed for
 external use (such as through a command-line executable JAR file). All the
 examples below assume that you are importing into a REPL for execution.
 
@@ -376,7 +376,7 @@ Which will produce a maze like:
 ![Growing Prim's Maze](img/growing-prim-maze.png)
 
 But, Growing Tree can also be used to implement Recursive Backtracker.
-_Note: if you do not suffle the new edges, the resulting "maze" will mostly be a
+_Note: If you do not shuffle the new edges, the resulting "maze" will mostly be a
 series of connected corridors._
 ```clojure
 (require '[meiro.growing-tree :as grow])
