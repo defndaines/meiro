@@ -12,6 +12,8 @@ mazes have exactly one path between any two cells in the maze. This also means
 that you designate any two cells as the start and end and guarantee that there
 is a solution.
 
+[![Dependencies Status](https://versions.deps.co/defndaines/meiro/status.svg)](https://versions.deps.co/defndaines/meiro)
+
 | [Usage](#usage)
 | [Algorithms](#algorithms)
 | [Solutions](#solutions)
