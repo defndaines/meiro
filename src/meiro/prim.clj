@@ -3,8 +3,7 @@
   The algorithm starts from a single cell and then chooses the next node based
   upon the cost of available edges. As new nodes are added to a forest, its
   edges are added to the available edges until the tree is complete."
-  (:require [meiro.core :as m]
-            [meiro.graph :as graph]))
+  (:require [meiro.graph :as graph]))
 
 
 ;; NOTE: The code assumes that edges are always given in ascending order.

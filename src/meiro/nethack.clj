@@ -7,8 +7,8 @@
 (def ^:private verticle-wall "|")
 (def ^:private inside-cell ".")
 (def ^:private cell-link ".")
-(def ^:private start-cell "@")
-(def ^:private end-cell "$")
+; (def ^:private start-cell "@"
+; (def ^:private end-cell "$")
 (def ^:private corridor "#")
 (def ^:private corridor-wall " ")
 

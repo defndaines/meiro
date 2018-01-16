@@ -20,8 +20,8 @@
           [[(dec row) (dec col)] [(dec row) (inc col)]
            [row (dec col)] [row (inc col)]]
           [[row (dec col)] [row (inc col)]
-           [(inc row) (dec col)] [(inc row) (inc col)]]
-          )))))
+           [(inc row) (dec col)] [(inc row) (inc col)]])))))
+
 
 
 (defn direction

@@ -158,7 +158,6 @@
    (let [size cell-size
          a-size (/ size 2.0)
          b-size (/ (* size (Math/sqrt 3)) 2.0)
-         width (* size 2)
          height (* b-size 2)
          rows (count maze)
          columns (count (first maze))
@@ -239,7 +238,7 @@
   [dir x y cell]
   (or (some #{dir} cell)
       (some #{dir} (map #(weave/direction [y x] %)
-                           (filter vector? cell)))))
+                         (filter vector? cell)))))
 
 (defn- link-north
   "Draw inset link to the cell to the north."
@@ -279,7 +278,7 @@
      (inc (* cell-size (count (first maze))))
      (inc (* cell-size (count maze)))
      (fn [graphic x y cell]
-       (let [[x1 x2 x3 x4 y1 y2 y3 y4 :as coords]
+       (let [[_ x2 x3 _ _ y2 y3 _ :as coords]
              (coordinates-with-inset x y cell-size inset)]
          (if (open? :north x y cell)
            (link-north graphic coords)

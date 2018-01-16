@@ -32,7 +32,7 @@
   [forests row width height]
   (reduce
     (fn [acc pos]
-      (if-let [forest (graph/find-forest acc pos)]
+      (if-let [forest (graph/find-forest acc pos)] ;; TODO Unused!?!
         acc
         (conj acc {:width width :height height :nodes #{pos} :edges []})))
     forests
@@ -63,7 +63,7 @@
         (if (seq neighbors)
           (let [neighbor (first (shuffle neighbors))
                 adj (filter (fn [n] (m/adjacent? node n)) (:nodes neighbor))
-                edge (vec (sort [node (rand-nth adj)])) ]
+                edge (vec (sort [node (rand-nth adj)]))]
             (recur
               (conj
                 (remove #(= % neighbor) tail)
@@ -111,27 +111,27 @@
   ;; TODO Currently only links once per corridor. Refactor to change this bias?
   ([forests row] (link-vertical forests row vertical-weight))
   ([forests row weight]
-  (let [next-row (inc row)
-        height (:height (first forests))]
-    (if (= next-row height)
-      forests
-      (reduce
-        (fn [acc forest]
-          (let [corridor (filter (fn [[_x y]] (= row y)) (:nodes forest))]
-            (if (seq corridor)
-              (if (< (rand) weight)
-                (let [[x y :as pos] (rand-nth corridor)
-                      pos-below [x next-row]]
-                  (-> acc
-                      (disj forest)
-                      (conj (graph/merge-forests
-                              forest
-                              {:nodes #{pos-below}}
-                              [pos pos-below]))))
-                acc)
-              acc)))
-        forests
-        forests)))))
+   (let [next-row (inc row)
+         height (:height (first forests))]
+     (if (= next-row height)
+       forests
+       (reduce
+         (fn [acc forest]
+           (let [corridor (filter (fn [[_ y]] (= row y)) (:nodes forest))]
+             (if (seq corridor)
+               (if (< (rand) weight)
+                 (let [[x _ :as pos] (rand-nth corridor)
+                       pos-below [x next-row]]
+                   (-> acc
+                       (disj forest)
+                       (conj (graph/merge-forests
+                               forest
+                               {:nodes #{pos-below}}
+                               [pos pos-below]))))
+                 acc)
+               acc)))
+         forests
+         forests)))))
 
 
 (spec/fdef create
