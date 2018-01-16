@@ -35,18 +35,14 @@
    (create grid pos neighbor-fn link-fn rand-nth))
   ([grid pos neighbor-fn link-fn select-fn]
    (loop [maze grid
-          pos pos
           stack (list pos)]
      (if (seq stack)
-       (let [unvisited (m/empty-neighbors maze neighbor-fn pos)]
+       (let [pos (first stack)
+             unvisited (m/empty-neighbors maze neighbor-fn pos)]
          (if (seq unvisited)
            (let [neighbor (select-fn unvisited)]
              (recur
                (link-fn maze pos neighbor)
-               neighbor
                (conj stack neighbor)))
-           (recur
-             maze
-             (second stack)
-             (rest stack))))
+           (recur maze (rest stack))))
        maze))))
