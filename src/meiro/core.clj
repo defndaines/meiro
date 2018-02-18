@@ -224,8 +224,8 @@
   :args (spec/cat :maze ::maze :pos-1 ::pos :pos-2 ::pos)
   :ret ::maze
   :fn #(and
-         (not (empty?) (get-in (:ret %) (-> % :args :pos-1)))
-         (not (empty?) (get-in (:ret %) (-> % :args :pos-2)))))
+         (not (empty? (get-in (:ret %) (-> % :args :pos-1))))
+         (not (empty? (get-in (:ret %) (-> % :args :pos-2))))))
 (defn link
   "Link two adjacent cells in a maze."
   ([maze pos-1 pos-2]
