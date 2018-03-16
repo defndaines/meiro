@@ -1,0 +1,2 @@
+{:deps {org.clojure/clojure {:mvn/version "1.9.0"}
+        org.clojure/data.generators {:mvn/version "0.1.2"}}}

@@ -11,3 +11,4 @@ scratch.clj
 maze.png
 /template.txt
 tags
+.cpcache/
