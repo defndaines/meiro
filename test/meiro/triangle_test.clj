@@ -1,6 +1,5 @@
 (ns meiro.triangle-test
-  (:require [clojure.test :refer :all]
-            [clojure.test.check.clojure-test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [meiro.core :as m]
             [meiro.triangle :refer :all]
             [meiro.backtracker :as backtracker]))

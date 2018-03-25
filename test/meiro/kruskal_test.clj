@@ -1,5 +1,5 @@
 (ns meiro.kruskal-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [meiro.kruskal :refer :all]
             [meiro.graph :as graph]))
 

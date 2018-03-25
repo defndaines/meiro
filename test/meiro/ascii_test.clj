@@ -1,5 +1,5 @@
 (ns meiro.ascii-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [meiro.core :as m]
             [meiro.ascii :refer :all]
             [clojure.string :as string]))

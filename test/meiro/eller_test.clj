@@ -1,5 +1,5 @@
 (ns meiro.eller-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [meiro.graph :as graph]
             [meiro.eller :refer :all]))
 

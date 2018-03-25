@@ -1,5 +1,5 @@
 (ns meiro.division-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [meiro.core :as m]
             [meiro.division :refer :all]
             [meiro.dijkstra :as d]))

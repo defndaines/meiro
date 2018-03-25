@@ -1,5 +1,5 @@
 (ns meiro.growing-tree-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [meiro.growing-tree :refer :all]
             [meiro.prim]
             [meiro.graph :as graph]))

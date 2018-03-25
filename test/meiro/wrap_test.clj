@@ -1,6 +1,5 @@
 (ns meiro.wrap-test
-  (:require [clojure.test :refer :all]
-            [clojure.test.check.clojure-test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [meiro.wrap :refer :all]
             [meiro.core :as m]
             [meiro.backtracker :as backtracker]))

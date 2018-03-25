@@ -1,5 +1,5 @@
 (ns meiro.prim-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [meiro.prim :refer :all]
             [meiro.graph :as graph]))
 

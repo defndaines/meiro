@@ -1,5 +1,5 @@
 (ns meiro.binary-tree-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [meiro.core :as m]
             [meiro.binary-tree :refer :all]
             [meiro.dijkstra :as d]))

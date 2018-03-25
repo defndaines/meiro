@@ -1,5 +1,5 @@
 (ns meiro.dijkstra-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [meiro.core :refer :all]
             [meiro.dijkstra :refer :all]
             [meiro.sidewinder :as sw]))
