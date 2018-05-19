@@ -1,7 +1,7 @@
 (ns meiro.sidewinder-test
   (:require [clojure.test :refer [deftest testing is]]
-            [meiro.core :refer :all]
-            [meiro.sidewinder :refer :all]))
+            [meiro.core :as meiro]
+            [meiro.sidewinder :as sidewinder]))
 
 
 (deftest western-path-test
@@ -25,7 +25,7 @@
 
 (deftest create-test
   (testing "Ensure all cells are linked."
-    (is (every? #(not-any? empty? %) (create (init 10 12))))))
+    (is (every? #(not-any? empty? %) (sidewinder/create (meiro/init 10 12))))))
 
 
 (deftest corridor-test
@@ -54,11 +54,11 @@
 (deftest last-row-test
   (testing "Last row can only link to itself."
     (is (= [[:east] [:east] [:east] [:west]]
-           (last-row 4)))))
+           (sidewinder/last-row 4)))))
 
 
 (deftest create-lazy-test
   (testing "Build a maze using infinite approach."
-    (let [maze (create-lazy 8)]
+    (let [maze (sidewinder/create-lazy 8)]
       (is (= 8
              (count (first (drop 25 maze))))))))

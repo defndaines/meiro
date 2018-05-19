@@ -1,8 +1,9 @@
 (ns meiro.aldous-broder-test
   (:require [clojure.test :refer [deftest testing is]]
-            [meiro.core :refer :all]
-            [meiro.aldous-broder :refer :all]))
+            [meiro.core :as meiro]
+            [meiro.aldous-broder :as ab]))
 
 (deftest create-test
   (testing "Ensure all cells are linked."
-    (is (every? #(not-any? empty? %) (create (init 10 12))))))
+    (is (every? #(not-any? empty? %)
+                (ab/create (meiro/init 10 12))))))

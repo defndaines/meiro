@@ -1,6 +1,6 @@
 (ns meiro.prim-test
   (:require [clojure.test :refer [deftest testing is]]
-            [meiro.prim :refer :all]
+            [meiro.prim :as prim]
             [meiro.graph :as graph]))
 
 
@@ -61,8 +61,8 @@
 (deftest create-test
   (testing "Creating a maze using Prim's Algorithm."
     (is (= (dec (* 8 12))
-           (count (:edges (create 8 12))))))
+           (count (:edges (prim/create 8 12))))))
   (testing "Ensure all cells are linked."
     (is (every?
           #(not-any? empty? %)
-          (graph/forest-to-maze (create 10 12))))))
+          (graph/forest-to-maze (prim/create 10 12))))))

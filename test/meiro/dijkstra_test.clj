@@ -1,7 +1,7 @@
 (ns meiro.dijkstra-test
   (:require [clojure.test :refer [deftest testing is]]
-            [meiro.core :refer :all]
-            [meiro.dijkstra :refer :all]
+            [meiro.core :as meiro]
+            [meiro.dijkstra :as dijkstra]
             [meiro.sidewinder :as sw]))
 
 
@@ -9,12 +9,12 @@
   (testing "When the grid is empty."
     (is (= [[0 1] [2 1] [1 2] [1 0]]
            (#'meiro.dijkstra/empty-neighbors
-             (init 3 3 nil) [1 1] [:north :south :east :west])))
-   (is (= [[2 1] [1 2]]
+             (meiro/init 3 3 nil) [1 1] [:north :south :east :west])))
+    (is (= [[2 1] [1 2]]
            (#'meiro.dijkstra/empty-neighbors
-             (init 3 3 nil) [1 1] [:south :east]))))
+             (meiro/init 3 3 nil) [1 1] [:south :east]))))
   (testing "When cells have been populated already"
-    (let [grid (assoc-in (init 3 3 nil) [2 1] 1)]
+    (let [grid (assoc-in (meiro/init 3 3 nil) [2 1] 1)]
       (is (= [[1 2]]
              (#'meiro.dijkstra/empty-neighbors grid [1 1] [:south :east])))
       (is (= [[1 0]]
@@ -27,9 +27,9 @@
                 [[:north :south] [:east] [:west :south]]
                 [[:north :east] [:west :east] [:north :west]]]]
       (is (= [[0 1 2] [1 6 5] [2 3 4]]
-             (distances maze)))
+             (dijkstra/distances maze)))
       (is (= [[6 7 8] [5 0 1] [4 3 2]]
-             (distances maze [1 1]))))))
+             (dijkstra/distances maze [1 1]))))))
 
 
 (deftest distances-by-breadth-test
@@ -38,18 +38,18 @@
                 [[:north :south] [:east] [:west :south]]
                 [[:north :east] [:west :east] [:north :west]]]]
       (is (= [[0 1 2] [1 6 5] [2 3 4]]
-             (distances-by-breadth maze)))
+             (dijkstra/distances-by-breadth maze)))
       (is (= [[6 7 8] [5 0 1] [4 3 2]]
-             (distances-by-breadth maze [1 1])))))
+             (dijkstra/distances-by-breadth maze [1 1])))))
   (testing "Calculate distances on a braided maze."
     (is (= [[0 3 4] [1 2 5] [2 3 4]]
-           (distances-by-breadth
+           (dijkstra/distances-by-breadth
              [[[:south :south] [:east :south] [:south :west]]
               [[:east :north :south :north] [:north :west] [:south :north]]
               [[:north :east] [:east :west] [:west :north]]]))))
   (testing "Calculate distances on a maze with a room."
     (is (= [[2 1 2] [1 0 3] [2 1 4]]
-           (distances-by-breadth
+           (dijkstra/distances-by-breadth
              [[[:east] [:south :east :west] [:south :west]]
               [[:south :east] [:north :south :west] [:north :south]]
               [[:north :east] [:north :west] [:north]]]
@@ -57,7 +57,7 @@
 
 
 (deftest solution-test
-  (let [sol (solution (sw/create (init 15 20)) [0 0] [14 19])]
+  (let [sol (dijkstra/solution (sw/create (meiro/init 15 20)) [0 0] [14 19])]
     (testing "Must be long enough to cross at least all columns and rows."
       (is (< 33 (count sol))))
     (testing "Starts with the provided 'start' cell."
@@ -76,7 +76,7 @@
                  [:north :west]]]]
       (is (= '([0 0] [0 1] [1 1] [1 0] [2 0] [3 0] [3 1] [3 2] [3 3] [3 4] [2 4]
                [1 4] [0 4])
-             (solution maze [0 0] [0 4]))))))
+             (dijkstra/solution maze [0 0] [0 4]))))))
 
 
 (deftest shortest-path-test
@@ -91,7 +91,7 @@
                  [:north :west]]]]
       (is (= '([0 0] [0 1] [1 1] [1 0] [2 0] [3 0] [3 1] [3 2] [3 3] [3 4] [2 4]
                [1 4] [0 4])
-             (shortest-path maze [0 0] [0 4])))))
+             (dijkstra/shortest-path maze [0 0] [0 4])))))
   (testing "Find shortest path (solution) when the maze has rooms."
     (let [maze
           [[[:south :east] [:south :east :west] [:south :west] [:south :east]
@@ -106,10 +106,10 @@
            [[:east] [:north :east :west] [:west] [:north :east]
             [:north :west]]]]
       (is (= '([0 0] [1 0] [1 1] [1 2] [1 3] [2 3] [3 3] [4 3] [4 4])
-             (shortest-path maze [0 0] [4 4])))
+             (dijkstra/shortest-path maze [0 0] [4 4])))
       (is (= '([4 0] [4 1] [3 1] [2 1] [1 1] [1 2] [1 3] [2 3] [3 3] [4 3]
                [4 4])
-             (shortest-path maze [4 0] [4 4])))))
+             (dijkstra/shortest-path maze [4 0] [4 4])))))
   (testing "Find shortest path when the maze is braided."
     (let [maze
           [[[:east :south] [:east :west] [:east :west] [:south :east :west]
@@ -123,12 +123,12 @@
            [[:east :north] [:east :west] [:east :west] [:east :west :north]
             [:north :west]]]]
       (is  (= '([0 0] [0 1] [0 2] [0 3] [1 3] [2 3] [3 3] [4 3] [4 4])
-              (shortest-path maze [0 0] [4 4])))
+              (dijkstra/shortest-path maze [0 0] [4 4])))
       (is  (= '([0 0] [1 0] [2 0] [2 1] [1 1] [1 2] [2 2] [3 2] [3 1] [3 0]
                 [4 0])
-              (shortest-path maze [0 0] [4 0])))
+              (dijkstra/shortest-path maze [0 0] [4 0])))
       (is  (= '([0 4] [0 3] [1 3] [1 2] [2 2] [3 2] [3 1] [3 0] [4 0])
-              (shortest-path maze [0 4] [4 0]))))))
+              (dijkstra/shortest-path maze [0 4] [4 0]))))))
 
 
 (deftest farthest-test
@@ -136,9 +136,9 @@
               [[:north :east] [:west :east :south] [:north :west]]
               [[:east] [:north :west :east] [:west]]]]
     (testing "Finding the farthest point."
-      (is (= [2 2] (farthest-pos maze)))
-      (is (= [0 1] (farthest-pos maze [0 2])))
-      (is (= [0 1] (farthest-pos maze [2 0]))))))
+      (is (= [2 2] (dijkstra/farthest-pos maze)))
+      (is (= [0 1] (dijkstra/farthest-pos maze [0 2])))
+      (is (= [0 1] (dijkstra/farthest-pos maze [2 0]))))))
 
 
 (deftest longest-path-test
@@ -146,4 +146,4 @@
               [[:north :east] [:west :east :south] [:north :west]]
               [[:east] [:north :west :east] [:west]]]]
     (testing "Finding the longest path."
-      (is (= '([0 1] [0 0] [1 0] [1 1] [2 1] [2 2]) (longest-path maze))))))
+      (is (= '([0 1] [0 0] [1 0] [1 1] [2 1] [2 2]) (dijkstra/longest-path maze))))))

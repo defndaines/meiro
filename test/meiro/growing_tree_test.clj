@@ -1,6 +1,6 @@
 (ns meiro.growing-tree-test
   (:require [clojure.test :refer [deftest testing is]]
-            [meiro.growing-tree :refer :all]
+            [meiro.growing-tree :as growing-tree]
             [meiro.prim]
             [meiro.graph :as graph]))
 
@@ -17,18 +17,19 @@
 (deftest recreate-prims-algorithm-test
   (testing "Creating a maze using Prim's Algorithm."
     (is (= (dec (* 8 12))
-           (count (:edges (create 8 12
-                                  (java.util.PriorityQueue.)
-                                  #'meiro.prim/poll
-                                  #'meiro.prim/to-active!))))))
+           (count (:edges
+                    (growing-tree/create 8 12
+                                         (java.util.PriorityQueue.)
+                                         #'meiro.prim/poll
+                                         #'meiro.prim/to-active!))))))
   (testing "Ensure all cells are linked."
     (is (every?
           #(not-any? empty? %)
           (graph/forest-to-maze
-            (create 10 12
-                    (java.util.PriorityQueue.)
-                    #'meiro.prim/poll
-                    #'meiro.prim/to-active!))))))
+            (growing-tree/create 10 12
+                                 (java.util.PriorityQueue.)
+                                 #'meiro.prim/poll
+                                 #'meiro.prim/to-active!))))))
 
 
 (deftest recreate-recursive-backtracker-test
@@ -36,16 +37,17 @@
     (is (every?
           #(not-any? empty? %)
           (graph/forest-to-maze
-            (create 18 10
-                    '()
-                    (fn [q] [(first q) (rest q)])
-                    (fn [new-edges queue remaining-edges]
-                      (reduce
-                        (fn [[q es] e]
-                          (let [remaining (disj es e)]
-                            (if (= es remaining)
-                              [q es]
-                              [(conj q e)
-                               remaining])))
-                        [queue remaining-edges]
-                        (shuffle new-edges)))))))))
+            (growing-tree/create
+              18 10
+              '()
+              (fn [q] [(first q) (rest q)])
+              (fn [new-edges queue remaining-edges]
+                (reduce
+                  (fn [[q es] e]
+                    (let [remaining (disj es e)]
+                      (if (= es remaining)
+                        [q es]
+                        [(conj q e)
+                         remaining])))
+                  [queue remaining-edges]
+                  (shuffle new-edges)))))))))

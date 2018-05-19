@@ -1,6 +1,6 @@
 (ns meiro.kruskal-test
   (:require [clojure.test :refer [deftest testing is]]
-            [meiro.kruskal :refer :all]
+            [meiro.kruskal :as kruskal]
             [meiro.graph :as graph]))
 
 
@@ -37,11 +37,11 @@
 (deftest create-test
   (testing "Creating a maze using Kruskal's Algorithm."
     (is (= (dec (* 8 12))
-           (count (:edges (create 8 12))))))
+           (count (:edges (kruskal/create 8 12))))))
   (testing "Ensure all cells are linked."
     (is (every?
           #(not-any? empty? %)
-          (graph/forest-to-maze (create 10 12))))))
+          (graph/forest-to-maze (kruskal/create 10 12))))))
 
 
 (deftest weave-test
@@ -49,26 +49,26 @@
     (testing "Can add weaves to forests for a Kruskal's maze."
       (is (= [[[0 1] [2 1]]]
              (-> forests
-                 (weave [1 1] :horizontal)
+                 (kruskal/weave [1 1] :horizontal)
                  (graph/find-forest [0 1])
                  :edges)))
       (is (= [[[1 0] [1 1]] [[1 1] [1 2]]]
              (-> forests
-                 (weave [1 1] :horizontal)
+                 (kruskal/weave [1 1] :horizontal)
                  (graph/find-forest [1 1])
                  :edges)))
       (is (= [[[0 1] [1 1]] [[1 1] [2 1]]]
              (-> forests
-                 (weave [1 1] :vertical)
+                 (kruskal/weave [1 1] :vertical)
                  (graph/find-forest [1 1])
                  :edges)))
       (is (= [[[1 0] [1 2]]]
              (-> forests
-                 (weave [1 1] :vertical)
+                 (kruskal/weave [1 1] :vertical)
                  (graph/find-forest [1 0])
                  :edges))))
     (testing "Invalid requests return original forests."
       (is (= forests
-             (weave forests [0 0])))
+             (kruskal/weave forests [0 0])))
       (is (= forests
-             (weave forests [0 1]))))))
+             (kruskal/weave forests [0 1]))))))

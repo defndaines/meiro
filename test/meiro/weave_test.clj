@@ -1,29 +1,29 @@
 (ns meiro.weave-test
   (:require [clojure.test :refer [deftest testing is]]
             [meiro.core :as m]
-            [meiro.weave :refer :all]))
+            [meiro.weave :as weave]))
 
 
 (deftest east-west-test
   (testing "Check for east-west corridors."
-    (is (east-west? [:east :west]))
-    (is (east-west? [:west :east]))
-    (is (not (east-west? [:east :west :south])))
-    (is (not (east-west? [:east :west :north])))
-    (is (not (east-west? [:south :north])))
-    (is (not (east-west? [:east])))
-    (is (not (east-west? [:west])))))
+    (is (weave/east-west? [:east :west]))
+    (is (weave/east-west? [:west :east]))
+    (is (not (weave/east-west? [:east :west :south])))
+    (is (not (weave/east-west? [:east :west :north])))
+    (is (not (weave/east-west? [:south :north])))
+    (is (not (weave/east-west? [:east])))
+    (is (not (weave/east-west? [:west])))))
 
 
 (deftest north-south-test
   (testing "Check for north-south corridors."
-    (is (north-south? [:north :south]))
-    (is (north-south? [:south :north]))
-    (is (not (north-south? [:north :south :east])))
-    (is (not (north-south? [:north :south :west])))
-    (is (not (north-south? [:east :west])))
-    (is (not (north-south? [:north])))
-    (is (not (north-south? [:south])))))
+    (is (weave/north-south? [:north :south]))
+    (is (weave/north-south? [:south :north]))
+    (is (not (weave/north-south? [:north :south :east])))
+    (is (not (weave/north-south? [:north :south :west])))
+    (is (not (weave/north-south? [:east :west])))
+    (is (not (weave/north-south? [:north])))
+    (is (not (weave/north-south? [:south])))))
 
 
 (deftest cells-to-test
@@ -43,23 +43,23 @@
 (deftest cell-west-test
   (testing "Pick up a cell to the west if available."
     (is (nil?
-          (cell-west
+          (weave/cell-west
             [[[:north :south] [:north :south] [:start]]]
             [0 2])))
     (is (= [0 0]
-           (cell-west
+           (weave/cell-west
              [[[] [:north :south] [:start]]]
              [0 2])))
     (is (= [0 0]
-           (cell-west
+           (weave/cell-west
              [[[] [:north :south] [:north :south] [:north :south] [:start]]]
              [0 4])))
     (is (nil?
-          (cell-west
+          (weave/cell-west
             [[[] [:north] [:north :south] [:north :south] [:start]]]
             [0 4])))
     (is (= [0 1]
-           (cell-west
+           (weave/cell-west
              [[[] [] [:north :south] [:north :south] [:start]]]
              [0 4])))))
 
@@ -67,11 +67,11 @@
 (deftest cell-east-test
   (testing "Pick up a cell to the east if available."
     (is (nil?
-          (cell-east
+          (weave/cell-east
             [[[:start] [:north :south] [:north :south]]]
             [0 0])))
     (is (= [0 3]
-           (cell-east
+           (weave/cell-east
              [[[:north :south] [:start] [:north :south] []]]
              [0 1])))))
 
@@ -79,11 +79,11 @@
 (deftest cell-north-test
   (testing "Pick up a cell to the north if available."
     (is (nil?
-          (cell-north
+          (weave/cell-north
             [[[:east :west]] [[:east :west]] [[:start]]]
             [2 0])))
     (is (= [0 0]
-           (cell-north
+           (weave/cell-north
              [[[]] [[:east :west]] [[:start]]]
              [2 0])))))
 
@@ -91,11 +91,11 @@
 (deftest cell-south-test
   (testing "Pick up a cell to the south if available."
     (is (nil?
-          (cell-south
+          (weave/cell-south
             [[[:start]] [[:east :west]] [[:east :west]]]
             [0 0])))
     (is (= [2 0]
-           (cell-south
+           (weave/cell-south
              [[[:start]] [[:east :west]] [[]]]
              [0 0])))))
 
@@ -108,47 +108,47 @@
                 [[] [] [:east :west] [] []]
                 [[] [] [] [] []]]]
       (is (= [[0 2] [1 2] [3 2] [4 2] [2 3] [2 4] [2 0] [2 1]]
-             (neighbors maze [2 2]))))
+             (weave/neighbors maze [2 2]))))
     (let [maze [[[] [] [:north] [] []]
                 [[] [] [:east :west] [] []]
                 [[:west] [:north :south] [] [:north :south] [:east]]
                 [[] [] [:east :west] [] []]
                 [[] [] [:south] [] []]]]
       (is (= [[1 2] [3 2] [2 3] [2 1]]
-             (neighbors maze [2 2])))) ))
+             (weave/neighbors maze [2 2])))) ))
 
 
 (deftest positions-between-test
   (testing "Enumerate all positions between two positions."
     (is (= [[0 1] [0 2]]
-           (positions-between [0 0] [0 3])))
+           (weave/positions-between [0 0] [0 3])))
     (is (= [[0 1] [0 2]]
-           (positions-between [0 3] [0 0])))
+           (weave/positions-between [0 3] [0 0])))
     (is (= [[2 1] [3 1]]
-           (positions-between [1 1] [4 1])))
+           (weave/positions-between [1 1] [4 1])))
     (is (= [[2 1] [3 1]]
-           (positions-between [4 1] [1 1])))
+           (weave/positions-between [4 1] [1 1])))
     (is (= []
-           (positions-between [4 1] [3 1])))
+           (weave/positions-between [4 1] [3 1])))
     (is (= []
-           (positions-between [4 1] [4 2])))))
+           (weave/positions-between [4 1] [4 2])))))
 
 
 (deftest link-test
   (testing "Adjacent cells link with opposite directions."
     (let [above [2 2]
           below [3 2]
-          m (link (m/init 6 4) below above)]
+          m (weave/link (m/init 6 4) below above)]
       (is (some (comp = :north) (get-in m below)))
       (is (some (comp = :south) (get-in m above))))
     (let [left [1 2]
           right [1 3]
-          m (link (m/init 6 4) left right)]
+          m (weave/link (m/init 6 4) left right)]
       (is (some (comp = :east) (get-in m left)))
       (is (some (comp = :west) (get-in m right)))))
   (testing "Non-adjacent link by position and path between marked as under."
     (let [base [[[] [:north :south] [:north :south] []]]
-          maze (link base [0 0] [0 3])]
+          maze (weave/link base [0 0] [0 3])]
       (is (= [[0 0]]
              (get-in maze [0 3])))
       (is (some #{:under} (get-in maze [0 1])))
@@ -159,12 +159,12 @@
 
 (deftest direction-test
   (testing "Identify adjacent directions."
-    (is (= :north (direction [2 3] [1 3])))
-    (is (= :south (direction [2 3] [3 3])))
-    (is (= :east (direction [2 3] [2 4])))
-    (is (= :west (direction [2 3] [2 2]))))
+    (is (= :north (weave/direction [2 3] [1 3])))
+    (is (= :south (weave/direction [2 3] [3 3])))
+    (is (= :east (weave/direction [2 3] [2 4])))
+    (is (= :west (weave/direction [2 3] [2 2]))))
   (testing "Identify non-adjacent directions."
-    (is (= :north (direction [2 3] [0 3])))
-    (is (= :south (direction [2 3] [5 3])))
-    (is (= :east (direction [2 3] [2 9])))
-    (is (= :west (direction [2 3] [2 0])))))
+    (is (= :north (weave/direction [2 3] [0 3])))
+    (is (= :south (weave/direction [2 3] [5 3])))
+    (is (= :east (weave/direction [2 3] [2 9])))
+    (is (= :west (weave/direction [2 3] [2 0])))))

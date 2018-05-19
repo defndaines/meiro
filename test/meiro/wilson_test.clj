@@ -1,20 +1,21 @@
 (ns meiro.wilson-test
   (:require [clojure.test :refer [deftest testing is]]
-            [meiro.core :refer :all]
-            [meiro.wilson :refer :all]))
+            [meiro.core :as meiro]
+            [meiro.wilson :as wilson]))
+
 
 (deftest walk-test
   (testing "Path includes one visited cell."
-    (let [maze (init 8 8)]
+    (let [maze (meiro/init 8 8)]
       (is (= [0 0]
              (last (#'meiro.wilson/walk
                      maze
-                     (remove #{[0 0]} (all-positions maze))))))
+                     (remove #{[0 0]} (meiro/all-positions maze))))))
       (is (= [3 4]
              (last (#'meiro.wilson/walk
                      maze
-                     (remove #{[3 4]} (all-positions maze)))))))))
+                     (remove #{[3 4]} (meiro/all-positions maze)))))))))
 
 (deftest create-test
   (testing "Ensure all cells are linked."
-    (is (every? #(not-any? empty? %) (create (init 10 12))))))
+    (is (every? #(not-any? empty? %) (wilson/create (meiro/init 10 12))))))

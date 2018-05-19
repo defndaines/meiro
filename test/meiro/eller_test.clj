@@ -1,7 +1,7 @@
 (ns meiro.eller-test
   (:require [clojure.test :refer [deftest testing is]]
             [meiro.graph :as graph]
-            [meiro.eller :refer :all]))
+            [meiro.eller :as eller]))
 
 
 (deftest for-forests-test
@@ -9,15 +9,15 @@
     (is (= #{{:width 3 :height 1 :nodes #{[0 0]} :edges []}
              {:width 3 :height 1 :nodes #{[1 0]} :edges []}
              {:width 3 :height 1 :nodes #{[2 0]} :edges []}}
-           (for-forests #{} 0 3 1)))
+           (eller/for-forests #{} 0 3 1)))
     (is (= #{{:width 3 :height 3 :nodes #{[0 2]} :edges []}
              {:width 3 :height 3 :nodes #{[1 2]} :edges []}
              {:width 3 :height 3 :nodes #{[2 2]} :edges []}}
-           (for-forests #{} 2 3 3)))
+           (eller/for-forests #{} 2 3 3)))
     (is (= #{{:width 3 :height 1 :nodes #{[0 0]} :edges []}
              {:width 3 :height 1 :nodes #{[1 0]} :edges []}
              {:width 3 :height 1 :nodes #{[2 0]} :edges []}}
-           (for-forests
+           (eller/for-forests
              #{{:width 3 :height 1 :nodes #{[1 0]} :edges []}}
              0 3 1)))
     (is (= #{{:width 3 :height 2 :nodes #{[0 1]}
@@ -26,7 +26,7 @@
               :edges [[[0 0] [1 0]] [[1 0] [1 1]]]}
              {:width 3 :height 2 :nodes #{[2 1] [2 0]}
               :edges [[[2 0] [2 1]]]}}
-           (for-forests
+           (eller/for-forests
              #{{:width 3 :height 2 :nodes #{[1 1] [0 0] [1 0]}
                 :edges [[[0 0] [1 0]] [[1 0] [1 1]]]}
                {:width 3 :height 2 :nodes #{[2 1] [2 0]}
@@ -38,11 +38,11 @@
   (testing "Merge multiple forests into a single forest."
     (is (= {:width 3 :height 1 :nodes #{[0 0] [1 0] [2 0]}
             :edges [[[0 0] [1 0]] [[1 0] [2 0]]]}
-           (merge-all
+           (eller/merge-all
              #{{:width 3 :height 1 :nodes #{[0 0]} :edges []}
                {:width 3 :height 1 :nodes #{[1 0]} :edges []}
                {:width 3 :height 1 :nodes #{[2 0]} :edges []}})))
-    (let [forest (merge-all
+    (let [forest (eller/merge-all
                    #{{:width 3 :height 2 :nodes #{[0 1]}
                       :edges []}
                      {:width 3 :height 2 :nodes #{[1 1] [0 0] [1 0]}
@@ -68,10 +68,10 @@
               :nodes #{[0 0] [1 0] [2 0]}
               :edges [[[0 0] [1 0]] [[1 0] [2 0]]]}}
            (#'meiro.eller/link-horizontal
-             (for-forests #{} 0 3 1)
+             (eller/for-forests #{} 0 3 1)
              0 1.0))))
   (testing "No links in a row."
-    (let [forests (for-forests #{} 0 3 1)]
+    (let [forests (eller/for-forests #{} 0 3 1)]
       (is (= forests
              (#'meiro.eller/link-horizontal forests 0 0.0))))))
 
@@ -81,22 +81,22 @@
     (is (= #{{:width 2 :height 2 :nodes #{[0 0] [0 1]} :edges [[[0 0] [0 1]]]}
              {:width 2 :height 2 :nodes #{[1 0] [1 1]} :edges [[[1 0] [1 1]]]}}
            (#'meiro.eller/link-vertical
-             (for-forests #{} 0 2 2)
+             (eller/for-forests #{} 0 2 2)
              0 1.0))))
   (testing "Only one cell per corridor links south."
     (is (= 2
-           (-> (for-forests #{} 0 2 2)
-             (#'meiro.eller/link-horizontal 0 1.0)
-             (#'meiro.eller/link-vertical 0 1.0)
-             first
-             :edges
-             count)))))
+           (-> (eller/for-forests #{} 0 2 2)
+               (#'meiro.eller/link-horizontal 0 1.0)
+               (#'meiro.eller/link-vertical 0 1.0)
+               first
+               :edges
+               count)))))
 
 
 (deftest create-test
   (let [width 2
         height 5
-        forest (create width height)]
+        forest (eller/create width height)]
     (testing "Creating a maze using Eller's Algorithm."
       (is (= (* width height)
              (count (:nodes forest))))

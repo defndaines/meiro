@@ -1,8 +1,9 @@
 (ns meiro.ascii-test
   (:require [clojure.test :refer [deftest testing is]]
             [meiro.core :as m]
-            [meiro.ascii :refer :all]
+            [meiro.ascii :as ascii]
             [clojure.string :as string]))
+
 
 (deftest cell-level-test
   (testing "Default rendering."
@@ -23,7 +24,7 @@
                                   "+---+---+---+"
                                   "|   |   |   |"
                                   "+---+---+---+\n"])
-           (render (m/init 2 3))))
+           (ascii/render (m/init 2 3))))
     (is (= (string/join \newline ["+---+---+"
                                   "|   |   |"
                                   "+---+---+"
@@ -35,20 +36,20 @@
                                   "+---+---+"
                                   "|   |   |"
                                   "+---+---+\n"])
-           (render (m/init 5 2)))))
+           (ascii/render (m/init 5 2)))))
   (testing "Links are represented as gaps in the wall."
     (is (= (string/join \newline ["+---+---+"
                                   "|   |   |"
                                   "+---+---+"
                                   "|       |"
                                   "+---+---+\n"])
-           (render (m/link (m/init 2 2) [1 1] [1 0]))))
+           (ascii/render (m/link (m/init 2 2) [1 1] [1 0]))))
     (is (= (string/join \newline ["+---+---+"
                                   "|   |   |"
                                   "+---+   +"
                                   "|   |   |"
                                   "+---+---+\n"])
-           (render (m/link (m/init 2 2) [1 1] [0 1]))))))
+           (ascii/render (m/link (m/init 2 2) [1 1] [0 1]))))))
 
 (deftest include-distances
   (testing "When distances are provided."
@@ -64,7 +65,7 @@
                            "+   +---+   +"
                            "| 2   3   4 |"
                            "+---+---+---+\n"])
-             (render maze (show-distance distances)))))))
+             (ascii/render maze (ascii/show-distance distances)))))))
 
 (deftest include-solution
   (testing "When a solution is provided."
@@ -87,7 +88,7 @@
                            "+   +---+   +---+   +"
                            "| *   *   *   *   * |"
                            "+---+---+---+---+---+\n"])
-             (render maze (show-solution sol)))))))
+             (ascii/render maze (ascii/show-solution sol)))))))
 
 (deftest masked-test
   (let [maze
@@ -113,15 +114,15 @@
                            "+   +   +---+   +   +"
                            "|           |       |"
                            "+---+---+---+---+---+\n"])
-             (render maze))))))
+             (ascii/render maze))))))
 
 (deftest line-to-row-test
   (testing "No masking"
     (is (= [[] [] [] []]
-           (line-to-row "...."))))
+           (ascii/line-to-row "...."))))
   (testing "All masking"
     (is (= [[:mask] [:mask] [:mask] [:mask]]
-           (line-to-row "xxxx"))))
+           (ascii/line-to-row "xxxx"))))
   (testing "Mixed masking"
     (is (= [[] [:mask] [:mask] []]
-           (line-to-row ".xx.")))))
+           (ascii/line-to-row ".xx.")))))

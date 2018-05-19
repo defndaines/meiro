@@ -1,8 +1,7 @@
 (ns meiro.division-test
   (:require [clojure.test :refer [deftest testing is]]
             [meiro.core :as m]
-            [meiro.division :refer :all]
-            [meiro.dijkstra :as d]))
+            [meiro.division :as division]))
 
 
 (deftest link-all-test
@@ -55,7 +54,7 @@
 (deftest create-test
   (testing "Ensure all cells are linked."
     (is (every? #(not-any? empty? %)
-                (create (m/init 12 10)))))
+                (division/create (m/init 12 10)))))
    ; (testing "Even with rooms, all mazes should be perfect."
     ; (let [maze (create (m/init 25 25) 4 0.5)]
       ; (is (d/solution maze [0 0] [24 24]))
