@@ -42,8 +42,8 @@
   (let [[row-1 col-1] pos-1
         [row-2 col-2] pos-2]
     (or
-     (and (= row-1 row-2) (= 1 (Math/abs ^int (- col-1 col-2))))
-     (and (= col-1 col-2) (= 1 (Math/abs ^int (- row-1 row-2)))))))
+      (and (= row-1 row-2) (= 1 (Math/abs ^int (- col-1 col-2))))
+      (and (= col-1 col-2) (= 1 (Math/abs ^int (- row-1 row-2)))))))
 
 
 (spec/fdef direction
@@ -119,9 +119,7 @@
 ;;; Grid Functions
 
 (spec/fdef init
-  :args (spec/alt
-          :2-args (spec/cat :rows pos-int? :columns pos-int?)
-          :3-args (spec/cat :rows pos-int? :columns pos-int? :v (spec/? any?)))
+  :args (spec/cat :rows pos-int? :columns pos-int? :v (spec/? any?))
   :ret ::grid)
 (defn init
   "Initialize a grid of cells with the given number of rows and columns,
@@ -143,8 +141,8 @@
           max-row (dec (count grid))
           max-col (dec (count (get grid row)))]
       (and
-       (<= 0 row max-row)
-       (<= 0 col max-col)))
+        (<= 0 row max-row)
+        (<= 0 col max-col)))
     false))
 
 
@@ -156,8 +154,8 @@
   "Get all potential neighbors of a position in a given grid"
   [grid [row col]]
   (filter
-   #(in? grid %)
-   #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]}))
+    #(in? grid %)
+    #{[(dec row) col] [(inc row) col] [row (dec col)] [row (inc col)]}))
 
 
 (spec/fdef all-positions
@@ -246,9 +244,7 @@
 
 
 (spec/fdef braid
-  :args (spec/alt
-          :1-arg (spec/cat :maze ::maze)
-          :2-args (spec/cat :maze ::maze :rate ::rate))
+  :args (spec/cat :maze ::maze :rate (spec/? ::rate))
   :ret ::maze)
 (defn braid
   "Braid a maze.
@@ -285,21 +281,19 @@
         cell-2 (get-in maze pos-2)]
     (-> maze
         (assoc-in
-         pos-1
-         (if (= 1 (count cell-1))
-           [:mask]
-           (vec (remove #{(direction pos-1 pos-2)} (get-in maze pos-1)))))
+          pos-1
+          (if (= 1 (count cell-1))
+            [:mask]
+            (vec (remove #{(direction pos-1 pos-2)} (get-in maze pos-1)))))
         (assoc-in
-         pos-2
-         (if (= 1 (count cell-2))
-           [:mask]
-           (vec (remove #{(direction pos-2 pos-1)} (get-in maze pos-2))))))))
+          pos-2
+          (if (= 1 (count cell-2))
+            [:mask]
+            (vec (remove #{(direction pos-2 pos-1)} (get-in maze pos-2))))))))
 
 
 (spec/fdef cull
-  :args (spec/alt
-         :1-arg (spec/cat :maze ::maze)
-         :2-args (spec/cat :maze ::maze :rate ::rate))
+  :args (spec/cat :maze ::maze :rate (spec/? ::rate))
   :ret ::maze)
 (defn cull
   "Cull dead ends from a maze by unlinking them.
@@ -314,7 +308,7 @@
          (let [pos (first positions)
                neighbor (pos-to (first (get-in maze pos)) pos)]
            (recur
-            (unlink acc pos neighbor)
-            (rest positions)))
+             (unlink acc pos neighbor)
+             (rest positions)))
          (recur acc (rest positions)))
        acc))))
