@@ -18,6 +18,7 @@ is a solution.
 | [Algorithms](#algorithms)
 | [Solutions](#solutions)
 | [Utilities](#utilities)
+| [Presentation](#presentation)
 
 
 ## Usage
@@ -701,6 +702,13 @@ To wrap off any direction:
 ```
 
 ![Wrap Maze](img/wrap-maze.png)
+
+
+## Presentation
+
+I did a presentation on this code at Pivotal in January 2018. It is available
+on YouTube here:
+[Maze Generation Algorithms in Clojure – Michael Daines](https://www.youtube.com/watch?v=eUHUX7E2OLk)
 
 
 ## License
