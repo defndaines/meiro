@@ -348,7 +348,7 @@
 
 (defn- draw-up-arrow
   "Draw an up arrow (pointing right)."
-  [graphic x y]
+  [^Graphics2D graphic x y]
   (let [offset 4
         half-x (+ (* cell-size x) (/ cell-size 2) 1)
         x' (- (* cell-size (inc x)) offset)
@@ -365,7 +365,7 @@
 
 (defn- draw-down-arrow
   "Draw a down arrow (pointing left)."
-  [graphic x y]
+  [^Graphics2D graphic x y]
   (let [offset 4
         half-x (dec (+ (* cell-size x) (/ cell-size 2)))
         x' (+ (* cell-size x) offset)
