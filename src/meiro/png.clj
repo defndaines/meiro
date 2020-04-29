@@ -57,7 +57,7 @@
      (.setColor graphic Color/BLACK)
      (doseq [[y row] (map-indexed vector maze)]
        (doseq [[x cell] (map-indexed vector row)]
-         (if (not-any? #{:mask} cell)
+         (when (not-any? #{:mask} cell)
            (cell-fn graphic x y cell))))
      (ImageIO/write img "png" (File. file-name)))))
 
@@ -292,7 +292,7 @@
          (if (open? :south x y cell)
            (link-south graphic coords)
            (draw-line graphic x2 y3 x3 y3))
-         (if (some #{:under} cell)
+         (when (some #{:under} cell)
            (if (some #{:north} cell)
              (do
                (link-east graphic coords)
@@ -399,7 +399,7 @@
       (let [offset (+ (* z 0.5) (* z width))]
         (doseq [[y row] (map-indexed vector level)]
           (doseq [[x' cell] (map-indexed vector row)]
-            (if (not-any? #{:mask} cell)
+            (when (not-any? #{:mask} cell)
               (let [x (+ offset x')
                     x+ (inc x)
                     y+ (inc y)]
