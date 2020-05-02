@@ -39,7 +39,7 @@
 
 (defn- draw-line
   "Draw a line using float-based coordinates."
-  [graphic x y x' y']
+  [^Graphics2D graphic x y x' y']
   (.draw graphic (Line2D$Double. x y x' y')))
 
 
