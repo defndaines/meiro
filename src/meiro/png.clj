@@ -303,7 +303,7 @@
 
 
 (defn- fill-square
-  [graphic x y]
+  [^Graphics2D graphic x y]
   (let [x' (inc (* x cell-size))
         y' (inc (* y cell-size))
         length (- cell-size 2)]
@@ -312,7 +312,7 @@
 
 
 (defn- fill-passage
-  [graphic x y x' y']
+  [^Graphics2D graphic x y x' y']
   (let [start-x (inc (* x cell-size))
         start-y (inc (* y cell-size))
         length-x (+ cell-size (- (* x' cell-size) start-x 1))
