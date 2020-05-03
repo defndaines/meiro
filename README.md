@@ -201,7 +201,7 @@ Which will produce a maze like:
 Sidewinder is based upon Binary Tree, but when it navigates south, it chooses a
 random cell from the current horizontal corridor and generates the link from
 there. The mazes will still flow vertically, but not to the right as with Binary
-Tree. All mazes with have a single horizontal corridor along the southern edge.
+Tree. All mazes will have a single horizontal corridor along the southern edge.
 
 To generate a maze using the sidewinder algorithm:
 ```clojure
@@ -294,7 +294,11 @@ Which will produce a maze like:
 
 ### Recursive Backtracker
 
-Recursive Backtracker uses a random-walk algorithm. When it encounters a dead end, it backtracks to the last unvisited cell and resumes the random walk from that position. It completes when it backtracks to the starting cell. Resulting mazes have long, twisty passages and fewer dead ends. It should be faster than hunt-and-kill, but has to maintain the stack of all visited cells.
+Recursive Backtracker uses a random-walk algorithm. When it encounters a dead
+end, it backtracks to the last unvisited cell and resumes the random walk from
+that position. It completes when it backtracks to the starting cell. Resulting
+mazes have long, twisty passages and fewer dead ends. It should be faster than
+hunt-and-kill, but has to maintain the stack of all visited cells.
 
 To generate a random-walk maze biased to the last unvisited cell on the path
 using Recursive Backtracker:
@@ -608,6 +612,7 @@ multiple times to remove more ends. Culled cells will be marked as masked, so
 you will need to use a rendering function which handles this sensibly.
 Culled mazes will remain perfect mazes.
 ```clojure
+(require '[meiro.hunt-and-kill :as hk])
 (def maze (hk/create (m/init 8 22)))
 (png/render-inset (m/cull (m/cull maze 0.6) 0.6) 3)
 ```
@@ -720,7 +725,7 @@ on YouTube here:
 
 ## License
 
-Copyright © 2017 Michael S. Daines
+Copyright © 2017–2020 Michael S. Daines
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
