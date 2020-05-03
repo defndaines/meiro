@@ -37,11 +37,12 @@ position-aware, with cells accessed by `[row column]`.
 
 Here is a 5x5 maze:
 ```clojure
-[[[:east] [:south :west :east] [:west :east] [:west :south] [:south]]
+(def maze
+ [[[:east] [:south :west :east] [:west :east] [:west :south] [:south]]
  [[:east :south] [:east :north :west] [:south :west] [:north :east] [:west :north]]
  [[:north :east] [:west] [:south :north :east] [:west] [:south]]
  [[:south] [:south] [:south :north :east] [:west :east] [:west :north :south]]
- [[:east :north] [:north :west :east] [:west :north] [:east] [:north :west]]]
+ [[:east :north] [:north :west :east] [:west :north] [:east] [:north :west]]])
 ```
 
 The easiest way to visualize a maze at the REPL is to generate an ASCII
@@ -67,6 +68,8 @@ nil
 And if you want to print or share a maze, it can be output as a PNG:
 ```clojure
 (require '[meiro.png :as png])
+(require '[meiro.core :as m])
+(require '[meiro.sidewinder :as sw])
 (png/render (sw/create (m/init 15 20)) "sample-maze.png")
 ```
 Which creates a PNG file like:
@@ -75,7 +78,8 @@ Which creates a PNG file like:
 
 To print a maze with masked cells:
 ```clojure
-(def grid (ascii/read-grid "template.txt"))
+(def grid (ascii/read-grid "test/meiro/template.txt"))
+(require '[meiro.backtracker :as b])
 (png/render-masked (b/create grid))
 ```
 
@@ -83,6 +87,7 @@ To print a maze with masked cells:
 
 To print a circular (polar) maze:
 ```clojure
+(require '[meiro.polar :as polar])
 (png/render-polar
   (b/create (polar/init 10) [0 0] polar/neighbors polar/link))
 ```
@@ -91,6 +96,7 @@ To print a circular (polar) maze:
 
 To print a sigma (hex) maze:
 ```clojure
+(require '[meiro.hex :as hex])
 (png/render-hex
   (b/create (m/init 15 20) [7 9] hex/neighbors hex/link))
 ```
@@ -99,6 +105,7 @@ To print a sigma (hex) maze:
 
 To print a delta (triangle) maze:
 ```clojure
+(require '[meiro.triangle :as triangle])
 (def grid (ascii/read-grid "test/meiro/triangle.txt"))
 (png/render-delta
   (b/create grid [0 12] triangle/neighbors m/link))
