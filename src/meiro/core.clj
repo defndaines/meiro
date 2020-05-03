@@ -191,12 +191,12 @@
 
 (spec/fdef empty-neighbors
   :args (spec/alt
-          :2-args (spec/cat :maze ::maze :pos ::pos))
+          :2-args (spec/cat :maze ::maze :pos ::pos)
           ;; The 3-arg ::maze can contain
           ;;   #{::pos :north :south :east :west
           ;;     :northeast :northwest :southeast :southwest
           ;;     :inward :clockwise :counter-clockwise :mask}}
-          :3-args (spec/cat :maze ::maze :neighbor-fn ifn? :pos ::pos)
+          :3-args (spec/cat :maze ::maze :neighbor-fn ifn? :pos ::pos))
   :ret (spec/coll-of ::pos)
   :fn #(every? adjacent? %))
 (defn empty-neighbors
@@ -222,8 +222,8 @@
   :args (spec/cat :maze ::maze :pos-1 ::pos :pos-2 ::pos)
   :ret ::maze
   :fn #(and
-         (not (empty? (get-in (:ret %) (-> % :args :pos-1))))
-         (not (empty? (get-in (:ret %) (-> % :args :pos-2))))))
+         (seq (get-in (:ret %) (-> % :args :pos-1)))
+         (seq (get-in (:ret %) (-> % :args :pos-2)))))
 (defn link
   "Link two adjacent cells in a maze."
   ([maze pos-1 pos-2]

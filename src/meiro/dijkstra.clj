@@ -83,7 +83,7 @@
             (first paths)
             (get-shorty
               (reduce
-                (fn [acc [head &_ :as path]]
+                (fn [acc [head & _ :as path]]
                   (let [steps (step head n)]
                     (if (seq steps)
                       (map (fn [e] (conj path e)) steps)

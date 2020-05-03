@@ -32,7 +32,7 @@
   [forests row width height]
   (reduce
     (fn [acc pos]
-      (if-let [forest (graph/find-forest acc pos)] ;; TODO Unused!?!
+      (if-let [_forest (graph/find-forest acc pos)] ;; TODO Unused!?!
         acc
         (conj acc {:width width :height height :nodes #{pos} :edges []})))
     forests

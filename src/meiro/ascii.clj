@@ -1,5 +1,7 @@
 (ns meiro.ascii
-  "Generate an ASCII representation of a maze. Useful for debugging.")
+  "Generate an ASCII representation of a maze. Useful for debugging."
+  (:require [clojure.java.io :as io]
+            [clojure.string :as string]))
 
 (def ^:private corner "+")
 (def ^:private horizontal-wall "---")
@@ -11,7 +13,7 @@
 (defn- top-level
   "Render the top edge of the maze."
   [maze]
-  (clojure.string/join
+  (string/join
     (flatten
       (concat
         corner
@@ -82,5 +84,5 @@
   "Read in an ASCII grid using 'x' to mark masked cells and '.' for open
   cells."
   [file-name]
-  (with-open [reader (clojure.java.io/reader file-name)]
+  (with-open [reader (io/reader file-name)]
     (vec (map line-to-row (line-seq reader)))))

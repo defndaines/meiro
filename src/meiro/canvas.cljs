@@ -1,7 +1,6 @@
 (ns meiro.canvas
   "Functions for drawing mazes onto a canvas object."
-  (require [clojure.spec.alpha :as spec]))
-
+  (:require [clojure.spec.alpha :as spec]))
 
 (def cell-size
   "Cell size constant which determines cell width and height in image."
@@ -50,8 +49,3 @@
           (draw-fn context (inc x) y (inc x) (inc y)))
         (when (not-any? #{:south} cell)
           (draw-fn context x (inc y) (inc x) (inc y)))))))
-
-(comment
-  (def canvas (.getElementById js/document "drawing"))
-  (def context (.getContext canvas "2d"))
-  (render maze context (scaled-line-fn cell-size)))

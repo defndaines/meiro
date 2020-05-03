@@ -1,8 +1,7 @@
 (ns meiro.wrap
   "Functions for generating mazes which wrap around on themselves
   (think Pac-Man)."
-  (:require [meiro.core :as m])
-  (:import (java.lang Math)))
+  (:require [meiro.core :as m]))
 
 
 (defn neighbors
