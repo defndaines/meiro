@@ -5,9 +5,9 @@
 
 (def ^:private corner "+")
 (def ^:private horizontal-wall "---")
-(def ^:private verticle-wall "|")
+(def ^:private vertical-wall "|")
 (def ^:private inside-cell "   ")
-(def ^:private verticle-link " ")
+(def ^:private vertical-link " ")
 (def ^:private horizontal-link "   ")
 
 (defn- top-level
@@ -26,7 +26,7 @@
   ([cell] (cell-level cell inside-cell))
   ([cell inside]
    (concat inside
-           (if (some #{:east} cell) verticle-link verticle-wall))))
+           (if (some #{:east} cell) vertical-link vertical-wall))))
 
 (defn- bottom-level
   "Render the bottom edge of a cell, or precisely the south and south-east
@@ -41,7 +41,7 @@
           (top-level maze)
           (mapcat
             (fn [row]
-              (concat verticle-wall (mapcat cell-level row) "\n"
+              (concat vertical-wall (mapcat cell-level row) "\n"
                       corner (mapcat bottom-level row) "\n"))
             maze)))
   ;; Could just call (render maze (fn [_] inside-cell)), but feel like there's
@@ -52,7 +52,7 @@
           (flatten
             (for [row (range (count maze))]
               (concat
-                verticle-wall
+                vertical-wall
                 (for [col (range (count (first maze)))]
                   (cell-level (get-in maze [row col])
                               (cell-fn [row col])))

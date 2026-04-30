@@ -325,7 +325,7 @@
   "Render a forest to PNG.
   Because forests are a collection of edges, other render functions (which are
   position-aware) cannot render them without conversion. To work around that,
-  this function bores out the maze by iterating through the edges whereever they
+  this function bores out the maze by iterating through the edges wherever they
   are."
   [forest]
   (let [{:keys [width height edges]} forest

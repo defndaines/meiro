@@ -43,7 +43,7 @@
   :args (spec/cat :forests :meiro.graph/forest :node :meiro.graph/node)
   :ret :meiro.graph/forest)
 (defn- neighboring-forests
-  "Get all forests with nodes adjancent to the provided node."
+  "Get all forests with nodes adjacent to the provided node."
   [forests node]
   (filter
     (fn [f] (some #(m/adjacent? node %) (:nodes f)))

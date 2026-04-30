@@ -2,7 +2,7 @@
   "Unicode rendering of a maze.
 
   NOTE: Not pretty. This is super clunky, since all maze edges are treated
-        exceptionally. I don't intend to revist this code to clean it up."
+        exceptionally. I don't intend to revisit this code to clean it up."
   (:require [meiro.core :as m]))
 
 (def ^:private corner "\u254b")
@@ -25,9 +25,9 @@
 (def ^:private e-edge "\u2501")
 (def ^:private w-edge "\u2501")
 (def ^:private horizontal-wall "\u2501\u2501")
-(def ^:private verticle-wall "\u2503")
+(def ^:private vertical-wall "\u2503")
 (def ^:private inside-cell "  ")
-(def ^:private verticle-link " ")
+(def ^:private vertical-link " ")
 (def ^:private horizontal-link "  ")
 
 (defn- top-level [maze]
@@ -43,7 +43,7 @@
 
 (defn- cell-level [cell]
   (concat inside-cell
-          (if (some #{:east} cell) verticle-link verticle-wall)))
+          (if (some #{:east} cell) vertical-link vertical-wall)))
 
 (defn- bottom-row
   "Get south and south-east characters for a given row."
@@ -57,7 +57,7 @@
     [:south nil :east :south] [horizontal-link n-edge]
     [nil :east :east :south] [horizontal-wall w-edge]
     [nil :east :east nil] [horizontal-wall ew-edge]
-    [:south nil nil :south] [horizontal-link verticle-wall]
+    [:south nil nil :south] [horizontal-link vertical-wall]
     [:south :east nil nil] [horizontal-link nw-corner]
     [nil :east nil :south] [horizontal-wall ne-corner]
     [nil nil :east :south] [horizontal-wall se-corner]
@@ -71,26 +71,26 @@
 (defn- bottom-left
   [maze cell]
   (if (some #{:south} (get-in maze cell))
-    verticle-wall
+    vertical-wall
     nes-tee))
 
 (defn- bottom-last
   [maze cell]
   (if (some #{:south} (get-in maze cell))
-    [horizontal-link verticle-wall]
+    [horizontal-link vertical-wall]
     [horizontal-wall nws-tee]))
 
 (defn- last-row
   [row]
   (flatten
     (concat
-      verticle-wall
+      vertical-wall
       (map cell-level row)
       "\n"
       sw-corner
       (map (fn [cell]
              [horizontal-wall
-              (if (some #{:east} cell) verticle-link verticle-wall)])
+              (if (some #{:east} cell) vertical-link vertical-wall)])
            (butlast row))
       horizontal-wall se-corner "\n")))
 
@@ -104,7 +104,7 @@
       (flatten
         (for [row (range (dec (count maze)))]
           (concat
-            verticle-wall
+            vertical-wall
             (for [col (range (count (first maze)))]
               (cell-level (get-in maze [row col])))
             "\n"

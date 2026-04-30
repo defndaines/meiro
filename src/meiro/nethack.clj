@@ -4,7 +4,7 @@
 
 
 (def ^:private horizontal-wall "-")
-(def ^:private verticle-wall "|")
+(def ^:private vertical-wall "|")
 (def ^:private inside-cell ".")
 (def ^:private cell-link ".")
 ; (def ^:private start-cell "@"
@@ -27,7 +27,7 @@
   ([cell] (cell-room-level cell inside-cell))
   ([cell inside]
    (concat inside
-           (if (some #{:east} cell) cell-link verticle-wall))))
+           (if (some #{:east} cell) cell-link vertical-wall))))
 
 
 (defn- bottom-room-level
@@ -37,7 +37,7 @@
   (concat
     (if (some #{:south} cell) cell-link horizontal-wall)
     (if (some #{:south} cell)
-      (if (not-any? #{:east} cell) verticle-wall horizontal-wall)
+      (if (not-any? #{:east} cell) vertical-wall horizontal-wall)
       horizontal-wall)))
 
 
@@ -48,8 +48,8 @@
           (top-level maze) \newline
           (mapcat
             (fn [row]
-              (concat verticle-wall (mapcat cell-room-level row) "\n"
-                      verticle-wall (mapcat bottom-room-level row) "\n"))
+              (concat vertical-wall (mapcat cell-room-level row) "\n"
+                      vertical-wall (mapcat bottom-room-level row) "\n"))
             maze))))
 
 
